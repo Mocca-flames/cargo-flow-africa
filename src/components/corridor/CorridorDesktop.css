@@ -1,0 +1,7 @@
+.corridor--desktop .corridor__split {
+  height: 50%;
+}
+
+.corridor--desktop .corridor__gap {
+  width: 2vw;
+}

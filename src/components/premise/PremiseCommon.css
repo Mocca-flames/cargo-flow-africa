@@ -1,0 +1,144 @@
+.premise {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  overflow: hidden;
+  background: var(--color-canvas);
+}
+
+@supports not (height: 100svh) {
+  .premise {
+    height: 100vh;
+  }
+}
+
+/* ─── Visual Layer ─── */
+.premise-visual {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.premise-visual--loaded {
+  opacity: 1;
+}
+
+.premise-visual__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.premise-visual--loaded .premise-visual__video {
+  opacity: 1;
+}
+
+.premise-visual__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    180deg,
+    rgba(248, 244, 235, 0.15) 0%,
+    rgba(248, 244, 235, 0.35) 50%,
+    rgba(248, 244, 235, 0.5) 100%
+  );
+}
+
+/* ─── Content Layer ─── */
+.premise-content {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: var(--section-padding);
+  padding-bottom: clamp(4rem, 10vw, 8rem);
+  pointer-events: none;
+}
+
+.premise-headline {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.75rem, 4vw + 0.5rem, 3.5rem);
+  line-height: 1.15;
+  color: var(--color-ink);
+  text-align: center;
+  max-width: 600px;
+  pointer-events: auto;
+  opacity: 1;
+  animation: premise-breathe 8s ease-in-out infinite;
+}
+
+@keyframes premise-breathe {
+  0%, 100% {
+    opacity: 0.85;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-0.5rem);
+  }
+}
+
+/* ─── WhatsApp FAB ─── */
+.whatsapp-fab {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  background: #25D366;
+  box-shadow: 0 2px 12px rgba(37, 211, 102, 0.4);
+  transition: transform 0.3s var(--ease-snap), box-shadow 0.3s ease;
+  pointer-events: auto;
+}
+
+.whatsapp-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.5);
+}
+
+.whatsapp-fab:active {
+  transform: scale(0.95);
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  .premise-headline {
+    animation: none;
+    opacity: 1;
+  }
+
+  .premise-visual {
+    opacity: 1;
+    transition: none;
+  }
+
+  .premise-visual__video {
+    display: none;
+  }
+
+  .whatsapp-fab {
+    transition: none;
+  }
+}

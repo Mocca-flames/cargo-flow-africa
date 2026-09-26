@@ -1,0 +1,80 @@
+.verdict {
+  position: relative;
+  width: 100%;
+  height: 80svh;
+  overflow: hidden;
+  background: var(--color-canvas);
+}
+
+@supports not (height: 80svh) {
+  .verdict {
+    height: 80vh;
+  }
+}
+
+.verdict__content {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--section-padding);
+  text-align: center;
+}
+
+.verdict__headline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.15;
+  color: var(--color-ink);
+  margin: 0 0 var(--space-8);
+  max-width: 600px;
+}
+
+.verdict__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 400px;
+}
+
+.verdict__field {
+  height: 3rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.verdict__cta {
+  height: 3.5rem;
+  background: var(--color-ink);
+  border: none;
+  cursor: pointer;
+}
+
+.verdict__stat {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  color: var(--color-ink-muted);
+  margin-top: var(--space-8);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ─── WhatsApp expands on verdict ─── */
+.verdict .whatsapp-fab {
+  bottom: 2rem;
+  right: 2rem;
+  width: 4rem;
+  height: 4rem;
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  .verdict {
+    height: 100vh;
+  }
+}

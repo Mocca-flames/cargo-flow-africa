@@ -1,17 +1,18 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "./tokens.css";
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Base Reset ─── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
   height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 html,
@@ -24,17 +25,9 @@ body {
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background: var(--color-canvas);
 }
 
 a {
@@ -42,8 +35,119 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ─── Typography Utilities ─── */
+.text-display-xl {
+  font-family: var(--font-display);
+  font-size: var(--text-display-xl);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.text-display-l {
+  font-family: var(--font-display);
+  font-size: var(--text-display-l);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.text-display-m {
+  font-family: var(--font-display);
+  font-size: var(--text-display-m);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.text-body-l {
+  font-family: var(--font-body);
+  font-size: var(--text-body-l);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.text-body-m {
+  font-family: var(--font-body);
+  font-size: var(--text-body-m);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.text-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ─── Color Utilities ─── */
+.color-ink { color: var(--color-ink); }
+.color-ink-muted { color: var(--color-ink-muted); }
+.color-gold { color: var(--color-accent-gold); }
+.color-terracotta { color: var(--color-accent-terracotta); }
+.color-canvas { color: var(--color-canvas); }
+.color-surface { color: var(--color-surface); }
+
+.bg-canvas { background-color: var(--color-canvas); }
+.bg-canvas-alt { background-color: var(--color-canvas-alt); }
+.bg-ink { background-color: var(--color-ink); }
+.bg-surface { background-color: var(--color-surface); }
+
+/* ─── Spacing Utilities ─── */
+.p-section { padding: var(--section-padding); }
+.px-section { padding-left: var(--section-padding); padding-right: var(--section-padding); }
+.py-section { padding-top: var(--section-padding); padding-bottom: var(--section-padding); }
+
+.mt-1 { margin-top: var(--space-1); }
+.mt-2 { margin-top: var(--space-2); }
+.mt-3 { margin-top: var(--space-3); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }
+.mt-8 { margin-top: var(--space-8); }
+.mt-12 { margin-top: var(--space-12); }
+.mt-16 { margin-top: var(--space-16); }
+
+.mb-1 { margin-bottom: var(--space-1); }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-3 { margin-bottom: var(--space-3); }
+.mb-4 { margin-bottom: var(--space-4); }
+.mb-6 { margin-bottom: var(--space-6); }
+.mb-8 { margin-bottom: var(--space-8); }
+.mb-12 { margin-bottom: var(--space-12); }
+.mb-16 { margin-bottom: var(--space-16); }
+
+/* ─── Layout Utilities ─── */
+.section {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.section-hero {
+  height: 100vh;
+}
+
+.section-fixed {
+  height: 100vh;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+}
+
+/* ─── Border ─── */
+.border-b {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.border-t {
+  border-top: 1px solid var(--color-border);
 }

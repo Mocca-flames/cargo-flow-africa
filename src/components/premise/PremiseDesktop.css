@@ -1,0 +1,36 @@
+/* ─── Desktop Premise ─── */
+.premise--desktop .premise-content {
+  padding-bottom: clamp(6rem, 12vw, 10rem);
+}
+
+.premise--desktop .premise-headline {
+  font-size: clamp(2rem, 4vw + 0.75rem, 4rem);
+  max-width: 700px;
+}
+
+.premise--desktop .whatsapp-fab {
+  bottom: 2rem;
+  right: 2rem;
+  width: 4rem;
+  height: 4rem;
+}
+
+/* ─── Desktop: Breathing animation on visual ─── */
+.premise--desktop .premise-visual--loaded {
+  animation: visual-breathe 12s ease-in-out infinite;
+}
+
+@keyframes visual-breathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .premise--desktop .premise-visual--loaded {
+    animation: none;
+  }
+}

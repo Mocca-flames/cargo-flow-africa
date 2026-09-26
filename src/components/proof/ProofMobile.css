@@ -1,0 +1,11 @@
+.proof--mobile .proof__grid {
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.proof--mobile .proof__column--1,
+.proof--mobile .proof__column--2,
+.proof--mobile .proof__column--3 {
+  height: 40vh;
+  margin-top: 0;
+}

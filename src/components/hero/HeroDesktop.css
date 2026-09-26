@@ -1,0 +1,37 @@
+.hero--desktop .hero-text-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: var(--section-padding);
+  pointer-events: none;
+  z-index: 20;
+}
+
+.hero--desktop .hero-text-set {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(90vw, 640px);
+  /* distance the box can move before its edge reaches the section padding, never negative */
+  --safe-slide: max(0px, (100vw - min(90vw, 640px)) / 2 - var(--section-padding));
+  transform: translate(-50%, -50%);
+}
+
+.hero--desktop .hero-text-set--primary {
+  top: 42%;
+  opacity: clamp(0, calc(1 - var(--scroll-progress) * 2), 1);
+  transform: translate(
+    calc(-50% + (0.5 + clamp(0, var(--scroll-progress) * 2, 1) * 0.5) * var(--safe-slide)),
+    -50%
+  );
+}
+
+.hero--desktop .hero-text-set--secondary {
+  top: 65%;
+  opacity: clamp(0, calc(var(--scroll-progress) * 2 - 1), 1);
+  transform: translate(
+    calc(-50% + (0.5 + (1 - clamp(0, calc(var(--scroll-progress) * 2 - 1), 1)) * 0.5) * var(--safe-slide)),
+    -50%
+  );
+}

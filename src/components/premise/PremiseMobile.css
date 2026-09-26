@@ -1,0 +1,39 @@
+/* ─── Mobile Premise ─── */
+.premise--mobile .premise-content {
+  padding-bottom: clamp(4rem, 12vw, 8rem);
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.premise--mobile .premise-headline {
+  font-size: clamp(1.5rem, 7vw, 2.75rem);
+  max-width: 100%;
+}
+
+.premise--mobile .whatsapp-fab {
+  bottom: 1rem;
+  right: 50%;
+  transform: translateX(50%);
+  width: 3.25rem;
+  height: 3.25rem;
+}
+
+/* ─── Mobile: Breathing animation on visual ─── */
+.premise--mobile .premise-visual--loaded {
+  animation: visual-breathe 10s ease-in-out infinite;
+}
+
+@keyframes visual-breathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .premise--mobile .premise-visual--loaded {
+    animation: none;
+  }
+}

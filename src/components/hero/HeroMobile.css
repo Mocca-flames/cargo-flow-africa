@@ -1,0 +1,44 @@
+.hero--mobile .hero-text-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 2rem 1.25rem 3rem;
+  padding-top: calc(var(--nav-height, 4.5rem) + 1rem);
+  pointer-events: none;
+  z-index: 20;
+}
+
+.hero--mobile .hero-text-content::before,
+.hero--mobile .hero-text-content::after {
+  content: "";
+  flex-shrink: 0;
+}
+
+.hero--mobile .hero-text-content::before {
+  flex-grow: var(--scroll-progress);
+}
+
+.hero--mobile .hero-text-content::after {
+  flex-grow: calc(1 - var(--scroll-progress));
+}
+
+.hero--mobile .hero-title {
+  font-size: clamp(1.75rem, 8vw, 2.75rem);
+}
+
+.hero--mobile .hero-description {
+  font-size: 0.95rem;
+}
+
+.hero--mobile .hero-text-set--primary {
+  opacity: clamp(0, calc(1 - var(--scroll-progress)), 1);
+  transform: translateY(calc((1 - var(--scroll-progress)) * -1.5rem));
+}
+
+.hero--mobile .hero-text-set--secondary {
+  opacity: var(--scroll-progress);
+  transform: translateY(calc((1 - var(--scroll-progress)) * 1.5rem));
+  margin-top: 1.5rem;
+}

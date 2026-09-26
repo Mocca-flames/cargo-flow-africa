@@ -1,0 +1,7 @@
+.verdict--mobile .verdict__content {
+  padding: 2rem 1.25rem;
+}
+
+.verdict--mobile .verdict__form {
+  max-width: 100%;
+}

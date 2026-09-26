@@ -1,0 +1,26 @@
+.loads {
+  position: relative;
+  width: 100%;
+  height: 130svh;
+  overflow: hidden;
+  background: var(--color-canvas);
+}
+
+@supports not (height: 130svh) {
+  .loads {
+    height: 130vh;
+  }
+}
+
+.loads__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  .loads {
+    height: 100vh;
+  }
+}

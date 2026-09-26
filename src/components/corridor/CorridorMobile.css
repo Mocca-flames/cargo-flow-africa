@@ -1,0 +1,7 @@
+.corridor--mobile .corridor__split {
+  height: 40%;
+}
+
+.corridor--mobile .corridor__gap {
+  width: 4vw;
+}

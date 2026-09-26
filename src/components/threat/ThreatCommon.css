@@ -1,0 +1,54 @@
+.threat {
+  position: relative;
+  width: 100%;
+  height: 150svh;
+  overflow: hidden;
+  background: var(--color-canvas);
+}
+
+@supports not (height: 150svh) {
+  .threat {
+    height: 150vh;
+  }
+}
+
+.threat__panel {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  z-index: 1;
+}
+
+.threat__panel--left {
+  left: 0;
+}
+
+.threat__panel--right {
+  right: 0;
+}
+
+.threat__panel-image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.threat__panel--left .threat__panel-image {
+  filter: saturate(0.3);
+  object-fit: cover;
+}
+
+.threat__panel--right .threat__panel-image {
+  filter: saturate(1);
+  object-fit: cover;
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  .threat {
+    height: 100vh;
+  }
+}

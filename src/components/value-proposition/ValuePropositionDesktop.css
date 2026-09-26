@@ -1,0 +1,12 @@
+.value-prop--desktop .value-prop__content {
+  padding-top: var(--section-padding);
+  padding-bottom: var(--section-padding);
+}
+
+.value-prop--desktop .value-prop__headline {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+}
+
+.value-prop--desktop .value-prop__stats {
+  gap: var(--space-12);
+}

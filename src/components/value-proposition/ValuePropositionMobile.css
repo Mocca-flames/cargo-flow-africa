@@ -1,0 +1,18 @@
+.value-prop--mobile .value-prop__content {
+  padding-top: calc(var(--nav-height, 4.5rem) + var(--space-8));
+  padding-bottom: var(--space-8);
+  justify-content: flex-end;
+}
+
+.value-prop--mobile .value-prop__headline {
+  font-size: clamp(1.75rem, 8vw, 2.75rem);
+}
+
+.value-prop--mobile .value-prop__body {
+  font-size: var(--text-body-m);
+  margin-bottom: var(--space-6);
+}
+
+.value-prop--mobile .value-prop__stats {
+  gap: var(--space-6);
+}
