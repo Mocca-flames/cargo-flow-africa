@@ -1,0 +1,326 @@
+/* ============================================================
+   HERO — static desktop layer stack
+   Reference viewport: 1440x810. No animation, no scroll logic.
+   ============================================================ */
+
+.hero-stage {
+  /* ── Stage ── */
+  --hero-bg: #f5f0e8;
+  --hero-min-height: 640px;
+  --hero-perspective: 1200px;
+  --hero-perspective-origin: 50% 40%;
+
+  /* ── Headline ── */
+  --headline-top: 9%;
+  --headline-size: clamp(40px, 5.4vw, 84px);
+  --headline-weight: 800;
+  --headline-color: #111;
+  --headline-spacing: -0.02em;
+  --headline-word-spacing: 0.08em;
+  --headline-max-width: 90%;
+
+  /* ── bg-sky ── */
+  --sky-width: 110%;
+  --sky-top: 0;
+  --sky-left: 50%;
+
+  /* ── road ── */
+  --road-width: 100%;
+  --road-height: 55%;
+  --road-mask: linear-gradient(to bottom, transparent 0%, #000 25%);
+
+  /* ── fx-dust ── */
+  --dust-width: 70%;
+  --dust-bottom: 12%;
+  --dust-opacity: 0.35;
+  --dust-mask: radial-gradient(ellipse at center, #000 35%, transparent 70%);
+
+  /* ── fx-streaks ── */
+  --streaks-width: 100%;
+  --streaks-top: 45%;
+  --streaks-opacity: 0.2;
+  --streaks-mask: linear-gradient(to right, transparent, #000 20%, #000 80%, transparent);
+
+  /* ── fg-grass ── */
+  --grass-width: 38%;
+
+  /* ── truck-scania ── */
+  --scania-width: 38%;
+  --scania-left: 11%;
+  --scania-bottom: 9%;
+
+  /* ── truck-faw ── */
+  --faw-width: 38%;
+  --faw-right: 11%;
+  --faw-bottom: 9%;
+
+  /* ── truck-man ── */
+  --man-width: 49%;
+  --man-left: 50%;
+  --man-bottom: 3%;
+
+  /* ── shadows ── */
+  --shadow-core-width: 60%;
+  --shadow-core-height: 4%;
+  --shadow-core-color: rgba(0, 0, 0, 0.55);
+  --shadow-core-blur: 6px;
+  --shadow-soft-width: 95%;
+  --shadow-soft-height: 10%;
+  --shadow-soft-color: rgba(0, 0, 0, 0.25);
+  --shadow-soft-blur: 22px;
+
+  /* ── reflection ── */
+  --reflection-opacity: 0.04;
+  --reflection-mask: linear-gradient(to bottom, #000, transparent 18%);
+  --reflection-blur: 2px;
+
+  /* ── glow ── */
+  --glow-size: 14%;
+  --glow-left-x: 14%;
+  --glow-right-x: 86%;
+  --glow-y: 82%;
+  --glow-opacity: 0.8;
+  --glow-mask: radial-gradient(circle, #000 30%, transparent 70%);
+
+  /* ── color grade ── */
+  --truck-filter: contrast(1.05) saturate(0.95) sepia(0.08);
+  --truck-side-filter: contrast(1.05) saturate(0.95) brightness(0.95) blur(0.4px) sepia(0.08);
+  --tint-color: #e8b46a;
+  --tint-opacity: 0.09;
+
+  height: 100vh;
+  min-height: var(--hero-min-height);
+  position: relative;
+  overflow: hidden;
+  background: var(--hero-bg);
+  isolation: isolate;
+  padding-top: var(--nav-height, 4.5rem);
+}
+
+/* ── Scene container ── */
+.hero-scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  perspective: var(--hero-perspective);
+  perspective-origin: var(--hero-perspective-origin);
+  transform-style: preserve-3d;
+}
+
+/* ── Shared layer primitives ── */
+.hero-layer {
+  position: absolute;
+}
+
+.hero-layer img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ── Layer 0: bg-sky ── */
+.hero-sky {
+  top: var(--sky-top);
+  left: var(--sky-left);
+  width: var(--sky-width);
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+/* ── Layer 1: road ── */
+.hero-road {
+  bottom: 0;
+  left: 0;
+  width: var(--road-width);
+  height: var(--road-height);
+  mask-image: var(--road-mask);
+  -webkit-mask-image: var(--road-mask);
+  z-index: 1;
+}
+
+.hero-road img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Layer 2: headline (behind the trucks) ── */
+.hero-headline {
+  position: absolute;
+  top: var(--headline-top);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--headline-max-width);
+  margin: 0;
+  text-align: center;
+  text-wrap: balance;
+  font-family: var(--font-display);
+  font-weight: var(--headline-weight);
+  font-size: var(--headline-size);
+  line-height: 1.02;
+  letter-spacing: var(--headline-spacing);
+  word-spacing: var(--headline-word-spacing);
+  color: var(--headline-color);
+  z-index: 2;
+}
+
+/* ── Layer 4: fx-dust ── */
+.hero-dust {
+  bottom: var(--dust-bottom);
+  left: 50%;
+  width: var(--dust-width);
+  transform: translateX(-50%);
+  mix-blend-mode: screen;
+  opacity: var(--dust-opacity);
+  mask-image: var(--dust-mask);
+  -webkit-mask-image: var(--dust-mask);
+  z-index: 4;
+}
+
+/* ── Layers 6-7: trucks ── */
+.truck-wrap {
+  position: absolute;
+  aspect-ratio: 3 / 2;
+}
+
+.truck-wrap--scania {
+  left: var(--scania-left);
+  bottom: var(--scania-bottom);
+  width: var(--scania-width);
+  z-index: 6;
+}
+
+.truck-wrap--faw {
+  right: var(--faw-right);
+  bottom: var(--faw-bottom);
+  width: var(--faw-width);
+  z-index: 6;
+}
+
+.truck-wrap--man {
+  left: var(--man-left);
+  bottom: var(--man-bottom);
+  width: var(--man-width);
+  transform: translateX(-50%);
+  z-index: 7;
+}
+
+.truck-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: var(--truck-filter);
+}
+
+.truck-wrap--scania .truck-img,
+.truck-wrap--faw .truck-img {
+  filter: var(--truck-side-filter);
+}
+
+/* ── Shadows (behind the truck) ── */
+.truck-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 50%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.truck-shadow--soft {
+  width: var(--shadow-soft-width);
+  height: var(--shadow-soft-height);
+  background: var(--shadow-soft-color);
+  filter: blur(var(--shadow-soft-blur));
+}
+
+.truck-shadow--core {
+  width: var(--shadow-core-width);
+  height: var(--shadow-core-height);
+  background: var(--shadow-core-color);
+  filter: blur(var(--shadow-core-blur));
+}
+
+/* ── Reflection (mirrored under the truck) ── */
+.truck-reflection {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: scaleY(-1);
+  transform-origin: top center;
+  opacity: var(--reflection-opacity);
+  filter: blur(var(--reflection-blur));
+  mask-image: var(--reflection-mask);
+  -webkit-mask-image: var(--reflection-mask);
+  pointer-events: none;
+}
+
+/* ── Glow (per headlight, on top of the truck) ── */
+.truck-glow {
+  position: absolute;
+  width: var(--glow-size);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+  opacity: var(--glow-opacity);
+  mask-image: var(--glow-mask);
+  -webkit-mask-image: var(--glow-mask);
+  pointer-events: none;
+}
+
+.truck-glow--left {
+  left: var(--glow-left-x);
+  top: var(--glow-y);
+}
+
+.truck-glow--right {
+  left: var(--glow-right-x);
+  top: var(--glow-y);
+}
+
+/* ── Layer 10: fx-streaks ── */
+.hero-streaks {
+  top: var(--streaks-top);
+  left: 0;
+  width: var(--streaks-width);
+  mix-blend-mode: screen;
+  opacity: var(--streaks-opacity);
+  mask-image: var(--streaks-mask);
+  -webkit-mask-image: var(--streaks-mask);
+  z-index: 10;
+}
+
+/* ── Layer 11: fg-grass (left + mirrored right) ── */
+.hero-grass {
+  bottom: 0;
+  width: var(--grass-width);
+  pointer-events: none;
+  z-index: 11;
+}
+
+.hero-grass--left {
+  left: 0;
+}
+
+.hero-grass--right {
+  right: 0;
+  transform: scaleX(-1);
+}
+
+/* ── Layer 12: warm tint overlay ── */
+.hero-tint {
+  position: absolute;
+  inset: 0;
+  background: var(--tint-color);
+  opacity: var(--tint-opacity);
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  z-index: 12;
+}

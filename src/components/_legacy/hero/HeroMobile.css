@@ -1,0 +1,330 @@
+/* ============================================================
+   HERO — mobile layout (<768px, reference 390x844)
+   All rules namespaced under .hero--mobile.
+   ============================================================ */
+
+/* ── Pills: stacked at the top ── */
+.hero--mobile .hero__pills {
+  position: absolute;
+  left: 5vw;
+  right: 5vw;
+  top: calc(var(--nav-height, 4.5rem) + 1.5vh);
+  align-items: flex-start;
+  z-index: 20;
+}
+
+.hero--mobile .hero-pill {
+  white-space: normal;
+  font-size: 0.6rem;
+  line-height: 1.4;
+}
+
+/* ── Headline: below the pills, bleed word still cropped ── */
+.hero--mobile .hero-headline-block {
+  position: absolute;
+  left: 0;
+  right: 5vw;
+  top: 16%;
+  z-index: 20;
+}
+
+.hero--mobile .hero-headline {
+  font-size: clamp(1.8rem, 8.6vw, 2.6rem);
+  --hero-bleed: -0.45em;
+}
+
+.hero--mobile .hero-headline__sub {
+  font-size: 0.85rem;
+  max-width: 30ch;
+}
+
+/* ── Body line: desktop-only; the mobile budget has no room for it ── */
+.hero--mobile .hero__bodyline {
+  display: none;
+}
+
+/* ============================================================
+   Tiles — shared mobile mechanics
+   ============================================================ */
+.hero--mobile .hero-tile {
+  position: absolute;
+  transform: translate3d(0, calc(var(--hero-py) * -8px), 0);
+}
+
+.hero--mobile .hero-tile__plate {
+  position: absolute;
+  inset: 0;
+  animation: hero-plate-in var(--hero-t-entrance) var(--hero-ease) backwards;
+  animation-delay: var(--plate-delay, 0ms);
+}
+
+.hero--mobile .hero-tile__imgwrap {
+  position: absolute;
+  opacity: 1;
+  animation: hero-img-in 600ms ease backwards;
+  animation-delay: calc(var(--plate-delay, 0ms) + 260ms);
+  will-change: transform;
+  z-index: 2;
+}
+
+.hero--mobile .hero-tile__img {
+  position: relative;
+  height: 100%;
+  width: auto;
+  animation: hero-bob var(--bob-t, 3.4s) ease-in-out var(--bob-d, 0s) infinite;
+  will-change: transform;
+}
+
+.hero--mobile .hero-tile__shadow {
+  position: absolute;
+  left: var(--sh-x, 50%);
+  top: var(--sh-y, 88%);
+  width: var(--sh-w, 70%);
+  height: 12%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(50% 50% at 50% 50%, rgba(10, 8, 5, 0.35), transparent 72%);
+  filter: blur(5px);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero--mobile .hero-tile__road {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.hero--mobile .hero-tile__road::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 200%;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--hero-gold-soft) 0 18px,
+    transparent 18px 78px
+  );
+  animation: hero-road var(--road-t, 4.5s) linear infinite;
+  will-change: transform;
+}
+
+.hero--mobile .hero-tile__sweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+}
+
+.hero--mobile .hero-tile__sweep::before {
+  content: "";
+  position: absolute;
+  inset: -20% -60%;
+  background: linear-gradient(
+    115deg,
+    transparent 32%,
+    rgba(255, 231, 166, 0.9) 50%,
+    transparent 66%
+  );
+  animation: hero-sweep var(--hero-t-sweep) linear infinite;
+  will-change: transform;
+}
+
+/* ── Tile A: full width, MAN cab breaking out of the top ──
+   Tunable: --man-height (cab size vs tile), --man-offset-y (crop nudge) */
+.hero--mobile .hero-tile--a {
+  left: 0;
+  top: 32%;
+  width: 100%;
+  height: 38%;
+  --plate-delay: 0ms;
+  --man-height: 110%;
+  --man-offset-y: 0%;
+  --sh-x: 50%;
+  --sh-y: 92%;
+  --sh-w: 56%;
+  --bob-t: 3.6s;
+}
+
+.hero--mobile .hero-tile--a .hero-tile__plate {
+  background: var(--hero-gold);
+}
+
+.hero--mobile .hero-tile--a .hero-tile__imgwrap {
+  bottom: 2%;
+  left: 50%;
+  height: var(--man-height);
+  transform: translate(-50%, var(--man-offset-y)) translate3d(0, calc(var(--hero-py) * -14px), 0);
+}
+
+/* ── Tile B: full width strip, gooseneck + start of deck ── */
+.hero--mobile .hero-tile--b {
+  left: 0;
+  top: 70%;
+  width: 100%;
+  height: 14%;
+  --plate-delay: var(--hero-t-entrance-stagger);
+  --sh-x: 42%;
+  --sh-y: 84%;
+  --sh-w: 60%;
+  --road-t: 4s;
+}
+
+.hero--mobile .hero-tile--b .hero-tile__plate {
+  background: var(--hero-green);
+}
+
+.hero--mobile .hero-tile--b .hero-tile__imgwrap {
+  bottom: 4%;
+  left: 2%;
+  height: 96%;
+}
+
+/* ── Tile C: two-thirds width, three wheels ── */
+.hero--mobile .hero-tile--c {
+  left: 0;
+  top: 84%;
+  width: 66%;
+  height: 16%;
+  overflow: hidden;
+  --plate-delay: calc(var(--hero-t-entrance-stagger) * 2);
+  --sh-x: 44%;
+  --sh-y: 80%;
+  --sh-w: 64%;
+  --road-t: 6s;
+}
+
+.hero--mobile .hero-tile--c .hero-tile__plate {
+  background: var(--hero-charcoal);
+}
+
+.hero--mobile .hero-tile--c .hero-tile__imgwrap {
+  bottom: 8%;
+  left: 4%;
+  height: 96%;
+}
+
+.hero--mobile .hero-tile--c .hero-tile__img {
+  max-width: none;
+}
+
+/* ── Empty block beside Tile C holding the scroll cue ── */
+.hero--mobile .hero__cue-block {
+  position: absolute;
+  left: 66%;
+  right: 5vw;
+  top: 84%;
+  height: 16%;
+  border: 1px solid rgba(23, 20, 15, 0.14);
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 6% 4%;
+  z-index: 10;
+}
+
+.hero--mobile .hero-scrollcue__line {
+  height: 2.2rem;
+}
+
+/* Twin headlight glows on the MAN cab */
+.hero--mobile .hero-tile__glow {
+  position: absolute;
+  width: var(--glow-size, 16%);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 214, 130, 0.92),
+    rgba(255, 214, 130, 0) 72%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation:
+    hero-glow-warm 1.6s var(--hero-ease) backwards,
+    hero-glow-pulse 4.2s ease-in-out 1.6s infinite;
+}
+
+.hero--mobile .hero-tile__glow--l {
+  left: var(--glow-l-x, 28%);
+  top: var(--glow-l-y, 72%);
+}
+
+.hero--mobile .hero-tile__glow--r {
+  left: var(--glow-r-x, 72%);
+  top: var(--glow-r-y, 72%);
+}
+
+.hero--mobile .hero-tile--a {
+  --glow-l-x: 28%;
+  --glow-l-y: 72%;
+  --glow-r-x: 72%;
+  --glow-r-y: 72%;
+  --glow-size: 16%;
+}
+
+/* ── Keyframes (mirrored from desktop so each file stays standalone) ── */
+@keyframes hero-plate-in {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes hero-img-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.55%);
+  }
+}
+
+@keyframes hero-road {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes hero-sweep {
+  from {
+    transform: translate3d(-42%, 0, 0);
+  }
+  to {
+    transform: translate3d(42%, 0, 0);
+  }
+}
+
+@keyframes hero-glow-warm {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-glow-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}

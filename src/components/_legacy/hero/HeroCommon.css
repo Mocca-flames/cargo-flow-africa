@@ -1,0 +1,278 @@
+/* ============================================================
+   HERO — shared styles, palette and timing variables
+   Breakpoint-specific rules live in HeroDesktop.css / HeroMobile.css.
+   ============================================================ */
+
+.hero {
+  /* ── Hero palette (brief values; global tokens untouched) ── */
+  --hero-canvas: #f3eee4;
+  --hero-gold: #c8902e;
+  --hero-green: #1f4a2e;
+  --hero-charcoal: #2a2926;
+  --hero-ink: #17140f;
+  --hero-ink-soft: rgba(23, 20, 15, 0.62);
+  --hero-ivory: #f7f2e7;
+  --hero-gold-soft: rgba(200, 144, 46, 0.6);
+
+  /* ── Timing ── */
+  --hero-ease: cubic-bezier(0.65, 0, 0.35, 1);
+  --hero-t-entrance: 900ms;
+  --hero-t-entrance-stagger: 140ms;
+  --hero-t-sweep: 11s;
+  --hero-t-haze: 26s;
+  --hero-t-blink: 1.6s;
+  --hero-t-cue: 2.2s;
+
+  /* ── Parallax inputs (set by useHeroParallax) ── */
+  --hero-px: 0;
+  --hero-py: 0;
+
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  background: var(--hero-canvas);
+  color: var(--hero-ink);
+}
+
+/* ── Gate-ready root: a scroll handler can translate this later.
+      The thin gold line marks its bottom edge. ── */
+.hero__gate {
+  position: absolute;
+  inset: 0;
+}
+
+.hero__gate::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--hero-gold), rgba(200, 144, 46, 0.25));
+  z-index: 30;
+}
+
+.hero__scene {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* ── Boot state before hydration: reserves the viewport, paints the h1 ── */
+.hero__boot {
+  position: absolute;
+  inset: 0;
+  padding: calc(var(--nav-height, 4.5rem) + 4vh) 6vw 0;
+}
+
+/* ── Headline typography (positioning per breakpoint) ── */
+.hero-headline {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  color: var(--hero-ink);
+}
+
+.hero-headline__line {
+  display: block;
+}
+
+.hero-headline__gold {
+  color: var(--hero-gold);
+  -webkit-text-stroke: 0.5px var(--hero-ink);
+  paint-order: stroke fill;
+}
+
+.hero-headline__bleed {
+  margin-left: var(--hero-bleed, -0.55em);
+}
+
+.hero-headline__sub {
+  margin: 0.9em 0 0;
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: var(--hero-ink-soft);
+}
+
+/* ── Telemetry pills ── */
+.hero__pills {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 20;
+}
+
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  margin: 0;
+  padding: 0.55em 0.9em;
+  font-family: var(--font-mono);
+  font-size: var(--text-label, 0.75rem);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--hero-ink);
+  background: rgba(247, 242, 231, 0.82);
+  border: 1px solid rgba(23, 20, 15, 0.18);
+  white-space: nowrap;
+}
+
+.hero-pill__dot {
+  flex: none;
+  width: 0.55em;
+  height: 0.55em;
+  border-radius: 50%;
+}
+
+.hero-pill--green .hero-pill__dot {
+  background: var(--hero-green);
+  box-shadow: 0 0 0 3px rgba(31, 74, 46, 0.18);
+}
+
+.hero-pill--amber .hero-pill__dot {
+  width: 0.72em;
+  height: 0.72em;
+  background: #ffb020;
+  box-shadow:
+    0 0 0 3px rgba(255, 176, 32, 0.32),
+    0 0 8px 2px rgba(255, 176, 32, 0.55);
+  animation: hero-blink var(--hero-t-blink) steps(1, end) infinite;
+}
+
+@keyframes hero-blink {
+  0%,
+  52% {
+    opacity: 1;
+    box-shadow:
+      0 0 0 3px rgba(255, 176, 32, 0.38),
+      0 0 10px 2px rgba(255, 176, 32, 0.7);
+  }
+  53%,
+  100% {
+    opacity: 0.18;
+    box-shadow: 0 0 0 3px rgba(255, 176, 32, 0.08);
+  }
+}
+
+/* ── Body line (bottom left) ── */
+.hero__bodyline {
+  position: absolute;
+  left: 3.5vw;
+  bottom: 5.5%;
+  margin: 0;
+  max-width: 38ch;
+  font-family: var(--font-body);
+  font-size: var(--text-body-m, 0.9375rem);
+  line-height: 1.5;
+  color: var(--hero-ink-soft);
+  z-index: 20;
+}
+
+/* ── Scroll cue (bottom right) ── */
+.hero-scrollcue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 20;
+}
+
+.hero-scrollcue__label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--hero-ink-soft);
+}
+
+.hero-scrollcue__line {
+  width: 1px;
+  height: 3rem;
+  overflow: hidden;
+  position: relative;
+  background: rgba(23, 20, 15, 0.15);
+}
+
+.hero-scrollcue__line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--hero-gold);
+  animation: hero-cue var(--hero-t-cue) var(--hero-ease) infinite;
+}
+
+@keyframes hero-cue {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(300%);
+  }
+}
+
+/* ── Haze and grain (page-level decorative layers) ── */
+.hero__haze,
+.hero__grain {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.hero__haze {
+  background:
+    radial-gradient(42% 34% at 24% 30%, rgba(200, 144, 46, 0.1), transparent 70%),
+    radial-gradient(50% 40% at 78% 68%, rgba(31, 74, 46, 0.08), transparent 72%);
+  animation: hero-haze-drift var(--hero-t-haze) ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes hero-haze-drift {
+  from {
+    transform: translate3d(-2%, -1.5%, 0);
+  }
+  to {
+    transform: translate3d(2.5%, 2%, 0);
+  }
+}
+
+.hero__grain {
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>");
+  background-size: 180px 180px;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+}
+
+/* ============================================================
+   Reduced motion: freeze everything into a clean static collage.
+   Entrance keyframes use fill-mode: backwards, so the natural
+   (unanimated) state below is already the final visible state.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .hero *,
+  .hero *::before,
+  .hero *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .hero-tile__imgwrap {
+    transform: none !important;
+  }
+
+  .hero-tile__plate,
+  .hero-tile__img {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

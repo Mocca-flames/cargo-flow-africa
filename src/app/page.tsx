@@ -1,4 +1,4 @@
-import HeroSection from "@/components/hero/HeroSection";
+import HeroScene from "@/components/hero/HeroScene";
 import ValuePropositionSection from "@/components/value-proposition/ValuePropositionSection";
 import PremiseSection from "@/components/premise/PremiseSection";
 import ThreatSection from "@/components/threat/ThreatSection";
@@ -11,7 +11,7 @@ import VerdictSection from "@/components/verdict/VerdictSection";
 export default function Home() {
   return (
     <main>
-      <HeroSection />
+      <HeroScene />
       <ValuePropositionSection />
       <PremiseSection />
       <ThreatSection />

@@ -1,0 +1,374 @@
+/* ============================================================
+   HERO — desktop layout (>=768px, reference 1440x900)
+   All rules namespaced under .hero--desktop. Tablet (768-1024)
+   falls back to this layout and scales via % / clamp().
+   ============================================================ */
+
+/* ── Pills: top right ── */
+.hero--desktop .hero__pills {
+  position: absolute;
+  right: 3vw;
+  top: calc(var(--nav-height, 4.5rem) + 1.2vh);
+  align-items: flex-end;
+  z-index: 20;
+}
+
+/* ── Headline: two lines above the truck breakout, first word bleeds left ── */
+.hero--desktop .hero-headline-block {
+  position: absolute;
+  left: 0;
+  top: calc(var(--nav-height, 4.5rem) + 1.6vh);
+  max-width: none;
+  z-index: 20;
+}
+
+.hero--desktop .hero-headline {
+  font-size: clamp(1.85rem, 2.8vw + 0.4rem, 3.05rem);
+}
+
+.hero--desktop .hero-headline__line {
+  white-space: nowrap;
+}
+
+.hero--desktop .hero-headline__sub {
+  display: none;
+}
+
+/* ── Body line: two lines at 1440, sits in the cream band under the tiles ── */
+.hero--desktop .hero__bodyline {
+  max-width: 48ch;
+}
+
+/* ── Scroll cue: bottom right ── */
+.hero--desktop .hero-scrollcue {
+  position: absolute;
+  right: 3vw;
+  bottom: 5.5%;
+}
+
+/* ============================================================
+   Tiles — shared desktop mechanics
+   ============================================================ */
+.hero--desktop .hero-tile {
+  position: absolute;
+  transform: translate3d(
+    calc(var(--hero-px) * -6px),
+    calc(var(--hero-py) * -3px),
+    0
+  );
+}
+
+.hero--desktop .hero-tile--b,
+.hero--desktop .hero-tile--c {
+  margin-left: -1px;
+}
+
+.hero--desktop .hero-tile__plate {
+  position: absolute;
+  inset: 0;
+  animation: hero-plate-in var(--hero-t-entrance) var(--hero-ease) backwards;
+  animation-delay: var(--plate-delay, 0ms);
+}
+
+.hero--desktop .hero-tile__imgwrap {
+  position: absolute;
+  opacity: 1;
+  animation: hero-img-in 600ms ease backwards;
+  animation-delay: calc(var(--plate-delay, 0ms) + 260ms);
+  transform: translate3d(calc(var(--hero-px) * 14px), calc(var(--hero-py) * 8px), 0);
+  will-change: transform;
+  z-index: 2;
+}
+
+.hero--desktop .hero-tile__img {
+  position: relative;
+  height: 100%;
+  width: auto;
+  animation: hero-bob var(--bob-t, 3.4s) ease-in-out var(--bob-d, 0s) infinite;
+  will-change: transform;
+}
+
+.hero--desktop .hero-tile__shadow {
+  position: absolute;
+  left: var(--sh-x, 50%);
+  top: var(--sh-y, 88%);
+  width: var(--sh-w, 68%);
+  height: 10%;
+  transform: translate(-50%, -50%) translate3d(calc(var(--hero-px) * 8px), calc(var(--hero-py) * 4px), 0);
+  background: radial-gradient(50% 50% at 50% 50%, rgba(10, 8, 5, 0.35), transparent 72%);
+  filter: blur(6px);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero--desktop .hero-tile__road {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.hero--desktop .hero-tile__road::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 200%;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--hero-gold-soft) 0 26px,
+    transparent 26px 110px
+  );
+  animation: hero-road var(--road-t, 5s) linear infinite;
+  will-change: transform;
+}
+
+/* Light sweep masked to the vehicle silhouette (mask set inline from the PNG) */
+.hero--desktop .hero-tile__sweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+}
+
+.hero--desktop .hero-tile__sweep::before {
+  content: "";
+  position: absolute;
+  inset: -20% -60%;
+  background: linear-gradient(
+    115deg,
+    transparent 32%,
+    rgba(255, 231, 166, 0.9) 50%,
+    transparent 66%
+  );
+  animation: hero-sweep var(--hero-t-sweep) linear infinite;
+  will-change: transform;
+}
+
+/* Twin headlight glows on the MAN (positions vs a-trucks-desktop.png) */
+.hero--desktop .hero-tile__glow {
+  position: absolute;
+  width: var(--glow-size, 7%);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 214, 130, 0.92),
+    rgba(255, 214, 130, 0) 72%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation:
+    hero-glow-warm 1.6s var(--hero-ease) backwards,
+    hero-glow-pulse 4.2s ease-in-out 1.6s infinite;
+}
+
+.hero--desktop .hero-tile__glow--l {
+  left: var(--glow-l-x, 42.6%);
+  top: var(--glow-l-y, 74%);
+}
+
+.hero--desktop .hero-tile__glow--r {
+  left: var(--glow-r-x, 57.6%);
+  top: var(--glow-r-y, 74%);
+}
+
+/* ============================================================
+   Tile A — gold, truck heads break out above the top edge
+   ============================================================ */
+.hero--desktop .hero-tile--a {
+  left: 0;
+  top: 34%;
+  width: calc(58% + 1px);
+  height: 53%;
+  --plate-delay: 0ms;
+  --sh-x: 54%;
+  --sh-y: 90%;
+  --sh-w: 86%;
+  --glow-l-x: 42.6%;
+  --glow-l-y: 74%;
+  --glow-r-x: 57.6%;
+  --glow-r-y: 74%;
+  --glow-size: 6.8%;
+  --bob-t: 3.4s;
+  --bob-d: 0s;
+  transform: translate3d(0, calc(var(--hero-py) * -3px), 0);
+}
+
+.hero--desktop .hero-tile--a .hero-tile__plate {
+  background: var(--hero-gold);
+  box-shadow: -2px 0 0 var(--hero-gold);
+}
+
+.hero--desktop .hero-tile--a .hero-tile__imgwrap {
+  bottom: -5%;
+  left: 54%;
+  height: 120%;
+  transform: translateX(-50%) translate3d(calc(var(--hero-px) * 14px), calc(var(--hero-py) * 8px), 0);
+}
+
+.hero--desktop .hero-tile--a .hero-tile__img {
+  display: block;
+  max-width: none;
+}
+
+.hero--desktop .hero-tile--a .hero-tile__sub {
+  position: absolute;
+  left: 1.2vw;
+  top: 6.5%;
+  z-index: 3;
+  margin: 0;
+  max-width: 12ch;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: clamp(0.68rem, 0.4vw + 0.55rem, 0.88rem);
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  color: var(--hero-ink);
+  text-align: left;
+  pointer-events: none;
+}
+
+@media (max-width: 1100px) {
+  .hero--desktop .hero-headline {
+    font-size: clamp(1.5rem, 2.2vw + 0.35rem, 2.35rem);
+  }
+}
+
+@media (max-width: 860px) {
+  .hero--desktop .hero-headline {
+    font-size: clamp(1.28rem, 2.4vw + 0.15rem, 1.7rem);
+  }
+
+  .hero--desktop .hero-tile--a .hero-tile__sub {
+    max-width: 10ch;
+    font-size: 0.64rem;
+  }
+}
+
+/* ============================================================
+   Tile B — deep green, lowbed runs off the right edge
+   ============================================================ */
+.hero--desktop .hero-tile--b {
+  left: 58%;
+  top: 41%;
+  width: 42%;
+  height: 24%;
+  --plate-delay: var(--hero-t-entrance-stagger);
+  --sh-x: 44%;
+  --sh-y: 86%;
+  --sh-w: 70%;
+  --road-t: 4.5s;
+  --bob-t: 4.1s;
+  --bob-d: -1.2s;
+}
+
+.hero--desktop .hero-tile--b .hero-tile__plate {
+  background: var(--hero-green);
+}
+
+.hero--desktop .hero-tile--b .hero-tile__imgwrap {
+  bottom: 6%;
+  left: 4%;
+  height: 96%;
+  transform: translate3d(calc(var(--hero-px) * 10px), calc(var(--hero-py) * 5px), 0);
+}
+
+/* ============================================================
+   Tile C — warm charcoal, tri-axle cropped to wheels + logo,
+   deck running off-tile
+   ============================================================ */
+.hero--desktop .hero-tile--c {
+  left: 58%;
+  top: 65%;
+  width: 42%;
+  height: 22%;
+  overflow: hidden;
+  --plate-delay: calc(var(--hero-t-entrance-stagger) * 2);
+  --sh-x: 38%;
+  --sh-y: 82%;
+  --sh-w: 52%;
+  --road-t: 7s;
+}
+
+.hero--desktop .hero-tile--c .hero-tile__plate {
+  background: var(--hero-charcoal);
+}
+
+.hero--desktop .hero-tile--c .hero-tile__imgwrap {
+  bottom: 8%;
+  left: 0;
+  height: 92%;
+  transform: translate3d(calc(var(--hero-px) * 12px), calc(var(--hero-py) * 6px), 0);
+}
+
+.hero--desktop .hero-tile--c .hero-tile__img {
+  max-width: none;
+}
+
+/* ============================================================
+   Keyframes
+   ============================================================ */
+@keyframes hero-plate-in {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes hero-img-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.55%);
+  }
+}
+
+@keyframes hero-road {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes hero-sweep {
+  from {
+    transform: translate3d(-42%, 0, 0);
+  }
+  to {
+    transform: translate3d(42%, 0, 0);
+  }
+}
+
+@keyframes hero-glow-warm {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-glow-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
