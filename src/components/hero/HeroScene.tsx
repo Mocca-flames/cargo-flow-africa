@@ -119,101 +119,128 @@ export default function HeroScene() {
   return (
     <section className="hero-track">
       <section id="hero" className="hero-stage" ref={stageRef}>
-        <div className="hero-scene dolly dolly--scene">
-          <div className="hero-layer hero-sky" data-depth="0.05" style={depthStyle("0.05")}>
-            <div className="intro intro--reveal intro--sky">
-              <div className="dolly dolly--sky">
-                <div className="live">
-                  <img src={heroAssets.bgSky} alt="" draggable={false} aria-hidden />
+        <div className="v2">
+          <span className="v2-label">V2 / CONTROL ROOM</span>
+          <div className="v2-shadow" aria-hidden="true" />
+        </div>
+
+        <div className="v1-slab">
+          <div className="hero-scene dolly dolly--scene">
+            <div className="hero-layer hero-sky" data-depth="0.05" style={depthStyle("0.05")}>
+              <div className="intro intro--reveal intro--sky">
+                <div className="dolly dolly--sky">
+                  <div className="live">
+                    <img src={heroAssets.bgSky} alt="" draggable={false} aria-hidden />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="hero-layer hero-road" data-depth="0.12" style={depthStyle("0.12")}>
-            <div className="intro intro--reveal intro--road">
-              <div className="dolly dolly--road">
-                <div className="live">
-                  <img src={heroAssets.road} alt="" draggable={false} aria-hidden />
+            <div className="hero-layer hero-road" data-depth="0.12" style={depthStyle("0.12")}>
+              <div className="intro intro--reveal intro--road">
+                <div className="dolly dolly--road">
+                  <div className="live">
+                    <img src={heroAssets.road} alt="" draggable={false} aria-hidden />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <h1 className="hero-headline" data-depth="0" style={depthStyle("0")}>
-            <span className="intro intro--reveal intro--headline">
-              <span className="dolly dolly--headline">
-                <span className="live">
-                  <span className="hero-word">Cross-Haulage,</span>{" "}
-                  <span className="hero-word">Border</span>{" "}
-                  <span className="hero-word">to</span>{" "}
-                  <span className="hero-word">Border</span>
-                </span>
-              </span>
-            </span>
-          </h1>
-
-          <div className="hero-layer hero-dust" data-depth="0.3" style={depthStyle("0.3")}>
-            <div className="intro">
-              <div className="dolly dolly--dust">
-                <div className="live">
-                  <img src={heroAssets.fxDust} alt="" draggable={false} aria-hidden />
+            <div
+              className="hero-copy"
+              data-depth="0"
+              style={depthStyle("0")}
+            >
+              <div className="intro intro--reveal intro--headline">
+                <div className="dolly dolly--headline">
+                  <div className="live">
+                    <h1 className="hero-headline">
+                      <span className="hero-word">Cross-Border</span>{" "}
+                      <span className="hero-word">Heavy</span>{" "}
+                      <span className="hero-word">Haulage</span>{" "}
+                      <span className="hero-word">&amp;</span>{" "}
+                      <span className="hero-word">Corridor</span>{" "}
+                      <span className="hero-word">Freight</span>
+                    </h1>
+                    <p className="hero-sub">Secured from Origin to Destination.</p>
+                    <div className="hero-pills">
+                      <span className="hero-pill">
+                        CORRIDOR: SOUTH AFRICA &#10132; DRC (LUBUMBASHI / KOLWEZI)
+                      </span>
+                      <span className="hero-pill">
+                        <span className="hero-pill-dot" aria-hidden="true" />
+                        STATUS: DIRECT FLEET DISPATCH
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <Truck
-            className="truck-wrap--scania"
-            src={heroAssets.truckFaw}
-            depth="0.5"
-            side="left"
-            glow="left"
-          />
-          <Truck
-            className="truck-wrap--faw"
-            src={heroAssets.truckScania}
-            depth="0.5"
-            side="right"
-            glow="right"
-          />
-          <Truck
-            className="truck-wrap--man"
-            src={heroAssets.truckMan}
-            depth="0.7"
-            glow="both"
-          />
-
-          <div className="hero-layer hero-streaks" data-depth="0.9" style={depthStyle("0.9")}>
-            <div className="intro">
-              <div className="dolly dolly--streaks">
-                <div className="live">
-                  <img src={heroAssets.fxStreaks} alt="" draggable={false} aria-hidden />
+            <div className="hero-layer hero-dust" data-depth="0.3" style={depthStyle("0.3")}>
+              <div className="intro">
+                <div className="dolly dolly--dust">
+                  <div className="live">
+                    <img src={heroAssets.fxDust} alt="" draggable={false} aria-hidden />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="hero-layer hero-grass hero-grass--left" data-depth="1.4" style={depthStyle("1.4")}>
-            <div className="intro">
-              <div className="dolly dolly--grass">
-                <div className="live">
-                  <img src={heroAssets.fgGrass} alt="" draggable={false} aria-hidden />
+            <Truck
+              className="truck-wrap--scania"
+              src={heroAssets.truckFaw}
+              depth="0.5"
+              side="left"
+              glow="left"
+            />
+            <Truck
+              className="truck-wrap--faw"
+              src={heroAssets.truckScania}
+              depth="0.5"
+              side="right"
+              glow="right"
+            />
+            <Truck
+              className="truck-wrap--man"
+              src={heroAssets.truckMan}
+              depth="0.7"
+              glow="both"
+            />
+
+            <div className="hero-layer hero-streaks" data-depth="0.9" style={depthStyle("0.9")}>
+              <div className="intro">
+                <div className="dolly dolly--streaks">
+                  <div className="live">
+                    <img src={heroAssets.fxStreaks} alt="" draggable={false} aria-hidden />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="hero-layer hero-grass hero-grass--right" data-depth="1.4" style={depthStyle("1.4")}>
-            <div className="intro">
-              <div className="dolly dolly--grass">
-                <div className="live">
-                  <img src={heroAssets.fgGrass} alt="" draggable={false} aria-hidden />
+
+            <div className="hero-layer hero-grass hero-grass--left" data-depth="1.4" style={depthStyle("1.4")}>
+              <div className="intro">
+                <div className="dolly dolly--grass">
+                  <div className="live">
+                    <img src={heroAssets.fgGrass} alt="" draggable={false} aria-hidden />
+                  </div>
                 </div>
               </div>
             </div>
+            <div className="hero-layer hero-grass hero-grass--right" data-depth="1.4" style={depthStyle("1.4")}>
+              <div className="intro">
+                <div className="dolly dolly--grass">
+                  <div className="live">
+                    <img src={heroAssets.fgGrass} alt="" draggable={false} aria-hidden />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="hero-tint" aria-hidden="true" />
           </div>
 
-          <div className="hero-tint" aria-hidden="true" />
+          <div className="gate-edge" aria-hidden="true" />
         </div>
       </section>
     </section>

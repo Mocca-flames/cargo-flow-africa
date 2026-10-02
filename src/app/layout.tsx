@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Sora, DM_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Sora, DM_Sans, JetBrains_Mono } from "next/font/google";
 import NavBar from "@/components/nav/NavBar";
 import "./globals.css";
 
@@ -15,7 +15,7 @@ const dmSans = DM_Sans({
   weight: ["400", "500", "700"],
 });
 
-const ibmPlexMono = IBM_Plex_Mono({
+const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
   weight: ["400", "500"],
@@ -35,7 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${sora.variable} ${dmSans.variable} ${ibmPlexMono.variable}`}
+      className={`${sora.variable} ${dmSans.variable} ${jetbrainsMono.variable}`}
     >
       <body>
         <NavBar />
