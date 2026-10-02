@@ -98,7 +98,7 @@ const getRouteProgress = (p2: number): number => {
  * `latch` is the px half of the translateY; `pg` is the 0-1 half, so the slab
  * reads it as `calc(var(--pg) * -102% + var(--gate-latch))`.
  */
-const gateEase = (
+export const gateEase = (
   raw: number,
   latchPx: number,
   latchFrac: number,
