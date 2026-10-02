@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Hidden worktree mirror used by local tooling; not part of the app build.
+    ".kilo/**",
   ]),
 ]);
 

@@ -65,6 +65,31 @@ const readBounds = (stage: HTMLElement): Bounds => {
   };
 };
 
+const routeProgressSteps = [
+  { p2: 0, r: 0 },
+  { p2: 0.08, r: 0 },
+  { p2: 0.35, r: 0.3 },
+  { p2: 0.55, r: 0.52 },
+  { p2: 0.7, r: 0.75 },
+  { p2: 0.88, r: 0.75 },
+  { p2: 1, r: 1 },
+] as const;
+
+const getRouteProgress = (p2: number): number => {
+  for (let i = 1; i < routeProgressSteps.length; i += 1) {
+    const previous = routeProgressSteps[i - 1];
+    const current = routeProgressSteps[i];
+
+    if (p2 <= current.p2) {
+      const span = current.p2 - previous.p2 || 1;
+      const localT = (p2 - previous.p2) / span;
+      return previous.r + (current.r - previous.r) * localT;
+    }
+  }
+
+  return routeProgressSteps[routeProgressSteps.length - 1].r;
+};
+
 /**
  * Piecewise gate curve: the first `latchFrac` of the segment settles the slab
  * downward to `latchPx` (easeOut), the remainder drives the committed lift to
@@ -112,6 +137,7 @@ export function useHeroScroll(stageRef: RefObject<HTMLElement | null>): void {
     setVar(stage, "--pg", 0);
     setLength(stage, "--gate-latch", 0);
     setVar(stage, "--p2", 0);
+    setVar(stage, "--r", 0);
     stage.classList.remove("gate-done");
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -138,12 +164,14 @@ export function useHeroScroll(stageRef: RefObject<HTMLElement | null>): void {
       const gateRaw = clamp01((scrolledVh - v1End) / (gateEnd - v1End));
       const { pg, latch } = gateEase(gateRaw, latchPx, latchFrac);
       const p2 = clamp01((scrolledVh - gateEnd) / (v2End - gateEnd));
+      const r = getRouteProgress(p2);
 
       setVar(stage, "--p1", p1);
       setVar(stage, "--pe1", pe1);
       setVar(stage, "--pg", pg);
       setLength(stage, "--gate-latch", latch);
       setVar(stage, "--p2", p2);
+      setVar(stage, "--r", r);
       stage.classList.toggle("gate-done", pg >= 1);
     };
 
