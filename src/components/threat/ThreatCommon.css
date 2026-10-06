@@ -1,54 +1,303 @@
 .threat {
   position: relative;
   width: 100%;
-  height: 150svh;
-  overflow: hidden;
+  padding: 0;
   background: var(--color-canvas);
+  box-sizing: border-box;
 }
 
-@supports not (height: 150svh) {
-  .threat {
-    height: 150vh;
+@property --threat-t {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0.5;
+}
+
+.threat__track {
+  position: relative;
+  height: var(--threat-track, 250vh);
+  view-timeline-name: --threat-progress;
+  view-timeline-axis: block;
+  view-timeline-inset: var(--nav-height) 0;
+}
+
+.threat__stage {
+  position: sticky;
+  top: var(--nav-height);
+  width: 100%;
+  height: calc(100svh - var(--nav-height));
+  margin: 0;
+  overflow: hidden;
+  border: none;
+  border-radius: 0;
+  background: var(--color-canvas);
+  box-shadow: none;
+  --threat-t: 0.5;
+  --threat-reveal: calc(60% - 20% * var(--threat-t));
+}
+
+@supports not (height: 100svh) {
+  .threat__stage {
+    height: calc(100vh - var(--nav-height));
   }
 }
 
-.threat__panel {
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .threat__stage {
+      animation: threat-scrub linear both;
+      animation-timeline: --threat-progress;
+      animation-range: contain 0% contain 100%;
+    }
+  }
+}
+
+@keyframes threat-scrub {
+  from {
+    --threat-t: 0;
+  }
+  to {
+    --threat-t: 1;
+  }
+}
+
+/* ─── Full-bleed image layers (no re-cropping, no re-sizing) ─── */
+.threat__layer {
   position: absolute;
-  top: 0;
-  width: 50%;
-  height: 100%;
-  z-index: 1;
-}
-
-.threat__panel--left {
-  left: 0;
-}
-
-.threat__panel--right {
-  right: 0;
-}
-
-.threat__panel-image {
+  inset: 0;
   width: 100%;
   height: 100%;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.threat__panel--left .threat__panel-image {
-  filter: saturate(0.3);
   object-fit: cover;
+  object-position: center;
 }
 
-.threat__panel--right .threat__panel-image {
-  filter: saturate(1);
-  object-fit: cover;
+.threat__layer--right {
+  z-index: 0;
 }
 
-/* ─── Reduced Motion ─── */
+.threat__layer--left {
+  z-index: 2;
+}
+
+/* Desktop: left panel clips from the right edge inward */
+.threat--desktop .threat__layer--left {
+  clip-path: inset(0 calc(100% - var(--threat-reveal)) 0 0);
+}
+
+/* Mobile: left panel clips from the bottom edge upward */
+.threat--mobile .threat__layer--left {
+  clip-path: inset(0 0 calc(100% - var(--threat-reveal)) 0);
+}
+
+.threat__layer--fear {
+  object-position: 38% 48%;
+  filter: grayscale(1) contrast(1.06) brightness(0.8);
+}
+
+/* ─── Bottom scrim for text legibility ─── */
+.threat__scrim {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 3;
+  height: 40%;
+  background: linear-gradient(to top, rgba(12, 18, 16, 0.88) 0%, rgba(12, 18, 16, 0.35) 55%, transparent 100%);
+  pointer-events: none;
+}
+
+/* ─── HUD overlays ─── */
+
+/* Kicker — top-centre overlay inside the stage */
+.threat__hud-kicker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  height: 2.75rem;
+  padding-top: var(--space-6);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-canvas);
+  text-shadow: 0 1px 8px rgba(12, 18, 16, 0.9), 0 0 1px rgba(12, 18, 16, 0.95);
+}
+
+.threat__hud-kicker-index {
+  color: var(--color-accent-gold);
+}
+
+.threat__hud-kicker::before,
+.threat__hud-kicker::after {
+  content: "";
+  width: 1.75rem;
+  height: 1px;
+  background: var(--color-accent-gold);
+}
+
+/* Broker overlay — bottom-left of stage */
+.threat__hud-broker {
+  position: absolute;
+  left: clamp(1rem, 3vw, 2.5rem);
+  bottom: clamp(1rem, 3vw, 2.5rem);
+  z-index: 5;
+  color: var(--color-canvas);
+}
+
+.threat__hud-broker-label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent-gold);
+  text-shadow: 0 1px 6px rgba(12, 18, 16, 0.9);
+}
+
+.threat__hud-broker-line {
+  margin: var(--space-3) 0 0;
+  max-width: 11ch;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2vw, 2rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--color-canvas);
+  text-shadow: 0 1px 6px rgba(12, 18, 16, 0.9);
+}
+
+/* Cargo Flow overlay — bottom-right of stage */
+.threat__hud-cargo {
+  position: absolute;
+  right: clamp(1rem, 3vw, 2.5rem);
+  bottom: clamp(1rem, 3vw, 2.5rem);
+  z-index: 5;
+  text-align: right;
+  color: var(--color-ink);
+}
+
+.threat__hud-cargo-label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent-gold);
+  text-shadow: 0 1px 4px rgba(248, 244, 235, 0.6);
+}
+
+/* ─── Status chips ─── */
+.threat__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: var(--space-3);
+  padding: 0.3rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  border: 1px solid;
+}
+
+.threat__chip--delayed {
+  background: rgba(12, 18, 16, 0.72);
+  color: var(--color-accent-terracotta);
+  border-color: var(--color-accent-terracotta);
+}
+
+.threat__chip--ontime {
+  background: rgba(12, 18, 16, 0.72);
+  color: #6abf4a;
+  border-color: #6abf4a;
+}
+
+/* Stats row */
+.threat__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-8);
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(220, 203, 169, 0.4);
+}
+
+.threat__stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  flex: 0 0 auto;
+}
+
+.threat__stat-value {
+  font-family: var(--font-mono);
+  font-size: clamp(1.15rem, 1.6vw, 1.5rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--color-accent-gold);
+  text-shadow: 0 1px 4px rgba(248, 244, 235, 0.5);
+}
+
+.threat__stat-label {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+/* ─── Wipe seam ─── */
+.threat__divider {
+  position: absolute;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.threat__divider-handle {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  background: var(--color-canvas);
+  border: 1px solid var(--color-accent-gold);
+  box-shadow: 0 0.5rem 1.25rem -0.5rem rgba(18, 56, 47, 0.55);
+}
+
+.threat__divider-handle::before,
+.threat__divider-handle::after {
+  content: "";
+  width: 0;
+  height: 0;
+  border-top: 0.25rem solid transparent;
+  border-bottom: 0.25rem solid transparent;
+}
+
+.threat__divider-handle::before {
+  margin-right: 0.3rem;
+  border-right: 0.375rem solid var(--color-accent-gold);
+}
+
+.threat__divider-handle::after {
+  margin-left: 0.3rem;
+  border-left: 0.375rem solid var(--color-accent-gold);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .threat {
-    height: 100vh;
+  .threat__layer--fear {
+    transform: none;
   }
 }

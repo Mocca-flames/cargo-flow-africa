@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { heroAssets, heroMobileAssets } from "./heroAssets";
 import { useHeroScrollMobile } from "./useHeroScrollMobile";
+import HeroMobileV2 from "./HeroMobileV2";
 import "./HeroMobile.css";
 
 const HEADLINE_WORDS = [
@@ -56,9 +57,7 @@ export default function HeroMobile() {
   return (
     <section className="hm-track" aria-label="Hero section">
       <section id="hero" className="hm-stage" ref={stageRef}>
-        <div className="hm-v2" aria-hidden="true">
-          <span className="hm-v2-label">V2 / CONTROL ROOM (MOBILE TBD)</span>
-        </div>
+        <HeroMobileV2 />
 
         <div className="hm-fade" aria-hidden="true" />
 

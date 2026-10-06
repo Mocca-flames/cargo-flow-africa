@@ -17,5 +17,43 @@ export default function PremiseSection() {
 
   if (isMobile === null) return null;
 
-  return isMobile ? <PremiseMobile key="mobile" /> : <PremiseDesktop key="desktop" />;
+  const variant = isMobile ? <PremiseMobile key="mobile" /> : <PremiseDesktop key="desktop" />;
+
+  return (
+    <>
+      {variant}
+      <PremiseTransition />
+    </>
+  );
+}
+
+function PremiseTransition() {
+  useEffect(() => {
+    const section = document.getElementById("premise-section");
+    if (!section) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    let rafId = 0;
+    const update = () => {
+      rafId = 0;
+      const rect = section.getBoundingClientRect();
+      const progressed = rect.top < -rect.height * 0.6;
+      section.classList.toggle("premise--desaturated", progressed);
+    };
+    const onScroll = () => {
+      if (!rafId) rafId = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  return null;
 }

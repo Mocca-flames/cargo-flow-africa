@@ -2,6 +2,9 @@
 
 import { useEffect, type RefObject } from "react";
 
+/* Fired on the stage after the scroll vars are written, so children read fresh values. */
+export const HERO_PROGRESS_EVENT = "hm:progress";
+
 const EASE_IN_OUT_CUBIC = (t: number): number =>
   t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
@@ -19,11 +22,38 @@ const setVar = (stage: HTMLElement, name: string, value: number): void => {
 type Bounds = {
   aEnd: number;
   bEnd: number;
+  cEnd: number;
 };
 
 const DEFAULT_BOUNDS: Bounds = {
   aEnd: 70,
   bEnd: 130,
+  cEnd: 530,
+};
+
+/* p: route-segment progress; r: fraction of the route covered (holds at each checkpoint). */
+const routeProgressSteps = [
+  { p: 0, r: 0 },
+  { p: 0.08, r: 0 },
+  { p: 0.35, r: 0.3 },
+  { p: 0.55, r: 0.52 },
+  { p: 0.7, r: 0.75 },
+  { p: 0.88, r: 0.75 },
+  { p: 1, r: 1 },
+] as const;
+
+const getRouteProgress = (p: number): number => {
+  for (let i = 1; i < routeProgressSteps.length; i += 1) {
+    const previous = routeProgressSteps[i - 1];
+    const current = routeProgressSteps[i];
+
+    if (p <= current.p) {
+      const span = current.p - previous.p || 1;
+      return previous.r + ((current.r - previous.r) * (p - previous.p)) / span;
+    }
+  }
+
+  return 1;
 };
 
 const readNumber = (stage: HTMLElement, name: string, fallback: number): number => {
@@ -35,10 +65,12 @@ const readNumber = (stage: HTMLElement, name: string, fallback: number): number 
 const readBounds = (stage: HTMLElement): Bounds => {
   const aEnd = readNumber(stage, "--hm-seg-a-end", DEFAULT_BOUNDS.aEnd);
   const bEnd = readNumber(stage, "--hm-seg-b-end", DEFAULT_BOUNDS.bEnd);
+  const cEnd = readNumber(stage, "--hm-seg-c-end", DEFAULT_BOUNDS.cEnd);
 
   return {
     aEnd: aEnd > 0 ? aEnd : DEFAULT_BOUNDS.aEnd,
     bEnd: bEnd > aEnd ? bEnd : DEFAULT_BOUNDS.bEnd,
+    cEnd: cEnd > bEnd ? cEnd : DEFAULT_BOUNDS.cEnd,
   };
 };
 
@@ -57,8 +89,12 @@ export function useHeroScrollMobile(stageRef: RefObject<HTMLElement | null>): vo
 
     setVar(stage, "--pa", 0);
     setVar(stage, "--pb", 0);
+    setVar(stage, "--pr", 0);
+    setVar(stage, "--r", 0);
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setVar(stage, "--pr", 1);
+      setVar(stage, "--r", 1);
       return;
     }
 
@@ -83,15 +119,20 @@ export function useHeroScrollMobile(stageRef: RefObject<HTMLElement | null>): vo
       const rect = track.getBoundingClientRect();
       const scrollTop = clamp(-rect.top, 0, Number.MAX_SAFE_INTEGER);
 
-      const { aEnd, bEnd } = bounds;
+      const { aEnd, bEnd, cEnd } = bounds;
       const aPx = segmentPx(aEnd);
       const bPx = segmentPx(bEnd);
+      const cPx = segmentPx(cEnd);
 
       const paRaw = aPx > 0 ? clamp01(scrollTop / aPx) : 0;
       const pbRaw = bPx > aPx ? clamp01((scrollTop - aPx) / (bPx - aPx)) : 0;
+      const prRaw = cPx > bPx ? clamp01((scrollTop - bPx) / (cPx - bPx)) : 0;
 
       setVar(stage, "--pa", EASE_IN_OUT_CUBIC(paRaw));
       setVar(stage, "--pb", EASE_IN_CUBIC(pbRaw));
+      setVar(stage, "--pr", prRaw);
+      setVar(stage, "--r", getRouteProgress(prRaw));
+      stage.dispatchEvent(new Event(HERO_PROGRESS_EVENT));
     };
 
     const onScroll = () => {

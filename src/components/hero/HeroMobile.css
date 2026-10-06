@@ -1,6 +1,7 @@
  :root {
   --hm-seg-a-end: 70;
   --hm-seg-b-end: 130;
+  --hm-seg-c-end: 530;
   --hm-road-start: 40%;
   --hm-zoom-a: 1.5;
   --hm-zoom-b: 2.4;
@@ -14,7 +15,7 @@
 
 .hm-track {
   position: relative;
-  height: calc(var(--hm-seg-b-end) * 1svh + 100lvh);
+  height: calc(var(--hm-seg-c-end) * 1svh + 100lvh);
 }
 
 .hm-stage {
@@ -56,46 +57,6 @@
 .hm-stage:not(.is-ready) .hm-cue,
 .hm-stage:not(.is-ready) .hm-tint {
   opacity: 0;
-}
-
-.hm-v2 {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  display: grid;
-  place-items: center;
-  background:
-    radial-gradient(ellipse 38% 30% at 50% 46%, rgba(201, 162, 75, 0.1), transparent 70%),
-    radial-gradient(ellipse 45% 40% at 12% 30%, rgba(64, 170, 190, 0.07), transparent 70%),
-    radial-gradient(ellipse 45% 40% at 88% 70%, rgba(64, 170, 190, 0.07), transparent 70%),
-    radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.45) 100%),
-    linear-gradient(180deg, #0a1322 0%, #0b1626 55%, #09111c 100%);
-  overflow: hidden;
-  pointer-events: none;
-  opacity: clamp(0, calc((var(--pb, 0) - 0.9) / 0.1), 1);
-}
-
-.hm-v2::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1.2px);
-  background-size: 24px 24px;
-  -webkit-mask-image: radial-gradient(ellipse at center, #000 0%, rgba(0, 0, 0, 0.65) 45%, transparent 80%);
-  mask-image: radial-gradient(ellipse at center, #000 0%, rgba(0, 0, 0, 0.65) 45%, transparent 80%);
-  pointer-events: none;
-}
-
-.hm-v2-label {
-  position: relative;
-  z-index: 1;
-  font-family: var(--font-mono);
-  font-size: calc(3.2 * var(--u));
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  text-align: center;
-  color: #c9a24b;
-  padding: 0 1rem;
 }
 
 .hm-scene {
@@ -497,13 +458,6 @@
     position: relative;
     height: auto;
     overflow: visible;
-  }
-
-  .hm-v2 {
-    position: relative;
-    inset: auto;
-    min-height: 32vh;
-    opacity: 1;
   }
 
   .hm-scene {
