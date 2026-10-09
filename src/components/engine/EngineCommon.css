@@ -1,73 +1,542 @@
+/* ============================================
+   CH3 — THE ENGINE / FLEET
+   Left-anchored switcher, spec panel, blueprint rig.
+
+   Deliberately NOT pinned or scroll-scrubbed: LANDING_LAYOUT.md scores
+   Ch3 as "user-paced, not scroll-forced" — the section rewards
+   inspection, so motion is driven by the tab, never by the scrollbar.
+   ============================================ */
+
 .engine {
   position: relative;
   width: 100%;
-  height: 120svh;
   overflow: hidden;
   background: var(--color-canvas);
+
+  /* Locks the section to the viewport as you scroll past it — the
+     configurator is meant to be read at one screen, not skimmed.
+     Requires `scroll-snap-type` on the root (see globals.css). */
+  scroll-snap-align: start;
+
+  /* Motion scale — zeroed under reduced motion so every transition
+     becomes the fade the design doc asks for, not a slide. */
+  --engine-nudge-x: 12px;
+  --engine-nudge-y: 0px;
+  --engine-nudge-s: 0.018;
+  --engine-enter-y: 14px;
+  --engine-stat-grid: 3;
 }
 
-@supports not (height: 120svh) {
-  .engine {
-    height: 120vh;
+/* Every component CSS file lands in one global bundle, so anything that
+   differs between variants must be scoped to `.engine--desktop` / `--mobile`
+   in its own file — see EngineDesktop.css / EngineMobile.css. */
+.engine__layout {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100svh;
+  padding: calc(var(--nav-height) + clamp(1.25rem, 3vw, 2.75rem)) var(--section-padding)
+    clamp(1.75rem, 4vw, 3.5rem);
+}
+
+@supports not (min-height: 100svh) {
+  .engine__layout {
+    min-height: 100vh;
   }
 }
 
-.engine__asset-switcher {
+/* ─── Entrance: staged, snappy, one pass ───
+   Delays live here only — the JSX stays free of inline timing so the
+   choreography has exactly one source of truth. */
+.engine__frame,
+.engine__rail-wrap,
+.engine__fleet-link {
+  opacity: 0;
+  transform: translate3d(0, var(--engine-enter-y), 0);
+}
+
+.engine__spec {
+  opacity: 0;
+}
+
+.engine--entered .engine__frame {
+  animation: engine-enter var(--duration-base) var(--ease-snap) both 0ms;
+}
+.engine--entered .engine__rail-wrap {
+  animation: engine-enter var(--duration-base) var(--ease-snap) both 60ms;
+}
+.engine--entered .engine__fleet-link {
+  animation: engine-enter var(--duration-base) var(--ease-snap) both 120ms;
+}
+
+/* The readout reveals without a transform of its own — its inner panel
+   supplies the slide, so first arrival and every tab switch read alike. */
+.engine--entered .engine__spec {
+  opacity: 1;
+  transition: opacity var(--duration-base) var(--ease-snap) 300ms;
+}
+
+@keyframes engine-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--engine-enter-y), 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* ─── Frame: the render-safe image slot ─── */
+.engine__frame {
+  position: relative;
+  z-index: var(--z-visual);
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-canvas-alt);
+  background-image:
+    radial-gradient(130% 100% at 50% 122%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 62%),
+    repeating-linear-gradient(to right, rgba(18, 56, 47, 0.06) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(to bottom, rgba(18, 56, 47, 0.06) 0 1px, transparent 1px 28px);
+}
+
+.engine__rig-wrap {
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 60%;
-  height: 100%;
+  inset: 0;
   z-index: 1;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.25rem, 3vw, 3rem) clamp(0.75rem, 2vw, 1.5rem)
+    clamp(2rem, 3.5vw, 3rem);
+}
+
+.engine-rig {
+  width: 100%;
+  height: 100%;
+}
+
+/* Blueprint stroke language — flat, no shadow, no tilt.
+   Non-scaling keeps lines crisp as the viewBox scales; the thumbnail
+   overrides the weight below or a 136px card renders as mush. */
+.engine-rig * {
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.engine-rig__body {
+  fill: rgba(18, 56, 47, 0.07);
+  stroke: var(--color-ink);
+  stroke-width: 1.5;
+}
+
+.engine-rig__glass {
+  fill: rgba(212, 164, 76, 0.22);
+  stroke: var(--color-ink);
+  stroke-width: 1;
+}
+
+.engine-rig__line {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 1;
+}
+
+.engine-rig__detail-fill {
+  fill: rgba(18, 56, 47, 0.2);
+  stroke: none;
+}
+
+.engine-rig__accent {
+  fill: var(--color-accent-gold);
+  stroke: var(--color-accent-gold);
+  stroke-width: 1.6;
+}
+
+.engine-rig__tyre {
+  fill: var(--color-ink);
+  stroke: none;
+}
+
+.engine-rig__hub {
+  fill: var(--color-canvas-alt);
+  stroke: var(--color-ink);
+  stroke-width: 1;
+}
+
+.engine-rig__dims {
+  pointer-events: none;
+}
+
+.engine-rig__ground {
+  stroke: rgba(18, 56, 47, 0.3);
+  stroke-width: 1.5;
+}
+
+.engine-rig__dim {
+  stroke: var(--color-accent-gold);
+  stroke-width: 1.4;
+}
+
+.engine-rig__tick {
+  stroke: var(--color-accent-gold);
+  stroke-width: 1.4;
+}
+
+.engine-rig__ext {
+  stroke: rgba(18, 56, 47, 0.28);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.engine-rig__label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  fill: var(--color-ink-muted);
+  stroke: none;
+}
+
+.engine-rig[data-detail="compact"] {
+  height: auto;
+}
+
+.engine-rig[data-detail="compact"] * {
+  stroke-width: 0.9;
+}
+
+/* Frame overlays */
+.engine__frame-code {
+  position: absolute;
+  top: clamp(0.5rem, 1.2vw, 1rem);
+  left: clamp(0.6rem, 1.4vw, 1.1rem);
+  z-index: 2;
+  font-family: var(--font-mono);
+  font-size: clamp(2rem, 5.5vw, 4.5rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: rgba(18, 56, 47, 0.075);
+  pointer-events: none;
+}
+
+.engine__frame-index,
+.engine__frame-tbc,
+.engine__frame-caption {
+  position: absolute;
+  z-index: 2;
+  font-family: var(--font-mono);
+  font-size: clamp(0.625rem, 0.5vw + 0.5rem, 0.875rem);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.engine__frame-index {
+  top: clamp(0.5rem, 1.2vw, 1rem);
+  right: clamp(0.6rem, 1.4vw, 1.1rem);
+  color: var(--color-ink-muted);
+}
+
+.engine__frame-tbc {
+  left: clamp(0.6rem, 1.4vw, 1.1rem);
+  bottom: clamp(0.5rem, 1vw, 0.9rem);
+  padding: 0.2rem 0.45rem;
+  border: 1px solid rgba(18, 56, 47, 0.22);
+  color: var(--color-ink-muted);
+}
+
+.engine__frame-caption {
+  right: clamp(0.6rem, 1.4vw, 1.1rem);
+  bottom: clamp(0.5rem, 1vw, 0.9rem);
+  color: var(--color-ink-muted);
+}
+
+/* Swap on selection: 200ms snap, never a slide */
+.engine__rig-wrap {
+  animation: engine-swap var(--duration-fast) var(--ease-snap) both;
+}
+
+@keyframes engine-swap {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--engine-nudge-x), var(--engine-nudge-y), 0)
+      scale(calc(1 + var(--engine-nudge-s)));
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/* ─── Thumb-rail ─── */
+.engine__rail-wrap {
+  z-index: var(--z-text);
+}
+
+.engine__rail-label {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent-gold);
+}
+
+.engine__rail {
+  display: flex;
   flex-direction: column;
+  gap: var(--space-2);
 }
 
-.engine__asset {
-  flex: 1;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+.engine__card {
+  display: grid;
+  grid-template-columns: minmax(0, 6.75rem) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-snap),
+    background-color var(--duration-fast) var(--ease-snap);
+}
+
+.engine__card:hover {
+  border-color: var(--color-ink-muted);
+}
+
+.engine__card:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+.engine__card[aria-selected="true"] {
+  border-color: var(--color-ink);
+  background: rgba(212, 164, 76, 0.14);
+}
+
+.engine__thumb {
+  display: block;
   opacity: 0.4;
-  transition: opacity 0.4s var(--ease-snap);
+  transition: opacity var(--duration-fast) var(--ease-snap);
 }
 
-.engine__asset[data-active="true"] {
+.engine__card[aria-selected="true"] .engine__thumb,
+.engine__card:hover .engine__thumb {
   opacity: 1;
 }
 
-.engine__spec-panels {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 40%;
-  height: 100%;
-  z-index: 10;
+.engine__card-meta {
   display: flex;
   flex-direction: column;
-  padding: var(--section-padding);
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.engine__card-code {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--color-ink-muted);
+  transition: color var(--duration-fast) var(--ease-snap);
+}
+
+.engine__card[aria-selected="true"] .engine__card-code {
+  color: var(--color-accent-gold);
+}
+
+.engine__card-name {
+  font-family: var(--font-display);
+  font-size: clamp(0.9rem, 0.4vw + 0.75rem, 1.05rem);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-ink);
+}
+
+/* ─── Spec readout: flat card, 1px border, mono values ─── */
+.engine__spec {
+  position: relative;
+  z-index: var(--z-data);
   box-sizing: border-box;
 }
 
-.engine__spec-panel {
-  flex: 1;
-  background: var(--color-surface);
+.engine__spec-inner {
+  animation: engine-panel var(--duration-fast) var(--ease-snap) both;
+}
+
+@keyframes engine-panel {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--engine-nudge-x), var(--engine-nudge-y), 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.engine__summary {
+  margin: 0 0 var(--space-4);
+  max-width: 46ch;
+  font-family: var(--font-body);
+  font-size: clamp(0.875rem, 0.5vw + 0.75rem, 1.0625rem);
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+}
+
+.engine__spec-stats {
+  display: grid;
+  grid-template-columns: repeat(var(--engine-stat-grid), minmax(0, 1fr));
   border: 1px solid var(--color-border);
-  margin-bottom: var(--space-4);
+  background: var(--color-surface);
 }
 
-.engine__spec-panel:last-child {
-  margin-bottom: 0;
+.engine__stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: clamp(0.85rem, 1.6vw, 1.35rem);
+  min-width: 0;
 }
 
-/* ─── Reduced Motion ─── */
+.engine__stat + .engine__stat {
+  border-left: 1px solid var(--color-border);
+}
+
+.engine__stat-label {
+  font-family: var(--font-display);
+  font-size: clamp(0.6875rem, 0.4vw + 0.6rem, 0.8125rem);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.engine__stat-value {
+  font-family: var(--font-mono);
+  font-size: clamp(1.5rem, 3vw + 0.5rem, 3.5rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
+.engine__stat-unit {
+  margin-left: 0.2em;
+  font-size: 0.4em;
+  font-weight: 500;
+  color: var(--color-ink-muted);
+}
+
+.engine__spec-meta {
+  margin: var(--space-4) 0 0;
+}
+
+.engine__spec-row {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 13rem) minmax(0, 1fr);
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.engine__spec-row:last-child {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.engine__spec-label {
+  font-family: var(--font-display);
+  font-size: clamp(0.6875rem, 0.4vw + 0.6rem, 0.8125rem);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.engine__spec-value {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(0.8125rem, 0.3vw + 0.7rem, 0.9375rem);
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--color-ink);
+}
+
+/* ─── Quiet secondary link — text, not a button ─── */
+.engine__fleet-link {
+  position: relative;
+  z-index: var(--z-text);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  justify-self: start;
+  font-family: var(--font-mono);
+  font-size: clamp(0.75rem, 0.5vw + 0.5rem, 0.875rem);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-snap);
+}
+
+.engine__fleet-link:hover,
+.engine__fleet-link:focus-visible {
+  color: var(--color-ink);
+}
+
+.engine__fleet-link:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 4px;
+}
+
+.engine__fleet-link-rule {
+  width: 1.75rem;
+  height: 1px;
+  background: currentColor;
+  transition: width var(--duration-fast) var(--ease-snap);
+}
+
+.engine__fleet-link:hover .engine__fleet-link-rule {
+  width: 2.75rem;
+}
+
+/* ─── Reduced motion: fade only, no travel ─── */
 @media (prefers-reduced-motion: reduce) {
   .engine {
-    height: 100vh;
+    --engine-nudge-x: 0px;
+    --engine-nudge-y: 0px;
+    --engine-nudge-s: 0;
+    --engine-enter-y: 0px;
   }
 
-  .engine__asset {
-    opacity: 0.7;
+  .engine__frame,
+  .engine__rail-wrap,
+  .engine__spec,
+  .engine__fleet-link {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .engine__card,
+  .engine__thumb,
+  .engine__card-code,
+  .engine__fleet-link,
+  .engine__fleet-link-rule {
     transition: none;
   }
 }

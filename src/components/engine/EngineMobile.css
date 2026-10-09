@@ -1,9 +1,114 @@
-.engine--mobile .engine__asset-switcher {
-  width: 100%;
-  height: 50%;
+/* ============================================
+   CH3 · Mobile — designed, not derived.
+   The viewport is claimed in full: the visual takes the free
+   height, the readout sits BELOW it (never overlaid), the
+   thumb-rail becomes a 2×2 grid (no horizontal scrolling to
+   hide assets). Type is retuned to the narrow measure.
+   No pinch, no hover-only affordances.
+   ============================================ */
+
+/* Scoped: this file ships alongside EngineDesktop.css in one bundle. */
+.engine--mobile .engine__layout {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(auto, 1fr) auto auto auto;
+  row-gap: clamp(0.5rem, 2.5vw, 1rem);
+  align-content: stretch;
+  min-height: 100svh;
+  padding-top: calc(var(--nav-height) + clamp(0.75rem, 3vw, 1.5rem));
+  padding-bottom: clamp(1rem, 4vw, 1.75rem);
 }
 
-.engine--mobile .engine__spec-panels {
-  width: 100%;
-  height: 50%;
+@supports not (min-height: 100svh) {
+  .engine--mobile .engine__layout {
+    min-height: 100vh;
+  }
+}
+
+.engine--mobile .engine__layout {
+  /* Slides land from below on portrait. */
+  --engine-nudge-x: 0px;
+  --engine-nudge-y: 10px;
+}
+
+.engine--mobile .engine__frame {
+  min-height: clamp(8.5rem, 22vh, 20rem);
+}
+
+.engine--mobile .engine__frame-code {
+  font-size: clamp(2.25rem, 13vw, 4rem);
+}
+
+.engine--mobile .engine__frame-caption {
+  display: none;
+}
+
+/* 2×2 grid — every asset visible at once, nothing hidden behind a swipe */
+.engine--mobile .engine__rail {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.engine--mobile .engine__card {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.engine--mobile .engine__rail-label {
+  margin-bottom: var(--space-2);
+}
+
+/* Two stats per row on portrait; the third spans the full measure.
+   Odd cells lose the left rule, the row break supplies a top rule. */
+.engine--mobile .engine__spec-stats {
+  --engine-stat-grid: 2;
+}
+
+.engine--mobile .engine__stat {
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.engine--mobile .engine__stat:nth-child(odd) {
+  border-left: none;
+}
+
+.engine--mobile .engine__stat:nth-child(even) {
+  border-left: 1px solid var(--color-border);
+}
+
+.engine--mobile .engine__stat:nth-child(n + 3) {
+  border-top: 1px solid var(--color-border);
+}
+
+.engine--mobile .engine__stat:nth-child(3) {
+  grid-column: 1 / -1;
+  border-left: none;
+}
+
+.engine--mobile .engine__summary {
+  margin-bottom: var(--space-2);
+  font-size: clamp(0.8125rem, 3.4vw, 0.9375rem);
+  line-height: 1.5;
+}
+
+.engine--mobile .engine__spec-row {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-1);
+  padding: var(--space-2) 0;
+}
+
+.engine--mobile .engine__stat-value {
+  font-size: clamp(1.6rem, 7vw, 2.25rem);
+}
+
+.engine--mobile .engine__spec-value {
+  font-size: clamp(0.8125rem, 3.5vw, 0.9375rem);
+  word-break: break-word;
+}
+
+.engine--mobile .engine__fleet-link {
+  margin-top: var(--space-1);
 }

@@ -1,26 +1,533 @@
+/* ============================================
+   CH5 — THE LOADS / CONSOLIDATION
+   The breath. Density 2-3, weight low and off-centre, tempo slow - the dip
+   that makes Ch6's climax have somewhere to fall from. Quiet, minimal text.
+
+   Shared layer: the pinned frame, the load sheet, the plan's own box, and
+   everything the MOBILE top view needs. Desktop's side elevation and its
+   manifest card live in `LoadPlan.desktop.css`, imported by
+   `LoadPlan.desktop.tsx` alone, so nothing here has to know about them.
+
+   The visual is the flatdeck trailer, read two ways: a side elevation on
+   desktop and a vertical top view on mobile, both in pure DOM + SVG + CSS. The
+   deck carries DASHED empty slots from first paint, labelled S1-S3; on scroll
+   each load falls into its slot, one at a time, and the slot turns solid. No
+   canvas, no 3D.
+
+   The viewport lock is deliberately CSS, not a pin library: a 284.5vh track
+   with a `position: sticky` frame, the shape Ch2 uses. No pin-spacer, so
+   nothing fights Ch3's `scroll-snap-align: start` (the page's only root snap)
+   and there is no ScrollTrigger to kill on unmount. JS only supplies a 0->1
+   progress number (`useLoadsProgress`), which lands the loads and ticks the
+   load sheet.
+
+   Sizing is fluid via clamp(); the only hard numbers are the two viewBoxes,
+   which the load-plan geometry (`planGeometry.ts`) divides out. There is one
+   breakpoint (767px) and it is the sanctioned mobile/desktop variant split,
+   not a fluid-size knob.
+   ============================================ */
+
 .loads {
   position: relative;
   width: 100%;
-  height: 130svh;
-  overflow: hidden;
+  /* FOUR steps of ~45vh of SCROLL - three landings plus the dwell, where the
+      finale is already up and the section just holds. The extra length buys the
+      chapter its breathing room rather than any more content.
+
+      The track is not 180vh: the scrub span is `trackH - frameH - nav`, because
+      the sticky frame is released as the track's bottom passes the viewport
+      bottom. So a 180vh SPAN needs `180 + 100 + 4.5 = 284.5vh` of track. Set the
+      track to 180vh and every step compresses to ~19vh and the landings blur. */
+  height: 284.5svh;
   background: var(--color-canvas);
+  color: var(--color-ink);
+
+  /* Contact dip, 0->1->0 over the last 15% of a landing: the trailer flexes
+      2px under the load and returns to rest exactly at touch-down. Written per
+      frame by the scrub onto the sticky frame; inherited down to the trailer
+      drawing. 0 by default, so no-JS / SSR / reduced motion never flex it.
+
+      How FAR a load falls is not here: that is per load, because the waiting
+      position is "top fifth of this block past the stage edge", and a
+      fertiliser pallet and a stack of jumbo bags hang at different heights.
+      It lives in `planGeometry.ts` as `--lift-pct` (a % of the stage), which
+      the desktop block multiplies by `1cqh`. */
+  --land-dip: 0;
 }
 
-@supports not (height: 130svh) {
+@supports not (height: 284.5svh) {
   .loads {
-    height: 130vh;
+    height: 284.5vh;
   }
 }
 
-.loads__canvas {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+.loads *,
+.loads *::before,
+.loads *::after {
+  box-sizing: border-box;
 }
 
-/* ─── Reduced Motion ─── */
+/* ─── Sticky frame ─── */
+
+.loads__frame {
+  position: sticky;
+  top: var(--nav-height, 4.5rem);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  height: calc(100svh - var(--nav-height, 4.5rem));
+  padding: clamp(1.25rem, 3vw, 2.75rem) var(--section-padding)
+    clamp(1rem, 2.5vw, 2rem);
+  overflow: hidden;
+}
+
+@supports not (height: 100svh) {
+  .loads__frame {
+    height: calc(100vh - var(--nav-height, 4.5rem));
+  }
+}
+
+/* ---- Heading ----
+   Display M, not Display L. Ch4's h2 is the chapter's loudest moment; Ch5 is
+   scored density 2-3 and has to stay quieter than what comes before it.
+   h2 only: the eyebrow, the standfirst and the origin chips are gone - the
+   manifest card and the load sheet carry the chapter's information now. */
+
+.loads__heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-display-m);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--color-ink);
+}
+
+.loads__header {
+  flex: none;
+  max-width: 42ch;
+}
+
+/* ─── The plan ───
+   Bottom-aligned, so the deck sits low and the space above it is the breath.
+   Two projections render, one per variant file; each owns its own box. The
+   container is a size container so each projection can fit itself to the
+   available height. */
+
+.loads__plan {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  z-index: var(--z-visual);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  container-type: size;
+}
+
+/* Ch3's 28px blueprint grid, faint and strongest where the deck sits, fading
+   into the whitespace above. */
+.loads__grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(to right, rgba(18, 56, 47, 0.06) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(to bottom, rgba(18, 56, 47, 0.06) 0 1px, transparent 1px 28px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 30%, #000 90%);
+  mask-image: linear-gradient(to bottom, transparent 30%, #000 90%);
+}
+
+/* ---- The stage ----
+   Aspect-matched to its own coordinate space, so a stage coordinate maps
+   linearly onto the box and the plan's percentages land exactly on the
+   drawing. This is what keeps the cargo glued to the deck without measuring
+   anything.
+
+   The stage's aspect ratio has to hold EXACTLY, not approximately:
+   `planGeometry.ts` expresses every load's position as a percentage of the
+   stage (the deck line lands at 38.24% from the bottom), which is only true if
+   the box is precisely 1200/340. So it is sized from the container's height -
+   `min(100%, 100cqh x 1200/340)` - rather than left to a flex line, which would
+   stretch it to whatever height is left over and quietly slide the freight off
+   the deck. Everything inside is absolutely positioned, so nothing in normal
+   flow would otherwise give the stage a definite size at all. */
+
+.loads__stage {
+  position: relative;
+  flex: none;
+  margin-inline: auto;
+}
+
+/* ---- The top view's stage ----
+   Mobile only: the deck runs down the screen, so its box is height-led and
+   narrow. Desktop's side stage is sized in LoadPlan.desktop.css. */
+
+.loads__plan--top .loads__stage {
+  width: auto;
+  height: clamp(11rem, 38svh, 26rem);
+  max-height: 100%;
+  aspect-ratio: 240 / 1000;
+}
+
+/* The trailer drawing fills its stage exactly. Every hardcoded hex in these
+   SVGs is `currentColor`, so these two rules keep the whole drawing set on the
+   palette. */
+.loads-trailer,
+.loads-cargo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: var(--color-ink);
+}
+
+/* ---- Slots ----
+   Dashed = empty, solid = filled. The switch is the section's whole story in
+   one border-style. Present from first paint, before any scroll, so the deck
+   is honestly empty until a load arrives. */
+
+.loads__slot {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(18, 56, 47, 0.42);
+  transition: border-color var(--duration-base) var(--ease-snap);
+}
+
+.loads__slot[data-filled="true"] {
+  border-style: solid;
+  border-color: var(--color-ink);
+}
+
+.loads__slot-code {
+  font-family: var(--font-mono);
+  font-size: clamp(0.5625rem, 0.35vw + 0.5rem, 0.6875rem);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: rgba(18, 56, 47, 0.5);
+}
+
+.loads__slot[data-filled="true"] .loads__slot-code {
+  visibility: hidden;
+}
+
+/* ---- Blocks: the loads ----
+   `--land-t` (0->1) is written per frame by the scrub. Default is fully landed
+   so SSR / no-JS / reduced-motion all render the end state. In the top view
+   there is no "above", so a footprint settles by scaling into place.
+
+   THE LOAD NEVER FADES. `opacity` is not touched here at all: a load is
+   opacity 1 for its whole life, from the moment it waits above the deck to
+   the moment it rests on it. It is moved by transform (LoadPlan.desktop.css)
+   and, where it would leave the stage, HIDDEN BY CLIPPING (the stage's
+   `overflow: clip`) — never by fading. Deleting the old
+   `opacity: var(--land-t)` is what turns this from "a load materialises on
+   the deck" into "a load falls onto the deck". */
+
+.loads__block {
+  position: absolute;
+  --land-t: 1;
+  border: 1px solid var(--color-ink);
+}
+
+.loads__plan--top .loads__block {
+  transform: scale(calc(0.94 + 0.06 * var(--land-t)));
+}
+
+/* One ink colour, five tints - the only per-commodity colour on the page. */
+.loads__block[data-index="0"] {
+  background: rgba(18, 56, 47, 0.1);
+}
+.loads__block[data-index="1"] {
+  background: rgba(18, 56, 47, 0.2);
+}
+.loads__block[data-index="2"] {
+  background: rgba(18, 56, 47, 0.07);
+}
+
+/* ---- Block label (mobile top view) ----
+   The top view has no drawing, so the cargo is a footprint and its label is
+   centred inside it. Desktop's side view carries the manifest card instead and
+   has no on-cargo label at all. */
+
+.loads__label {
+  position: absolute;
+  z-index: var(--z-text);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5em;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: clamp(0.5625rem, 0.35vw + 0.5rem, 0.6875rem);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+.loads__plan--top .loads__label {
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.loads__label-name {
+  color: var(--color-ink);
+}
+
+.loads__label-mass {
+  color: var(--color-ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.loads__label-name::after {
+  content: "·";
+  margin-left: 0.15em;
+  color: var(--color-border);
+}
+
+/* ---- Per-landing caption (mobile) ----
+   Reads the load that just settled: `STEEL COIL - 13.0 T -> NDOLA, ZAMBIA`.
+   Desktop uses the manifest card instead, so this is mobile-only. */
+
+.loads__caption {
+  flex: none;
+  margin: 0;
+  padding-bottom: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: clamp(0.6875rem, 0.5vw + 0.55rem, 0.8125rem);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Foot: the load sheet ----
+   Mobile only now. Desktop's link sits below the trailer instead (see
+   LoadPlan.desktop.css), and the whole foot is hidden there. */
+
+.loads__foot {
+  flex: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+/* DESIGN.md: mono is telemetry only, and never on its own - hence the Sora
+   label above it. The counter ticks 00 / 03 - 0.0 T -> 03 / 03 - 34.0 T as
+   each load lands. */
+.loads__sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.loads__sheet-label {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.loads__sheet-line {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(0.75rem, 0.5vw + 0.6rem, 0.9375rem);
+  letter-spacing: 0.08em;
+  color: var(--color-ink);
+}
+
+.loads__sheet-plate {
+  color: var(--color-ink-muted);
+}
+
+.loads__sheet-plate::after {
+  content: " ·";
+  color: var(--color-border);
+}
+
+.loads__sheet-value {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Quiet secondary link - text, not a button ----
+   Ch3's treatment (EngineCommon.css `.engine__fleet-link`): mono, a leading
+   hairline that grows on hover, no button chrome. `/loads` is a dead route
+   until the sub-page exists, exactly like `/fleet` on Ch3. */
+
+.loads__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: clamp(0.75rem, 0.5vw + 0.5rem, 0.875rem);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  text-decoration: none;
+  transition:
+    color var(--duration-fast) var(--ease-snap),
+    opacity var(--duration-base) var(--ease-snap) 260ms;
+}
+
+.loads__link:hover,
+.loads__link:focus-visible {
+  color: var(--color-ink);
+}
+
+.loads__link:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 4px;
+}
+
+.loads__link-rule {
+  width: 1.75rem;
+  height: 1px;
+  background: currentColor;
+  transition: width var(--duration-fast) var(--ease-snap);
+}
+
+.loads__link:hover .loads__link-rule {
+  width: 2.75rem;
+}
+
+/* Hidden until the plan is fully loaded; JS also drops it from the tab order
+   and the a11y tree until then, so it is never a silent dead end. */
+.loads__link[data-visible="false"] {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* ---- Entrance: staged, one pass, like Ch3 and Ch4 ----
+   Delays live here only, so the JSX stays free of inline timing.
+
+   The PLAN is deliberately NOT in this list. It holds the freight, and the
+   freight must be opacity 1 for its whole life — so the plan appears rather
+   than fades, and only the words around it animate in. There is no transform
+   on the plan either: a plan that travelled on entry would move the deck out
+   from under the landings being scrubbed. */
+
+.loads__header,
+.loads__foot {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+}
+
+.loads--entered .loads__header {
+  animation: loads-enter var(--duration-base) var(--ease-snap) both 0ms;
+}
+
+.loads--entered .loads__foot {
+  animation: loads-enter var(--duration-base) var(--ease-snap) both 200ms;
+}
+
+@keyframes loads-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* ---- Visually hidden ----
+   Ch4's "one audible copy, never two" pattern: the drawing and the manifest
+   card are decorative, and this single line is what a screen reader hears. */
+
+.loads__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- Variant: the two projections are separate components ----
+   `LoadsSection` picks desktop or mobile by viewport and renders only that
+   one, so there is no CSS breakpoint to keep in step with the JS: the class
+   here is `.loads__plan--desktop` or `.loads__plan--top` and nothing can ever
+   render both. The 767px query lives in `LoadsSection.tsx`, beside the
+   `matchMedia` that actually decides it. */
+
+/* ---- Reduced motion ----
+   No pin, no fall, no counter scrub: the end state shown statically - every
+   slot solid, every load seated, the counter already at 03 / 03. The desktop
+   finale (manifest card + link) is handled in LoadPlan.desktop.css.
+   `!important` on `--land-t` is belt-and-braces, so flipping the OS preference
+   mid-session can't leave a half-loaded deck. */
+
 @media (prefers-reduced-motion: reduce) {
   .loads {
-    height: 100vh;
+    height: auto;
+    min-height: 100svh;
+  }
+
+  @supports not (min-height: 100svh) {
+    .loads {
+      min-height: 100vh;
+    }
+  }
+
+  .loads__frame {
+    position: static;
+    height: auto;
+    min-height: 100svh;
+  }
+
+  @supports not (min-height: 100svh) {
+    .loads__frame {
+      min-height: 100vh;
+    }
+  }
+
+  .loads__header,
+  .loads__foot {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
+  }
+
+  /* Belt-and-braces with `--land-t` below: if the OS preference flips
+     mid-session, a trailer left flexed by a half-finished dip snaps back to
+     rest rather than staying 2px low. */
+  .loads__frame {
+    --land-dip: 0 !important;
+  }
+
+  .loads__block {
+    --land-t: 1 !important;
+  }
+
+  .loads__link,
+  .loads__link-rule {
+    transition: none;
   }
 }

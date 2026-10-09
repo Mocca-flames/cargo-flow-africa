@@ -1,0 +1,27 @@
+/* ============================================
+   Chapter title card — "Our Fleet"
+   Sits between Ch2 (Threat) and the Engine configurator.
+
+   Deliberately its own section rather than a masthead inside
+   Ch3: the heading gets its own band of canvas, so the
+   scroll-snap below it lands on the configurator alone.
+   ============================================ */
+
+.fleet-heading {
+  position: relative;
+  box-sizing: border-box;
+  padding: calc(var(--nav-height) + clamp(1rem, 2vw, 1.5rem)) var(--section-padding)
+    clamp(1rem, 2vw, 2rem);
+  background: var(--color-canvas);
+}
+
+.fleet-heading__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-display-l);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  color: var(--color-ink);
+}

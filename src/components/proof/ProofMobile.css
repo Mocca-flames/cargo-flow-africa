@@ -1,11 +1,66 @@
-.proof--mobile .proof__grid {
-  flex-direction: column;
-  gap: var(--space-6);
+/* ============================================
+   CH4 — MOBILE: the designed form.
+   A native horizontal scroll-snap deck — no scroll-jacking. One card
+   per screen, the next peeking from the right. `touch-action: pan-x
+   pan-y` keeps vertical page scroll honest inside the horizontal
+   scroller (watch this against the root's y-proximity snap on iOS;
+   fallback = `scroll-snap-type: none` scoped here).
+   ============================================ */
+
+.proof--mobile {
+  --proof-peek: 14vw;
 }
 
-.proof--mobile .proof__column--1,
-.proof--mobile .proof__column--2,
-.proof--mobile .proof__column--3 {
-  height: 40vh;
-  margin-top: 0;
+.proof--mobile .proof__deck {
+  display: flex;
+  gap: var(--space-4);
+  box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x pan-y;
+  scroll-padding-inline-start: var(--section-padding);
+  padding-inline: var(--section-padding);
+  padding-block: 0 var(--space-2);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.proof--mobile .proof__deck::-webkit-scrollbar {
+  display: none;
+}
+
+.proof--mobile .proof__card {
+  /* Width leaves the gap plus exactly one peek of the next card.
+     min-height, not height: short/landscape screens grow the
+     section instead of clipping header, card, counter, ticker. */
+  flex: 0 0 calc(
+    100vw - var(--section-padding) - var(--proof-peek) - var(--space-4)
+  );
+  scroll-snap-align: start;
+  min-height: clamp(21rem, 52vh, 32rem);
+}
+
+@supports (min-height: 52svh) {
+  .proof--mobile .proof__card {
+    min-height: clamp(21rem, 52svh, 32rem);
+  }
+}
+
+/* ─── Gates: a card animates only while it is the snapped card AND
+   the section is on screen. Removing the gate drops the animation
+   back to the static final frame; re-adding it replays the beat and
+   re-stamps the tag, so returning to a card fires the flair again. ─── */
+
+.proof--mobile.proof--inview .proof__card[data-active="true"] .scene__beat {
+  animation: var(--beat-name) 1.4s var(--ease-snap) var(--d, 0s) both;
+}
+
+.proof--mobile.proof--inview .proof__card[data-active="true"] .scene__idle {
+  animation: var(--idle-name) 2.6s linear calc(1.4s + var(--d, 0s)) infinite;
+}
+
+.proof--mobile.proof--inview .proof__card[data-active="true"] .proof__tag {
+  animation: proof-stamp var(--duration-fast) var(--ease-snap) both;
 }

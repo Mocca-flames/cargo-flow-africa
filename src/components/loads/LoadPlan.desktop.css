@@ -1,0 +1,386 @@
+/* ============================================
+   CH5 DESKTOP — THE LOAD PLAN
+   Side elevation of the flatdeck, three loads landing one at a time, and ONE
+   cargo manifest: a fixed document sitting directly UNDER the trailer, left,
+   whose commodity field changes only when a load lands.
+
+   Split out from LoadsCommon.css so the mobile top view is untouched by any of
+   this: every selector here is scoped to `.loads__plan--desktop`, which
+   desktop-only class, and the whole file is imported by LoadPlan.desktop.tsx
+   alone. The mobile projection keeps its own drawer, counter and layout, with
+   no dependency on anything below.
+
+   The vertical order of the plan is therefore: header (a sibling above), the
+   drawing, the manifest, then the closing link pinned to the bottom — the
+   freight is never overlaid by anything.
+   ============================================ */
+
+.loads__plan--desktop {
+  position: relative;
+  z-index: var(--z-visual);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  box-sizing: border-box;
+
+  /* How much of the plan's height is kept clear BELOW the stage, so the
+     manifest card and the closing link always have a floor to sit on. The
+     stage sizes itself from the container's height, and without this it would
+     claim all of it in a short window, pushing the card out of the frame
+     (and, with `justify-content: flex-end`, lifting the trailer up under the
+     header). 10rem ≈ card margin (0.75–1.5rem) + the manifest (~6.5rem) +
+     link ~2.6rem — the margin's clamp runs small precisely in the short
+     windows where this reserve binds. It only bites when the stage is
+     HEIGHT-limited; in the usual width-limited layout the `min()` below
+     picks 100% and nothing changes. */
+  --stage-floor: 10rem;
+
+  /* How far the drop line's anchor sits ABOVE a load at rest — its fixed
+     height before the flight is subtracted. It must stay comfortably greater
+     than the tallest `--lift-pct` in the plan (38, fertiliser, as a % of the
+     stage) or the line would go negative while a load is still in the air:
+     55cqh is the stage's own height unit, so this compares like with like. */
+  --loads-drop-reach: 55cqh;
+}
+
+/* ─── The stage ───
+   Aspect-locked to the 1200×340 source drawing, sized from the CONTAINER's
+   height — minus `--stage-floor`, the band the card and link live in below it
+   — so it always fits the vertical budget AND always leaves that band clear.
+   Everything inside (slots, cargo, drop lines) is a percentage of this box, so
+   the drawing stays locked to the deck at any size. */
+
+.loads__plan--desktop .loads__stage {
+  position: relative;
+  flex: none;
+  width: min(
+    100%,
+    calc((100cqh - var(--stage-floor)) * 1200 / 340)
+  );
+  margin: 0 auto;
+  aspect-ratio: 1200 / 340;
+  container-type: size;
+
+  /* THE CLIP. A load waits for its step ABOVE its slot, lifted by
+     `--lift-pct`, which puts the top fifth of the block past the stage's own
+     top edge. It is taken out of sight by clipping it here — transform for
+     the travel, overflow for the hiding. Never opacity: a load that has not
+     started yet is fully opaque and simply hangs half out of the frame, so
+     the reader watches it waiting on a crane hook rather than watching it
+     materialise on the deck.
+     `overflow: hidden` first as the fallback for anything that predates
+     `clip`; both clip identically for our purposes (no scrollable overflow is
+     ever produced here). */
+  overflow: hidden;
+  overflow: clip;
+}
+
+/* ─── The loads: the fall ───
+   The whole animation is ONE transform, driven by `--land-t`:
+
+     translateY = (land-t - 1) x --lift-pct x 1cqh
+
+   `--lift-pct` is a unitless percentage of the STAGE height, authored per load
+   by `planGeometry.ts` (lift = resting top offset + 0.2 x block height), and
+   `1cqh` is one percent of that same stage — the stage is the size container,
+   so the lift stays exact at any viewport instead of being a hard-coded px
+   guess that drifts when the drawing resizes.
+
+   land-t 0 → the load hangs `--lift-pct` above its slot, its top fifth cut
+              off by the stage edge, fully opaque, clear of the deck.
+   land-t 1 → translateY 0, resting exactly on the deck top.
+
+   The easing is already in the value: the scrub writes `--land-t` through a
+   cubic ease-out (useLoadsProgress), so this transform is fast off the mark
+   and slows into contact — weighted, never snapped.
+
+   This is the rule whose absence made the old build "fade, not fall": the
+   drop line below already subtracted the same lift, and without it the line
+   paid out over a load that never moved. */
+
+.loads__plan--desktop .loads__block {
+  transform: translate3d(
+    0,
+    calc((var(--land-t) - 1) * var(--lift-pct, 0) * 1cqh),
+    0
+  );
+}
+
+/* ─── The trailer, and the contact dip ───
+   The trailer sits on the bottom of the stage at its own aspect, so the space
+   above the deck is stage space rather than trailer space.
+
+   At touch-down it takes the weight: 0 → 2px → 0 across the last 15% of the
+   step, back at rest exactly when the load is. Nothing else moves — the load
+   has landed, so it stays put while the deck flexes under it. `--land-dip`
+   (0→1→0, a triangle) is written per frame by the scrub onto the sticky frame
+   and inherited down here; it is 0 outside a landing, so the trailer is dead
+   still everywhere else. */
+
+.loads__plan--desktop .loads-trailer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1200 / 200;
+  transform: translate3d(0, calc(var(--land-dip, 0) * 2px), 0);
+}
+
+/* ─── The cargo manifest ───
+   A printed document in normal flow directly BELOW the trailer, left-aligned —
+   under the drawing, never over it. It does not move: no measured transform, no
+   tracking the falling load, no re-placing on a landing — same x, same y, same
+   box for the whole chapter. Only the commodity field changes, and only when a
+   load lands (see LoadPlan.desktop.tsx). The closing link sits at the far end
+   of the same band, right-aligned.
+
+   The document is ruled, not panelled: a cream sheet that belongs to the
+   canvas, one hairline border, section rules edge to edge, values left /
+   labels right, mono for every label and figure, Sora for the commodity. No
+   radius, no shadow, no accent — the paperwork reads as paperwork.
+
+   `flex: none` keeps it from ever being squeezed: the stage's `--stage-floor`
+   reserve is what guarantees the room, and this makes sure that if a window
+   is ever shorter than that estimate, the card stays its own size rather than
+   collapsing onto its content. The height budget IS that floor (10rem =
+   margin + card + link), which is why the rows below are sized in tight
+   clamps: the card may grow into the floor's slack, never past it.
+
+   Its width is a deliberate fixed `clamp`, not a measured value: a
+   content-sized box would resize on the exact frame the reader is watching a
+   load land. A fixed box cannot.
+
+   It cannot live inside the stage: the deck line is 130 units up a 340-unit
+   stage and the freight fills the band above it. */
+
+.loads__card {
+  box-sizing: border-box;
+  flex: none;
+  align-self: flex-start;
+  width: clamp(17.5rem, 24vw, 24rem);
+  margin-top: clamp(0.75rem, 2vh, 1.5rem);
+  /* Warm document stock: canvas cream pulled a step deeper with canvas-alt,
+     so the sheet separates from the page background by tone, not by chrome.
+     The surface token stays as the fallback for anything without color-mix. */
+  background: var(--color-surface);
+  background: color-mix(in srgb, var(--color-canvas) 82%, var(--color-canvas-alt));
+  border: 1px solid var(--color-border);
+}
+
+.loads__card-inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+/* The document's left/right margins, shared by every ruled row. */
+.loads__card-doc,
+.loads__card-measure,
+.loads__card-field,
+.loads__card-summary {
+  padding-inline: clamp(0.7rem, 1.1vw, 1rem);
+}
+
+/* ─── Header: CARGO MANIFEST ─── Small, tracked, muted — a document heading,
+   never a marketing headline. */
+
+.loads__card-doc {
+  padding-top: clamp(0.2rem, 0.28vw, 0.25rem);
+  padding-bottom: clamp(0.12rem, 0.2vw, 0.18rem);
+  font-family: var(--font-mono);
+  font-size: clamp(0.5rem, 0.1vw + 0.44rem, 0.5625rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+/* ─── The figure: 34.0 T, with its label right-aligned on the baseline ───
+   Derived from `loadTotals`, present for the whole chapter. The rules above
+   and below make it the document's centre field without a box of its own. */
+
+.loads__card-measure {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  padding-top: clamp(0.15rem, 0.24vw, 0.22rem);
+  padding-bottom: clamp(0.15rem, 0.24vw, 0.22rem);
+}
+
+.loads__card-total {
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(1.125rem, 0.5vw + 0.85rem, 1.375rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.loads__card-measure-label,
+.loads__card-field-label {
+  font-family: var(--font-mono);
+  font-size: clamp(0.5rem, 0.1vw + 0.44rem, 0.5625rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-ink-muted);
+}
+
+/* ─── The commodity field ─── The one row that changes. It is keyed on the
+   load id in the JSX, so React swaps the whole field as a single node and the
+   fade below re-runs; every other row's height is fixed, so the rules and the
+   figure around it never shift. */
+
+.loads__card-field {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.03rem, 0.08vw, 0.08rem);
+  border-top: 1px solid var(--color-border);
+  padding-top: clamp(0.15rem, 0.24vw, 0.22rem);
+  padding-bottom: clamp(0.15rem, 0.24vw, 0.22rem);
+  animation: loads-card-field var(--duration-fast) var(--ease-snap) both;
+}
+
+.loads__card-commodity-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.loads__card-commodity {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: clamp(0.75rem, 0.25vw + 0.62rem, 0.875rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-ink);
+}
+
+.loads__card-meta {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--font-mono);
+  font-size: clamp(0.5625rem, 0.15vw + 0.46rem, 0.625rem);
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── The closing rule: the consolidation, in one line ─── */
+
+.loads__card-summary {
+  border-top: 1px solid var(--color-border);
+  padding-top: clamp(0.15rem, 0.24vw, 0.22rem);
+  padding-bottom: clamp(0.22rem, 0.32vw, 0.3rem);
+  font-family: var(--font-mono);
+  font-size: clamp(0.5625rem, 0.13vw + 0.47rem, 0.625rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-ink-muted);
+}
+
+/* The field's re-entry: opacity only, no transform — the text settles in
+   place and the document's geometry is untouched. */
+@keyframes loads-card-field {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ─── The drop line ───
+   A hairline that pays out from a fixed anchor above the deck, ending in a hook
+   that rides its cargo down. It is a CHILD of the load block, so it inherits
+   `--land-t` and needs no ref of its own — it cannot drift out of step with
+   the load it is lowering.
+
+   The maths: the line's height is `reach - lift x (1 - land-t)`. The block's
+   own transform lifts the load by `lift x (1 - land-t)`, and the height shrinks
+   by exactly the same amount, so the line's TOP stays pinned while its hook
+   descends with the cargo. Both terms are in `cqh` (percentages of the stage
+   from `planGeometry.ts` and the reach above), so they cancel at any size.
+   `reach` must exceed the tallest lift or the line would invert mid-flight.
+
+   The anchor now sits well above the stage's top edge, so the stage's
+   `overflow: clip` cuts the line there: it reads as paying out from off-stage,
+   and it is empty air for the first part of a step while the load is still up
+   in the clipped band. That is intended — the line and the load enter the
+   stage together, and neither of them is ever faded in. */
+
+.loads__plan--desktop .loads__drop {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  width: 1px;
+  height: calc(
+    var(--loads-drop-reach) - (1 - var(--land-t)) * var(--lift-pct, 0) * 1cqh
+  );
+  background: var(--color-ink);
+  opacity: 0.45;
+  transform: translateX(-50%);
+}
+
+/* The hook: a small curl at the line's lower end, sitting on the cargo. */
+.loads__plan--desktop .loads__drop-hook {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 5px;
+  height: 9px;
+  border-left: 1px solid var(--color-ink);
+  border-bottom: 1px solid var(--color-ink);
+  border-bottom-left-radius: 4px;
+  opacity: 0.75;
+  transform: translate(-50%, -1px);
+}
+
+/* ─── The link, below the trailer ───
+   Right-aligned, and it fades in only once the plan reads 05 / 05. Its position
+   is in the normal flow (margin-top:auto on a flex column), so it can never
+   overlap the stage. */
+
+.loads__link--below {
+  margin-top: auto;
+  padding-top: var(--space-6);
+  align-self: flex-end;
+}
+
+/* ─── Reduced motion ───
+   The end state only: the manifest renders complete (it is complete for the
+   whole chapter now), the field's fade is suppressed, link already up. The
+   card is a fixed plate with no transform to suppress, and the plan renders
+   fully landed (`--land-t: 1 !important`, LoadsCommon.css), so there is no
+   fall to freeze either. */
+
+@media (prefers-reduced-motion: reduce) {
+  .loads__card-field {
+    animation: none;
+  }
+
+  .loads__link--below {
+    transition: none;
+  }
+}

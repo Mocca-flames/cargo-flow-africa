@@ -1,0 +1,462 @@
+/* ============================================
+   CH5 — THE LOADS / CONSOLIDATION
+   The breath. Density 1–2, the sparsest chapter after the hero, and the one
+   section that has to feel too quiet on first review — that discomfort is
+   the point, so that Ch6's climax has somewhere to fall from.
+
+   Two renderings of the same plan, and the shared language that holds them
+   together:
+     .loads--pinned  a 300vh track with a sticky stage and a 3D assembly
+     .loads--static  one contained screen with an exploded-view drawing
+   Typography and the load sheet are shared here; each context's placement
+   is scoped to its own modifier, and the deliberate per-variant placement
+   differences live in LoadsDesktop.css / LoadsMobile.css.
+
+   The viewport lock is deliberately CSS, not GSAP: a tall track plus
+   `position: sticky` produces no pin-spacer, so Ch3 keeps the page's only
+   root snap point and nothing has to be killed on unmount.
+
+   Deliberately NOT pinned-looking and NOT dense. No second visual, no stat
+   grid, no ticker. The empty canvas is the composition.
+   ============================================ */
+
+.loads {
+  position: relative;
+  width: 100%;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+.loads *,
+.loads *::before,
+.loads *::after {
+  box-sizing: border-box;
+}
+
+/* ─── Pinned: 300vh track, sticky stage ───
+   Three viewports of scroll buy the chapter its length; they do not buy it
+   any more content. `over: 300svh` is the floor and the fallback is vh. */
+
+.loads--pinned {
+  height: 300svh;
+}
+
+@supports not (height: 300svh) {
+  .loads--pinned {
+    height: 300vh;
+  }
+}
+
+.loads__stage {
+  position: sticky;
+  top: var(--nav-height, 4.5rem);
+  width: 100%;
+  height: calc(100svh - var(--nav-height, 4.5rem));
+  overflow: hidden;
+}
+
+@supports not (height: 100svh) {
+  .loads__stage {
+    height: calc(100vh - var(--nav-height, 4.5rem));
+  }
+}
+
+.loads__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-visual);
+}
+
+/* ─── Static: one contained screen ───
+   Also what the server renders, before the capability check has run, so the
+   chapter is never absent from the document. */
+
+.loads--static {
+  min-height: 100svh;
+  overflow: hidden;
+}
+
+@supports not (min-height: 100svh) {
+  .loads--static {
+    min-height: 100vh;
+  }
+}
+
+.loads__static-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  min-height: inherit;
+  padding: calc(var(--nav-height, 4.5rem) + clamp(1.5rem, 4vw, 3.5rem)) var(--section-padding)
+    clamp(1.5rem, 4vw, 3rem);
+}
+
+.loads__figure {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin: clamp(1.5rem, 5vw, 4rem) 0;
+}
+
+.loads--static .loads__figure {
+  width: min(100%, 58rem);
+  margin-left: auto;
+}
+
+/* ─── Eyebrow — Ch4's, unchanged ─── */
+
+.loads__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-mono);
+  font-size: clamp(0.625rem, 0.5vw + 0.5rem, 0.875rem);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.loads__eyebrow-index {
+  color: var(--color-accent-gold);
+}
+
+.loads__eyebrow::before,
+.loads__eyebrow::after {
+  content: "";
+  width: 1.75rem;
+  height: 1px;
+  background: var(--color-accent-gold);
+}
+
+/* ─── Heading ───
+   Display M, not Display L. Ch4's h2 is the chapter's loudest moment; Ch5
+   is scored density 1–2 and has to stay visibly quieter than what comes
+   before it, so the type sits a full step down the scale. */
+
+.loads__heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-display-m);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--color-ink);
+}
+
+.loads__standfirst {
+  max-width: 36ch;
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-body-m);
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+  text-wrap: pretty;
+}
+
+/* ─── Placement in the pinned chapter ───
+   The load is seated low and right (see `CAMERA` in loadScene.tsx), so the
+   words take the empty upper left and the sheet sits under them in the same
+   wide, low band. Copy in the upper left, mass in the lower right: two
+   weights at opposite corners, nothing in the middle. */
+
+.loads--pinned .loads__header {
+  position: absolute;
+  top: calc(var(--nav-height, 4.5rem) + clamp(1rem, 3vw, 3rem));
+  left: var(--section-padding);
+  max-width: min(34ch, 40vw);
+  z-index: var(--z-text);
+}
+
+.loads--pinned .loads__foot {
+  position: absolute;
+  bottom: clamp(1.25rem, 3.5vw, 2.75rem);
+  left: var(--section-padding);
+  z-index: var(--z-text);
+}
+
+/* ─── Placement in the static chapter ─── */
+
+.loads--static .loads__header {
+  max-width: 42ch;
+}
+
+.loads--static .loads__foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ─── The load sheet ───
+   DESIGN.md: mono is telemetry only, and never on its own — hence the Sora
+   label above it and the coordinate line under it. */
+
+.loads__sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.loads__sheet-label {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.loads__sheet-line {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(0.75rem, 0.5vw + 0.6rem, 0.9375rem);
+  letter-spacing: 0.08em;
+  color: var(--color-ink);
+}
+
+.loads__sheet-plate {
+  color: var(--color-ink-muted);
+}
+
+.loads__sheet-plate::after {
+  content: " ·";
+  color: var(--color-border);
+}
+
+.loads__sheet-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.loads__sheet-chip {
+  padding: 0.15em 0.45em;
+  border: 1px solid var(--color-accent-gold);
+  background: rgba(212, 164, 76, 0.14);
+  font-size: 0.9em;
+  letter-spacing: 0.14em;
+  color: var(--color-ink);
+  /* Toggled from the frame loop; hidden outright until movement three
+     arrives so it never occupies space it isn't using. */
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loads__sheet-site {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(0.625rem, 0.4vw + 0.5rem, 0.75rem);
+  letter-spacing: 0.06em;
+  color: var(--color-ink-muted);
+}
+
+.loads__sheet-dot {
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-accent-gold);
+}
+
+/* The live sheet is written from useFrame. Screen readers get the settled
+   figures through this line instead, which is the pattern Ch4's ticker
+   already uses: one audible copy, never two. */
+.loads__sheet-static {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ─── Quiet secondary link — text, not a button ───
+   Ch3's treatment (EngineCommon.css `.engine__fleet-link`): mono, a leading
+   hairline that grows on hover, no button chrome. `/loads` is a dead route
+   until the sub-page exists, exactly like `/fleet` on Ch3. */
+
+.loads__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: clamp(0.75rem, 0.5vw + 0.5rem, 0.875rem);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-snap);
+}
+
+.loads__link:hover,
+.loads__link:focus-visible {
+  color: var(--color-ink);
+}
+
+.loads__link:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 4px;
+}
+
+.loads__link-rule {
+  width: 1.75rem;
+  height: 1px;
+  background: currentColor;
+  transition: width var(--duration-fast) var(--ease-snap);
+}
+
+.loads__link:hover .loads__link-rule {
+  width: 2.75rem;
+}
+
+/* ─── Entrance: staged, one pass, like Ch3 and Ch4 ───
+   Delays live here only, so the JSX stays free of inline timing. */
+
+.loads--pinned .loads__header,
+.loads--pinned .loads__foot,
+.loads--static .loads__header,
+.loads--static .loads__figure,
+.loads--static .loads__foot {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+}
+
+.loads--pinned.loads--entered .loads__header,
+.loads--static.loads--entered .loads__header {
+  animation: loads-enter var(--duration-base) var(--ease-snap) both 0ms;
+}
+
+.loads--pinned.loads--entered .loads__foot,
+.loads--static.loads--entered .loads__figure {
+  animation: loads-enter var(--duration-base) var(--ease-snap) both 120ms;
+}
+
+.loads--static.loads--entered .loads__foot {
+  animation: loads-enter var(--duration-base) var(--ease-snap) both 200ms;
+}
+
+@keyframes loads-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* ─── The exploded drawing ───
+   EngineRig's stroke language: ink outlines, one gold accent per unit,
+   dashed leaders, hairline ground. `vector-effect` keeps every stroke at the
+   same weight however the sheet is scaled to fit its container. */
+
+.loads__drawing {
+  display: block;
+  width: 100%;
+  height: auto;
+  color: var(--color-ink);
+}
+
+.loads__drawing * {
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.loads__deck {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 1.25;
+}
+
+.loads__mark {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 1.25;
+}
+
+.loads__ground {
+  stroke: var(--color-ink);
+  stroke-width: 1;
+  opacity: 0.3;
+}
+
+.loads__leader {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  opacity: 0.35;
+}
+
+.loads__piece {
+  fill: var(--color-surface);
+  stroke: var(--color-ink);
+  stroke-width: 1.5;
+}
+
+.loads__accent {
+  fill: var(--color-accent-gold);
+  stroke: none;
+}
+
+.loads__piece-code,
+.loads__datum {
+  fill: var(--color-ink-muted);
+  stroke: none;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+}
+
+/* ─── Reduced motion ───
+   The pinned sequence is never built under reduced motion — `LoadsSection`
+   resolves to LoadsStatic — but the rule is kept so that flipping the OS
+   preference mid-session, or a reduced-motion browser reaching this markup
+   some other way, can never leave a 300vh track with a still canvas in it. */
+
+@media (prefers-reduced-motion: reduce) {
+  .loads--pinned {
+    height: auto;
+    min-height: 100svh;
+  }
+
+  .loads__stage {
+    position: static;
+    height: auto;
+  }
+
+  .loads--pinned .loads__header,
+  .loads--pinned .loads__foot,
+  .loads--static .loads__header,
+  .loads--static .loads__figure,
+  .loads--static .loads__foot {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
+  }
+
+  .loads__link,
+  .loads__link-rule {
+    transition: none;
+  }
+}

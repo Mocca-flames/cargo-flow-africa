@@ -1,0 +1,41 @@
+/* ============================================
+   CH5 — MOBILE PLACEMENT
+   Scoped to `.loads--mobile` for the same reason as the desktop file: one
+   global CSS bundle.
+
+   Mobile is not the desktop layout with smaller type. Ch4's answer is a
+   swipe deck and Ch3's is a rail above the visual; Ch5's is a full-width
+   column — copy pinned to the top of the stage, the load low and small
+   beneath it, the sheet between them — because the chapter's whole job is
+   to be still, and a column leaves the object nowhere to hide. LANDING_DESIGN
+   asks for a tighter, zoomed framing here so the load stays legible at arm's
+   length; that is the mobile entry in `CAMERA`, not a CSS transform.
+   ============================================ */
+
+.loads--mobile.loads--pinned .loads__header {
+  right: var(--section-padding);
+  max-width: none;
+}
+
+.loads--mobile.loads--pinned .loads__foot {
+  right: var(--section-padding);
+  bottom: clamp(1rem, 4vw, 1.5rem);
+}
+
+/* The exploded sheet is wide and short; on a portrait screen it has to run
+   the full width to stay readable, and the datum line is allowed to wrap
+   rather than being squeezed to nothing. */
+.loads--mobile.loads--static .loads__figure {
+  width: 100%;
+  margin: var(--space-6) 0;
+}
+
+.loads--mobile.loads--static .loads__foot {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.loads--mobile.loads__standfirst {
+  max-width: 42ch;
+}

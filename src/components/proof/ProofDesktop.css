@@ -1,3 +1,73 @@
-.proof--desktop .proof__grid {
-  flex-direction: row;
+/* ============================================
+   CH4 — DESKTOP: the same four cards, re-laid as the staggered
+   diagonal (top-left heavy, descending to the right, uneven
+   heights). Scenes idle while visible; the arrival beat and the
+   stamp replay on hover — gated behind hover-capable pointers so
+   touch hardware never depends on it. Counter is mobile-only: all
+   four cards are visible here, so there is nothing to count.
+   ============================================ */
+
+.proof--desktop .proof__deck {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(var(--space-4), 2vw, var(--space-6));
+  align-items: start;
+}
+
+.proof--desktop .proof__deck-frame {
+  padding-top: var(--space-4);
+}
+
+.proof--desktop .proof__counter {
+  display: none;
+}
+
+.proof--desktop .proof__card {
+  min-height: clamp(20rem, 44vh, 28rem);
+}
+
+.proof--desktop .proof__card:nth-child(1) {
+  margin-top: 0;
+  min-height: clamp(20.5rem, 45vh, 28.5rem);
+}
+.proof--desktop .proof__card:nth-child(2) {
+  margin-top: var(--space-6);
+  min-height: clamp(21rem, 47vh, 30rem);
+}
+.proof--desktop .proof__card:nth-child(3) {
+  margin-top: var(--space-12);
+  min-height: clamp(19.5rem, 42vh, 27rem);
+}
+.proof--desktop .proof__card:nth-child(4) {
+  margin-top: var(--space-16);
+  min-height: clamp(20rem, 46vh, 29rem);
+}
+
+/* ─── Gates ─── */
+
+/* Idle: every visible card breathes quietly, section on screen only. */
+.proof--desktop.proof--inview .scene__idle {
+  animation: var(--idle-name) 2.6s linear calc(1.4s + var(--d, 0s)) infinite;
+}
+
+/* Arrival beat: touch-capable desktops get one beat when the section
+   enters (set and cleared in ProofDeck), then fall back to idle. */
+.proof--desktop.proof--inview .proof__card[data-arrive="true"] .scene__beat {
+  animation: var(--beat-name) 1.4s var(--ease-snap) var(--d, 0s) both;
+}
+
+.proof--desktop.proof--inview .proof__card[data-arrive="true"] .proof__tag {
+  animation: proof-stamp var(--duration-fast) var(--ease-snap) both;
+}
+
+/* Hover replay — fine pointers only. Touch laptops and tablets never
+   rely on hover; they got the arrival beat above instead. */
+@media (hover: hover) and (pointer: fine) {
+  .proof--desktop.proof--inview .proof__card:hover .scene__beat {
+    animation: var(--beat-name) 1.4s var(--ease-snap) var(--d, 0s) both;
+  }
+
+  .proof--desktop.proof--inview .proof__card:hover .proof__tag {
+    animation: proof-stamp var(--duration-fast) var(--ease-snap) both;
+  }
 }

@@ -1,0 +1,90 @@
+/* ============================================
+   CORRIDOR MAP — SADC, Ch5's map asset
+   Flat, quiet country outlines with three freight routes drawn on top. The
+   drawing set's own language: 15% ink fills, 1–1.5px ink strokes, one gold
+   accent reserved for a destination that has been reached.
+
+   Not mounted in Ch5's load plan — the component is built to be dropped
+   anywhere. Everything is scoped to `.loads-map`, so importing this file adds
+   the map's styles and nothing else, and it inherits typography and colour
+   from the tokens rather than hardcoding either.
+
+   `CorridorMap` publishes its own aspect ratio as `--map-aspect` (set inline
+   per variant), so the wrapper only has to say how wide the map is; the height
+   follows and the `viewBox` crop is what changes between variants.
+   ============================================ */
+
+.loads-map {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: var(--map-aspect, 600 / 520);
+  color: var(--color-ink);
+}
+
+/* ─── Routes ───
+   `pathLength={1}` normalises every route to a length of 1 in the markup, so
+   one dash spec draws all three regardless of their real geometry, and the
+   draw-on is just an offset between 1 (hidden) and 0 (complete). `--land-t` is
+   the per-route progress the component sets from its `progress` prop. */
+
+.loads-map__route {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--land-t, 1));
+}
+
+/* ─── Origin dots ───
+   Where the freight comes from is known before anything moves, so there is
+   nothing to animate: always on, and quieter than the destinations. */
+
+.loads-map__origin {
+  fill: currentColor;
+  fill-opacity: 0.55;
+}
+
+/* ─── Destination dots ───
+   The one gold in the drawing: a destination lights as its route completes.
+   The halo is the same accent at low opacity, so a lit dot still reads at
+   small sizes without a second colour. */
+
+.loads-map__dest-dot {
+  fill: var(--color-accent-gold);
+  opacity: var(--land-t, 1);
+}
+
+.loads-map__dest-halo {
+  fill: none;
+  stroke: var(--color-accent-gold);
+  stroke-width: 1;
+  opacity: calc(var(--land-t, 1) * 0.55);
+}
+
+/* ─── Labels ───
+   Mono, uppercase, and muted — annotation, not headline. `text-anchor` is set
+   per lane in the data, so a town named to the west of its dot right-aligns
+   itself; there is no per-index rule to keep in step with the lanes. */
+
+.loads-map__label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  fill: var(--color-ink-muted);
+  opacity: var(--land-t, 1);
+}
+
+/* ─── Reduced motion ───
+   No draw-on, no lighting: every route shown complete and every destination
+   shown reached, which is the map's static state anyway. */
+
+@media (prefers-reduced-motion: reduce) {
+  .loads-map__route,
+  .loads-map__destination,
+  .loads-map__label {
+    --land-t: 1 !important;
+  }
+}

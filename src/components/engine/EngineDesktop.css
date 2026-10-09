@@ -1,7 +1,55 @@
-.engine--desktop .engine__asset-switcher {
-  width: 55%;
+/* ============================================
+   CH3 · Desktop — two-column, deliberately broken symmetry.
+   Left rail is the anchor: a full-height switcher plate that
+   fills its column edge to edge, visual + readout on the right
+   stretching to the viewport. Density 4, left-heavy, no bleed.
+   ============================================ */
+
+/* Scoped: this file ships alongside EngineMobile.css in one bundle. */
+.engine--desktop .engine__layout {
+  max-width: min(1560px, 100%);
+  margin: 0 auto;
+  grid-template-columns: minmax(0, 24rem) minmax(0, 1fr);
+  grid-template-rows: minmax(auto, 1fr) auto auto;
+  column-gap: clamp(2rem, 4vw, 4.5rem);
+  row-gap: clamp(1.25rem, 2.4vw, 2rem);
+  align-content: stretch;
 }
 
-.engine--desktop .engine__spec-panels {
-  width: 45%;
+/* The rail owns the whole left column so the switcher never
+   leaves a dead band above it. */
+.engine--desktop .engine__rail-wrap {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.engine--desktop .engine__rail {
+  flex: 1;
+  min-height: 0;
+}
+
+.engine--desktop .engine__card {
+  flex: 1;
+  min-height: 4.75rem;
+  grid-template-columns: minmax(0, 9.5rem) minmax(0, 1fr);
+}
+
+.engine--desktop .engine__frame {
+  grid-column: 2;
+  grid-row: 1;
+  min-height: clamp(13rem, 36vh, 34rem);
+}
+
+.engine--desktop .engine__spec {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.engine--desktop .engine__fleet-link {
+  grid-column: 2;
+  grid-row: 3;
+  align-self: start;
 }

@@ -13,6 +13,12 @@ html {
   height: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* The page only locks on to a section that declares a snap point
+     (Ch3 — the Engine). `proximity` keeps every other chapter free:
+     the browser pulls the section into place when you stop near it,
+     and never forces a jump from across the page. */
+  scroll-snap-type: y proximity;
 }
 
 html {

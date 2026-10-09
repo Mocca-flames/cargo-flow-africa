@@ -2,6 +2,7 @@ import HeroScene from "@/components/hero/HeroScene";
 import ValuePropositionSection from "@/components/value-proposition/ValuePropositionSection";
 import PremiseSection from "@/components/premise/PremiseSection";
 import ThreatSection from "@/components/threat/ThreatSection";
+import FleetHeading from "@/components/fleet/FleetHeading";
 import EngineSection from "@/components/engine/EngineSection";
 import ProofSection from "@/components/proof/ProofSection";
 import LoadsSection from "@/components/loads/LoadsSection";
@@ -15,6 +16,7 @@ export default function Home() {
       <ValuePropositionSection />
       <PremiseSection />
       <ThreatSection />
+      <FleetHeading />
       <EngineSection />
       <ProofSection />
       <LoadsSection />

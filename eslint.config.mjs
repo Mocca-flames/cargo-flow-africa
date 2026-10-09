@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Hidden worktree mirror used by local tooling; not part of the app build.
     ".kilo/**",
+    // 3D assets removed from the landing page, preserved for a later story.
+    "archive/**",
   ]),
 ]);
 

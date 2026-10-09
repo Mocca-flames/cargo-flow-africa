@@ -107,36 +107,87 @@ weight and seriousness without ever looking broken.
 - **Reduced motion:** static split image, no scroll-scrub; the wipe
   position settles at 50/50.
 
-### 3 — The Engine (Fleet) · Reassurance, first proof · **BUILDING**
+### 3 — The Engine (Fleet) · Reassurance, first proof · **SHIPPED**
 - **Emotional target:** credibility. "Look closer, we can take it."
-- **Composition:** left-anchored asset switcher, spec panels sliding
-  in. First section where the client is rewarded for inspecting
-  rather than just scrolling past.
+- **Chapter heading:** "Our Fleet" is deliberately **not** inside Ch3 —
+  it is a standalone 56svh title band (`src/components/fleet`) sitting
+  between Ch2 and Ch3. Ch3 therefore opens directly on the instrument:
+  no kicker/headline/subhead stack competing with the switcher, and the
+  snap target below stays clean.
+- **Composition:** left-anchored asset switcher, spec panel beneath the
+  visual. First section where the client is rewarded for inspecting
+  rather than just scrolling past. Visual = render-safe side-elevation
+  schematic at true scale (28px = 1m) inside a `[TBC PHOTO]` frame —
+  the data carries the chapter, photography is an upgrade path.
 - **Density:** 4. **Symmetry:** broken, left-anchored.
-- **Viewport:** 120vh contained, user-paced not scroll-forced.
+- **Viewport:** 100svh contained (mobile content runs to ~116vh, inside
+  the original 120vh budget), user-paced not scroll-forced. No pin, no
+  scroll-scrub.
+- **Scroll snap:** the page's *only* snap point lives on this section
+  (`scroll-snap-type: y proximity` on the root,
+  `scroll-snap-align: start` here). Proximity means it invites a stop
+  rather than forcing one — the reader can rest anywhere in the band.
 - **Motion tempo:** snappy, responsive to interaction.
 - **Weight position:** left-anchored, asymmetric.
 - **Secondary link:** quiet text link to `/fleet`, not a button.
-- **Reduced motion:** tab switches fade instead of slide.
+- **Reduced motion:** tab switches fade instead of slide; count-ups
+  settle immediately.
 
 ### 4 — The Proof (Commodities) · Reassurance widening · **BUILDING FURTHER**
 - **Emotional target:** breadth. "We handle everything serious."
-- **Composition:** staggered diagonal grid, three commodity columns at
-  uneven heights.
-- **Density:** 3. **Symmetry:** staggered/diagonal.
-- **Viewport:** 100vh contained.
-- **Motion tempo:** medium, hover-driven.
-- **Weight position:** diagonal sweep, top-left heavy.
-- **Reduced motion:** hover reveals become tap-to-expand, no
-  auto-cycling.
+- **Composition:** four cargo-tag cards, one commodity each, every
+  card pointing back to the trailer it rides on (Ch3's four fleet
+  classes). **Mobile is the designed form:** a horizontal
+  scroll-snap deck — native `scroll-snap-type: x mandatory` on an
+  inner scroller, no scroll-jacking — one card per screen, the next
+  card peeking in from the right to invite the swipe. **Desktop**
+  re-lays the same cards as a 4-step staggered diagonal of columns
+  at uneven heights. The deck's snap lives on the inner container,
+  not the root — Ch3 stays the page's only root snap point. Ch4 has
+  **no section-level `scroll-snap-align`** of any kind (`start` or
+  `end`): only the inner deck snaps, horizontally (`x mandatory`).
+  That lets Ch4 grow past 100svh without fighting the root's
+  proximity snap.
+- **Blueprint grid (Ch3 bleed):** Ch3's 28px grid enters Ch4 only in
+  the top bleed zone and fades to zero **before the end of the Ch4
+  header** — below the header there is no grid. The card area is
+  flat "paperwork": solid canvas, no grid, no frame.
+- **Heading:** compact and inside the section — mono eyebrow
+  (`04 / PROOF`) + display h2 ("What We Move") directly above the
+  deck. No standalone title band as in Ch3: the section must stay
+  one screen, and a tall band would push cards below the fold.
+- **Counter:** `01 / 04`, mono, top-right of the deck frame —
+  mirrors Ch3's frame index. **Mobile-only** (it belongs to the
+  swipe deck): hidden on desktop, where all four cards are visible.
+- **Density:** 3. **Symmetry:** staggered/diagonal (desktop),
+  sequential (mobile).
+- **Viewport:** 100svh contained as `min-height` — on short screens
+  (landscape phones) the section grows rather than clipping header,
+  card, counter, and ticker. No pin, no scroll-scrub.
+- **Motion tempo:** medium — each card plays one small scene beat
+  and a fleet-tag stamp when it snaps into view, then settles to a
+  subtle idle loop; only the active card moves, off-screen cards
+  pause. Desktop: idle until hover.
+- **Weight position:** diagonal sweep, top-left heavy (desktop);
+  centered card with right-edge peek (mobile).
+- **Reduced motion:** scenes static at final frame, no stamp
+  animation, ticker becomes a wrapped line.
+- **Closing:** the deck ends with a slow ticker — `Sulphur · Steel ·
+  Fertilisers · Machinery · + more` — then "Where it goes →" into
+  Ch6. "+ more" is a closing line, never a fifth card.
 
 ### 5 — The Loads (Consolidation) · Relief, the breath · **THE BREATH**
 - **Emotional target:** quiet confidence, the calm beat immediately
   before the climax. This dip is deliberate — it should feel almost
   too quiet on first review. That discomfort is the point.
-- **Composition:** vast negative space around a single off-center 3D
-  object (the page's one React Three Fiber investment — cargo
-  assembling onto a trailer bed, slow and weighted, not snapped).
+- **Composition:** vast negative space around a flat load plan built
+  on the flatdeck trailer — a side elevation on desktop (full
+  viewport width, freight drawn on the deck), a vertical top view on
+  mobile. Three dashed empty slots sit on the deck from first paint,
+  each labelled S1–S3; a row of origin chips names the yards above;
+  each load falls into its slot one at a time, left to right,
+  counter-driven, slot turning solid as it fills. Mono-labelled
+  commodity / tonnes. No canvas, no 3D.
 - **Density:** 1–2, the sparsest section after the hero.
   **Symmetry:** radically off-axis, object low and small relative to
   the canvas around it.
@@ -144,8 +195,11 @@ weight and seriousness without ever looking broken.
 - **Motion tempo:** slow, physical, weighted.
 - **Weight position:** off-center, low, minor relative to whitespace.
 - **Secondary link:** quiet text link to `/loads`.
-- **Reduced motion:** 3D sequence replaced with a static exploded-view
-  image of the load.
+- **Reduced motion:** fully loaded state shown statically.
+- **Note:** 3D truck model is out of scope for the landing page;
+  reserved for a standalone truck story. Commodity freight art is
+  desktop-only for now; the mobile top view uses tinted footprints
+  until its cargo drawings land.
 
 ### 6 — Corridor & Clearance · Deeper fear → Trust · **CLIMAX**
 - **Emotional target:** this is where "deeper fear" belongs — border
@@ -219,8 +273,14 @@ dip has to be uncomfortable for the climax to land.
 - **Ch1 → Ch2:** hard cut. Calm hero ends, tension begins abruptly —
   no bleed, no crossfade.
 - **Ch2 → Ch3:** the wipe resolves fully before Ch3 begins, a clean
-  settle.
-- **Ch3 → Ch4:** soft bleed, both are "what we haul" content.
+  settle. The standalone "Our Fleet" title band lives inside that
+  settle — one beat of calm canvas, then the configurator.
+- **Ch3 → Ch4:** soft bleed, both are "what we haul" content. Made
+  literal and strictly bounded: Ch3's 28px blueprint grid carries
+  into Ch4's top bleed zone only, fading to zero before the end of
+  the Ch4 header — below the header there is no grid, and the card
+  area is flat "paperwork". Every card's fleet tag links back to
+  the trailer just inspected.
 - **Ch4 → Ch5:** hard cut into negative space — the sudden emptiness
   is itself the pacing signal.
 - **Ch5 → Ch6:** slow build-in. Ch6 doesn't open at full density, it
@@ -293,7 +353,7 @@ All dimensions use `clamp()`, no breakpoints, no snap points:
 | 1 Premise | Full-bleed rect | Centered | 2 | All edges |
 | 2 Threat | Mirrored split | Bilateral symmetric | 3 | None |
 | 3 Engine | Left-anchored panel | Broken, left-heavy | 4 | None |
-| 4 Proof | Staggered diagonal grid | Diagonal stagger | 3 | None |
+| 4 Proof | Cargo-tag snap deck (staggered diagonal on desktop) | Staggered/diagonal | 3 | None |
 | 5 Loads | Single off-center object | Radically off-axis | 1–2 | None |
 | 6 Corridor & Clearance | Diagonal split → full map | None, organic | 5 | Full-bleed |
 | 7 Verdict | None (empty-led) | Centered | 1 | None |
@@ -332,3 +392,5 @@ adding a single word.
 - WhatsApp element treated as static/unchanging — it responds to
   scroll-reversal behavior, matching the rest of the page's
   behavior-driven philosophy
+
+

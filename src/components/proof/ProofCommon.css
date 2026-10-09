@@ -1,61 +1,637 @@
+/* ============================================
+   CH4 — THE PROOF / COMMODITIES
+   A deck of cargo tags: four cards, four scenes, one stamp.
+
+   Not pinned, not scrubbed (the old stub's ScrollTrigger is gone):
+   LANDING_LAYOUT.md scores Ch4 as 100svh contained, medium tempo.
+   Also — deliberately — the section carries NO scroll-snap-align:
+   Ch3 keeps the page's only root snap point, so this section can
+   grow past 100svh on short screens without fighting the root's
+   proximity snap. Only the inner deck snaps (x mandatory, mobile).
+
+   Blueprint grid: enters through the top bleed zone on the header
+   only, fading to zero before the header ends — below it, flat
+   "paperwork": solid canvas, no grid, no frame.
+   ============================================ */
+
 .proof {
   position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  height: 100svh;
+  min-height: 100svh;
   overflow: hidden;
   background: var(--color-canvas);
 }
 
-@supports not (height: 100svh) {
+@supports not (min-height: 100svh) {
   .proof {
-    height: 100vh;
+    min-height: 100vh;
   }
 }
 
-.proof__grid {
+/* ─── Header: eyebrow + chapter card, grid bleed lives here ─── */
+
+.proof__header {
+  position: relative;
+  box-sizing: border-box;
+  padding: calc(var(--nav-height, 4.5rem) + clamp(1rem, 2vw, 1.75rem))
+    var(--section-padding) clamp(1.25rem, 2.5vw, 2rem);
+}
+
+/* Ch3's 28px blueprint grid, top bleed zone only: strongest at the
+   section's first pixel, zero before the header's bottom edge. */
+.proof__header::before {
+  content: "";
   position: absolute;
   inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(to right, rgba(18, 56, 47, 0.06) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(to bottom, rgba(18, 56, 47, 0.06) 0 1px, transparent 1px 28px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent 85%);
+  mask-image: linear-gradient(to bottom, #000 30%, transparent 85%);
+}
+
+.proof__eyebrow,
+.proof__heading {
+  position: relative;
+  z-index: 1;
+}
+
+.proof__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-mono);
+  font-size: clamp(0.625rem, 0.5vw + 0.5rem, 0.875rem);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.proof__eyebrow-index {
+  color: var(--color-accent-gold);
+}
+
+.proof__eyebrow::before,
+.proof__eyebrow::after {
+  content: "";
+  width: 1.75rem;
+  height: 1px;
+  background: var(--color-accent-gold);
+}
+
+.proof__heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-display-l);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  color: var(--color-ink);
+}
+
+/* ─── Deck frame: counter strip + the card row ─── */
+
+.proof__deck-frame {
+  position: relative;
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  width: 100%;
+  padding-top: var(--space-8);
+}
+
+.proof__counter {
+  position: absolute;
+  top: 0;
+  right: var(--section-padding);
+  font-family: var(--font-mono);
+  font-size: clamp(0.625rem, 0.5vw + 0.5rem, 0.875rem);
+  letter-spacing: 0.08em;
+  color: var(--color-ink-muted);
+}
+
+/* ─── Card: a cargo tag — ghost number, hook, scene, stamp ─── */
+
+.proof__card {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.proof__card-ghost {
+  position: absolute;
+  top: -0.16em;
+  left: 0.35rem;
+  z-index: 0;
+  font-family: var(--font-display);
+  font-size: clamp(5.5rem, 11vw, 8rem);
+  font-weight: 700;
+  line-height: 1;
+  color: rgba(18, 56, 47, 0.075);
+  pointer-events: none;
+  user-select: none;
+}
+
+.proof__card-head {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--space-3);
+}
+
+.proof__card-name {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-display-m);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+.proof__card-hook {
+  margin: 0;
+  font-size: var(--text-body-m);
+  line-height: 1.45;
+  color: var(--color-ink-muted);
+}
+
+.proof__card-scene {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  margin: var(--space-2) 0;
+}
+
+.proof__card-foot {
+  position: relative;
   z-index: 1;
   display: flex;
-  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px dashed var(--color-border);
+}
+
+/* The customs stamp: rest state IS the settled state (scale 1,
+   -2deg), so reduced motion and pre-activation need no fallback. */
+.proof__tag {
+  display: inline-block;
+  padding: 0.3em 0.65em;
+  border: 1.5px solid var(--color-accent-gold);
+  background: rgba(212, 164, 76, 0.14);
+  font-family: var(--font-mono);
+  font-size: clamp(0.75rem, 0.5vw + 0.6rem, 0.9375rem);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--color-ink);
+  text-decoration: none;
+  transform: rotate(-2deg);
+}
+
+.proof__tag:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+.proof__tag-chip {
+  display: inline-block;
+  padding: 0.25em 0.5em;
+  border: 1px solid var(--color-border);
+  font-family: var(--font-mono);
+  font-size: clamp(0.6875rem, 0.4vw + 0.55rem, 0.8125rem);
+  letter-spacing: 0.08em;
+  color: var(--color-ink-muted);
+}
+
+.proof__corridor {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: clamp(0.6875rem, 0.4vw + 0.55rem, 0.8125rem);
+  letter-spacing: 0.06em;
+  color: var(--color-ink-muted);
+}
+
+.proof__corridor-dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent-gold);
+}
+
+/* ─── Scenes: EngineRig stroke language, one gold accent each ─── */
+
+.scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+}
+
+.scene * {
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.scene__body {
+  stroke: var(--color-ink);
+  stroke-width: 1.5;
+  fill: rgba(18, 56, 47, 0.07);
+}
+
+.scene__line {
+  stroke: var(--color-ink);
+  stroke-width: 1;
+  fill: none;
+}
+
+.scene__rail {
+  stroke: var(--color-ink);
+  stroke-width: 1.5;
+  fill: none;
+}
+
+.scene__accent {
+  stroke: var(--color-accent-gold);
+  stroke-width: 1.6;
+  fill: rgba(212, 164, 76, 0.4);
+}
+
+.scene__dot {
+  fill: var(--color-accent-gold);
+  stroke: var(--color-ink);
+  stroke-width: 1;
+}
+
+.scene__ground {
+  stroke: rgba(18, 56, 47, 0.3);
+  stroke-width: 1.5;
+  fill: none;
+}
+
+.scene__ext {
+  stroke: rgba(18, 56, 47, 0.28);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  fill: none;
+}
+
+/* Per-scene animation names — the gate rules (variant files) resolve
+   `animation: var(--beat-name) …` on the beat/idle element itself,
+   so removing the gate removes the animation and the scene snaps
+   back to its static final frame; re-adding it replays from zero. */
+.scene--pour {
+  --beat-name: proof-pour-beat;
+  --idle-name: proof-pour-idle;
+}
+.scene--stack {
+  --beat-name: proof-stack-beat;
+  --idle-name: proof-stack-idle;
+}
+.scene--drop {
+  --beat-name: proof-drop-beat;
+  --idle-name: proof-drop-idle;
+}
+.scene--ramp {
+  --beat-name: proof-ramp-beat;
+  --idle-name: proof-ramp-idle;
+}
+
+.scene--pour .scene__beat--pile {
+  --beat-name: proof-pile-beat;
+}
+
+.scene__beat,
+.scene__idle {
+  transform-box: fill-box;
+}
+
+.scene__beat--pile {
+  transform-origin: bottom center;
+}
+
+.scene--ramp .scene__idle {
+  transform-origin: bottom center;
+}
+
+.scene__delay-1 {
+  --d: 0s;
+}
+.scene__delay-2 {
+  --d: 0.16s;
+}
+.scene__delay-3 {
+  --d: 0.32s;
+}
+
+/* ─── Beat keyframes: one main arrival move per scene ─── */
+
+@keyframes proof-pour-beat {
+  from {
+    transform: translateY(-46px);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes proof-pile-beat {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes proof-stack-beat {
+  from {
+    transform: translateX(74px);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes proof-drop-beat {
+  0% {
+    transform: translateY(-64px);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  55% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  68% {
+    transform: translateY(-8px);
+  }
+  80% {
+    transform: translateY(0);
+  }
+  88% {
+    transform: translateY(-3px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes proof-ramp-beat {
+  from {
+    transform: translate(-88px, 16px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  to {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+/* ─── Idle loops: subtle, start only after the beat settles ─── */
+
+@keyframes proof-pour-idle {
+  0% {
+    transform: translateY(-46px);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+}
+
+@keyframes proof-stack-idle {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes proof-drop-idle {
+  0% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  8% {
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.18);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes proof-ramp-idle {
+  0%,
+  100% {
+    transform: rotate(-1deg);
+  }
+  50% {
+    transform: rotate(1deg);
+  }
+}
+
+/* ─── The stamp: scale down, slight rotate, settle ─── */
+
+@keyframes proof-stamp {
+  from {
+    transform: scale(1.55) rotate(-12deg);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    transform: rotate(-2deg);
+    opacity: 1;
+  }
+}
+
+/* ─── Entrance: staged, one pass, like Ch3 ─── */
+
+.proof__header,
+.proof__deck-frame,
+.proof__closing {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+}
+
+.proof--entered .proof__header {
+  animation: proof-enter var(--duration-base) var(--ease-snap) both 0ms;
+}
+.proof--entered .proof__deck-frame {
+  animation: proof-enter var(--duration-base) var(--ease-snap) both 80ms;
+}
+.proof--entered .proof__closing {
+  animation: proof-enter var(--duration-base) var(--ease-snap) both 160ms;
+}
+
+@keyframes proof-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* ─── Closing: ticker + the way on to corridors ─── */
+
+.proof__closing {
+  position: relative;
+  display: flex;
+  align-items: center;
   gap: var(--space-4);
-  padding: var(--section-padding);
   box-sizing: border-box;
+  padding: var(--space-4) var(--section-padding) clamp(1.25rem, 3vw, 2rem);
+  border-top: 1px solid var(--color-border);
 }
 
-.proof__column {
-  flex: 1;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  transition: transform 0.3s var(--ease-snap);
+.proof__ticker {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
 }
 
-.proof__column:hover {
-  transform: scale(1.02);
+.proof__ticker-track {
+  display: flex;
+  width: max-content;
 }
 
-.proof__column--1 {
-  height: 60%;
-  margin-top: var(--space-8);
+.proof--inview .proof__ticker-track {
+  animation: proof-ticker 38s linear infinite;
 }
 
-.proof__column--2 {
-  height: 80%;
+.proof__ticker-run {
+  padding-right: var(--space-8);
+  font-family: var(--font-mono);
+  font-size: clamp(0.6875rem, 0.5vw + 0.55rem, 0.875rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-ink-muted);
 }
 
-.proof__column--3 {
-  height: 50%;
-  margin-top: var(--space-16);
+@keyframes proof-ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
-/* ─── Reduced Motion ─── */
+/* Screen readers hear the ticker exactly once — through this line.
+   Visually hidden in normal motion; under reduced motion it becomes
+   the visible ticker and the marquee above is removed. */
+.proof__ticker-static {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.proof__where {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: clamp(0.6875rem, 0.5vw + 0.55rem, 0.875rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-accent-gold);
+  padding-bottom: 2px;
+  transition: color var(--duration-fast) var(--ease-snap);
+}
+
+.proof__where:hover {
+  color: var(--color-accent-gold);
+}
+
+/* ─── Reduced motion: static final frames, no stamp, wrapped ticker ─── */
+
 @media (prefers-reduced-motion: reduce) {
-  .proof {
-    height: 100vh;
+  .proof__header,
+  .proof__deck-frame,
+  .proof__closing {
+    opacity: 1;
+    transform: none;
   }
 
-  .proof__column:hover {
-    transform: none;
+  .proof *,
+  .proof *::before,
+  .proof *::after {
+    animation: none !important;
+  }
+
+  .proof__ticker {
+    display: none;
+  }
+
+  .proof__ticker-static {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
   }
 }
