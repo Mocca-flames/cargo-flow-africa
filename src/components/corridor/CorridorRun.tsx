@@ -139,6 +139,7 @@ export default function CorridorRun() {
         scrollTrigger: {
           trigger: root, start: "top top", end: () => `+=${window.innerHeight * PIN_SCREENS}`,
           pin: true, scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
+          refreshPriority: 0,
         },
       }).to(state, { p: 1, duration: 1, onUpdate: () => render(state.p) });
     }, root);

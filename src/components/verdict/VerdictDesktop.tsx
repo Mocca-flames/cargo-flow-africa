@@ -24,7 +24,9 @@ export default function VerdictDesktop() {
           pin: true,
           scrub: 0.3,
           anticipatePin: 1,
+          refreshPriority: 0,
         });
+        ScrollTrigger.refresh();
       }, sectionRef);
     });
 
