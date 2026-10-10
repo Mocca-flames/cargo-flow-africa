@@ -5,7 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import css from "./corridor-run.module.css";
 import {
-  BEATS, DELAY_KEYS, GATES, GATE_OFF, MOBILE_MAX, PIN_SCREENS, ROUTE_D, ROUTE_KEYS,
+  BEATS, DELAY_KEYS, GATES, GATE_OFF, MOBILE_MAX, NIGHT_KEYS, PIN_SCREENS, ROUTE_D, ROUTE_KEYS,
   STRIKE, TINT_KEYS, TOTAL_KM, ZOOM_KEYS, type Beat,
 } from "./config";
 import { buildRouteTable, computeRig, headingAt, keyed, pointAt, deg, rad } from "./rig";
@@ -58,6 +58,7 @@ export default function CorridorRun() {
   const routeRef = useRef<SVGPathElement>(null);
   const horseRef = useRef<SVGGElement>(null);
   const trailerRef = useRef<SVGGElement>(null);
+  const nightLightsRef = useRef<SVGGElement>(null);
 
   useEffect(() => {
     if (reduced) return;
@@ -89,6 +90,8 @@ export default function CorridorRun() {
     const treads = Array.from(root.querySelectorAll<SVGElement>(".tread"));
     const gateEls = GATES.map((g) => root.querySelector(`[data-gate="${g.id}"]`));
     const strikeEl = root.querySelector("[data-strike]");
+    const nightLights = nightLightsRef.current;
+    const nightTintEl = root.querySelector<HTMLElement>("[data-night-tint]");
     const panels = Array.from(root.querySelectorAll<HTMLElement>("[data-beat]"));
     const hud = (k: string) => root.querySelector<HTMLElement>(`[data-hud="${k}"]`);
     const [hLast, hNext, hKm, hDelay, hBar, hTint] = ["last", "next", "km", "delay", "bar", "tint"].map(hud);
@@ -109,7 +112,7 @@ export default function CorridorRun() {
       const fx = rig.pivot.x - Math.cos(ah) * 350;
       const fy = rig.pivot.y - Math.sin(ah) * 350;
       const ax = size.w * (mobile ? 0.5 : 0.62);
-      const ay = size.h * (mobile ? 0.34 : 0.46);
+      const ay = size.h * (mobile ? 0.34 : 0.54);
       world.setAttribute("transform", `translate(${ax - fx * z} ${ay - fy * z}) scale(${z})`);
 
       GATES.forEach((g, i) =>
@@ -124,6 +127,49 @@ export default function CorridorRun() {
       setText(hDelay, `${Math.round(keyed(DELAY_KEYS, p))} h`);
       if (hBar) hBar.style.transform = `scaleX(${p})`;
       if (hTint) hTint.style.opacity = String(keyed(TINT_KEYS, p));
+
+      // --- night / day ---
+      const n = keyed(NIGHT_KEYS, p);
+      root.style.setProperty("--n", String(n));
+
+      // night-lights SVG shares the same camera transform as the world
+      if (nightLights) {
+        nightLights.setAttribute("transform", world.getAttribute("transform")!);
+
+        // headlight beams — opacity from n
+        const beamL = root.getElementById("nl-beam-l");
+        const beamR = root.getElementById("nl-beam-r");
+        if (beamL) beamL.setAttribute("opacity", String(n * 0.7));
+        if (beamR) beamR.setAttribute("opacity", String(n * 0.7));
+
+        // tail / brake lights — dim tail always on at night, brighter when stopped
+        const isStopped = p < STRIKE.until || GATES.some((g) => p >= g.queueFrom && p < g.clearedAt);
+        const tailOp = n * (isStopped ? 0.9 : 0.5);
+        const tailL = root.getElementById("nl-tail-l");
+        const tailR = root.getElementById("nl-tail-r");
+        if (tailL) tailL.setAttribute("opacity", String(tailOp));
+        if (tailR) tailR.setAttribute("opacity", String(tailOp));
+
+        // hazard flashers — slow blink, ≤ 1.5 Hz (no strobe)
+        const flash = n > 0.1 ? (Math.floor(Date.now() / 600) % 2) : 0;
+        const hazFL = root.getElementById("nl-hazard-fl");
+        const hazFR = root.getElementById("nl-hazard-fr");
+        if (hazFL) hazFL.setAttribute("opacity", String(n * flash * 0.8));
+        if (hazFR) hazFR.setAttribute("opacity", String(n * flash * 0.8));
+
+        // booth glow for each gate
+        GATES.forEach((g, i) => {
+          const el = gateEls[i];
+          if (el && el.getAttribute("data-state") === "hold" && nightLights) {
+            // find booth glow inside nightLights
+            const boothGlow = root.getElementById(`nl-booth-${g.id}`);
+            if (boothGlow) boothGlow.setAttribute("opacity", String(n * 0.5));
+          }
+        });
+      }
+
+      // screen-space tint layer — multiply blend over trucks at night
+      if (nightTintEl) nightTintEl.style.opacity = String(n * 0.5);
     };
 
     const measure = () => {
@@ -210,6 +256,35 @@ export default function CorridorRun() {
         </svg>
 
         <div className={css.tint} data-hud="tint" />
+        <div className={css.nightTint} data-night-tint />
+        <svg className={css.nightLights} aria-hidden="true" focusable="false">
+          <g ref={nightLightsRef}>
+            {/* Tractor headlight beams */}
+            <g opacity="0" id="nl-beam-l"><polygon points="0,0 400,-100 400,80" fill="url(#nl-headlight)" /></g>
+            <g opacity="0" id="nl-beam-r"><polygon points="0,0 400,-80 400,100" fill="url(#nl-headlight)" /></g>
+            {/* Tractor hazard flashers */}
+            <circle id="nl-hazard-fl" cx="405" cy="14" r="6" fill="#F2A91B" opacity="0" />
+            <circle id="nl-hazard-fr" cx="405" cy="286" r="6" fill="#F2A91B" opacity="0" />
+            {/* Tractor tail/brake lights */}
+            <circle id="nl-tail-l" cx="-215" cy="116" r="8" fill="#C8352B" opacity="0.6" />
+            <circle id="nl-tail-r" cx="-215" cy="184" r="8" fill="#C8352B" opacity="0.6" />
+            {/* Gate booth glow */}
+            <rect id="nl-booth-g1" x="-60" y="-700" width="120" height="120" rx="60" fill="url(#nl-booth-glow)" opacity="0" />
+            <rect id="nl-booth-g2" x="-60" y="-700" width="120" height="120" rx="60" fill="url(#nl-booth-glow)" opacity="0" />
+            <rect id="nl-booth-g3" x="-60" y="-700" width="120" height="120" rx="60" fill="url(#nl-booth-glow)" opacity="0" />
+          </g>
+          <defs>
+            <radialGradient id="nl-headlight" cx="0" cy="0.5" r="1">
+              <stop offset="0%" stopColor="#fffbe6" stopOpacity="0.9" />
+              <stop offset="60%" stopColor="#fffbe6" stopOpacity="0.2" />
+              <stop offset="100%" stopColor="#fffbe6" stopOpacity="0" />
+            </radialGradient>
+            <radialGradient id="nl-booth-glow" cx="0.5" cy="0.5" r="0.5">
+              <stop offset="0%" stopColor="#fff8e0" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#fff8e0" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+        </svg>
         <div className={css.kickerPlate}><span>06</span> Corridor &amp; Clearance</div>
 
         <aside className={css.hud} aria-hidden="true">
