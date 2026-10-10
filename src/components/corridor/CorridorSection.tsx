@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import CorridorDesktop from "./CorridorDesktop";
-import CorridorMobile from "./CorridorMobile";
+import CorridorRun from "./CorridorRun";
 
 export default function CorridorSection() {
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
@@ -17,5 +16,5 @@ export default function CorridorSection() {
 
   if (isMobile === null) return null;
 
-  return isMobile ? <CorridorMobile key="mobile" /> : <CorridorDesktop key="desktop" />;
+  return <CorridorRun />;
 }
