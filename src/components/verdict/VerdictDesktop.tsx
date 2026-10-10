@@ -30,7 +30,6 @@ export default function VerdictDesktop() {
 
     return () => {
       cancelAnimationFrame(frame);
-      ScrollTrigger.getAll().forEach((st) => st.kill());
       ctx?.revert();
     };
   }, []);
