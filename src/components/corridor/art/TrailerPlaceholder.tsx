@@ -1,8 +1,8 @@
-// Frame: viewBox 0 0 1500 300, faces +x, kingpin pivot (1300,150). Swap this whole <g> for the Gemini SVG.
+// Frame: viewBox -200 -100 1900 500, faces +x, kingpin pivot (1300,150). Swap this whole <g> for the Gemini SVG.
 
 export function TrailerArt() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 300">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="10 0 1400 300">
   <defs>
     <linearGradient id="tarp-base" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stopColor="#14392F"/>

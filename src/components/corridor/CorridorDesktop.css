@@ -1,0 +1,36 @@
+/* ============================================================
+   CH6 · CORRIDOR — DESKTOP layout (≥768px; CorridorSection picks this
+   variant). Framing numbers: DESKTOP_CAMERA in camera.ts.
+
+   Desktop composition:
+     · truck rides right-of-centre (anchorX 0.62)
+     · HUD = compact card, top-right
+     · copy = fixed-width left rail that the truck never covers
+   Anything shared with mobile belongs in CorridorCommon.css.
+   ============================================================ */
+
+.corridor--desktop .corridor__hud {
+  right: clamp(1rem, 3vw, 3rem);
+  top: calc(var(--header-h, 90px) + 4.5rem);
+  min-width: 13rem;
+  padding: 0.9rem 1rem;
+}
+
+/* One label/value per row, stretched edge to edge. */
+.corridor--desktop .corridor__hud div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  align-items: baseline;
+}
+
+.corridor--desktop .corridor__panels {
+  left: clamp(2rem, 5vw, 8rem);
+  top: calc(var(--header-h, 90px) + 14vh);
+  width: min(23rem, 28vw);
+}
+
+/* Panels stack from the top-left; only the active one is visible. */
+.corridor--desktop .corridor__panel {
+  inset: 0 auto auto 0;
+}

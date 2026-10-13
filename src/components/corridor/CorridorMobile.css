@@ -1,0 +1,40 @@
+/* ============================================================
+   CH6 · CORRIDOR — MOBILE layout (≤767px; CorridorSection picks this
+   variant). Framing numbers: MOBILE_CAMERA in camera.ts (truck centred,
+   raised to anchorY 0.34 so the bottom sheet never covers it).
+
+   Mobile composition:
+     · HUD = full-width 2-column strip under the header (labels stacked
+       above values — horizontal room is too tight for label-left/value-right)
+     · copy = bottom sheet, pinned to the bottom edge
+   Anything shared with desktop belongs in CorridorCommon.css.
+   ============================================================ */
+
+.corridor--mobile .corridor__hud {
+  right: 0.75rem;
+  left: 0.75rem;
+  top: calc(var(--header-h, 70px) + 3.2rem);
+  grid-template-columns: 1fr 1fr;
+  min-width: 0;
+  padding: 0.6rem 0.75rem;
+}
+
+/* Stacked label-over-value cells in the 2-col grid. */
+.corridor--mobile .corridor__hud div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.corridor--mobile .corridor__panels {
+  left: 0.75rem;
+  right: 0.75rem;
+  width: auto;
+  top: auto;
+  bottom: 1rem;
+}
+
+/* Sheet panels stretch full-width along the bottom edge. */
+.corridor--mobile .corridor__panel {
+  inset: auto 0 0 0;
+}

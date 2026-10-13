@@ -3,14 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import css from "./corridor-run.module.css";
+import "./CorridorCommon.css";
 import {
   BEATS, DELAY_KEYS, GATES, GATE_OFF, MOBILE_MAX, NIGHT_KEYS, PIN_SCREENS, ROUTE_D, ROUTE_KEYS,
   STRIKE, TINT_KEYS, TOTAL_KM, ZOOM_KEYS, type Beat,
 } from "./config";
 import { buildRouteTable, computeRig, headingAt, keyed, pointAt, deg, rad } from "./rig";
-import { TractorArt } from "./TractorPlaceholder";
-import { TrailerArt } from "./TrailerPlaceholder";
+import { TractorArt } from "./art/TractorPlaceholder";
+import { TrailerArt } from "./art/TrailerPlaceholder";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -29,9 +29,9 @@ function useReducedMotion() {
 function BeatCopy({ b }: { b: Beat }) {
   return (
     <>
-      <p className={css.kicker}>{b.kicker}</p>
-      <h3 className={css.title}>{b.title}</h3>
-      <dl className={css.triad}>
+      <p className="corridor__kicker">{b.kicker}</p>
+      <h3 className="corridor__title">{b.title}</h3>
+      <dl className="corridor__triad">
         <div><dt>What happened</dt><dd>{b.happened}</dd></div>
         <div><dt>What we did</dt><dd>{b.did}</dd></div>
         <div><dt>What you saw</dt><dd>{b.saw}</dd></div>
@@ -44,13 +44,13 @@ function QueueTrucks() {
   return (
     <>
       {[0, 1, 2, 3].map((i) => (
-        <rect key={i} x={-2000 - i * 2300} y={-125} width={2000} height={250} rx={24} className={css.queueTruck} />
+        <rect key={i} x={-2000 - i * 2300} y={-125} width={2000} height={250} rx={24} className="corridor__queue-truck" />
       ))}
     </>
   );
 }
 
-export default function CorridorRun() {
+export default function CorridorRun({ variant }: { variant?: "desktop" | "mobile" }) {
   const reduced = useReducedMotion();
   const rootRef = useRef<HTMLElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -106,11 +106,11 @@ export default function CorridorRun() {
         el.setAttribute("transform", `rotate(${rig.steer} ${el.dataset.cx} ${el.dataset.cy})`));
       treads.forEach((el) => { el.style.strokeDashoffset = String(-rig.s); });
 
-      // camera: follow the truck's middle, zoom per beat; text left (desktop) / sheet bottom (mobile)
+      // camera: follow 800 units behind the pivot (full trailer in frame)
       const z = keyed(ZOOM_KEYS, p) * (mobile ? 0.62 : 1);
       const ah = rad(rig.tractor);
-      const fx = rig.pivot.x - Math.cos(ah) * 350;
-      const fy = rig.pivot.y - Math.sin(ah) * 350;
+      const fx = rig.pivot.x - Math.cos(ah) * 800;
+      const fy = rig.pivot.y - Math.sin(ah) * 800;
       const ax = size.w * (mobile ? 0.5 : 0.62);
       const ay = size.h * (mobile ? 0.34 : 0.54);
       world.setAttribute("transform", `translate(${ax - fx * z} ${ay - fy * z}) scale(${z})`);
@@ -137,23 +137,23 @@ export default function CorridorRun() {
         nightLights.setAttribute("transform", world.getAttribute("transform")!);
 
         // headlight beams — opacity from n
-        const beamL = root.getElementById("nl-beam-l");
-        const beamR = root.getElementById("nl-beam-r");
+        const beamL = document.getElementById("nl-beam-l");
+        const beamR = document.getElementById("nl-beam-r");
         if (beamL) beamL.setAttribute("opacity", String(n * 0.7));
         if (beamR) beamR.setAttribute("opacity", String(n * 0.7));
 
         // tail / brake lights — dim tail always on at night, brighter when stopped
         const isStopped = p < STRIKE.until || GATES.some((g) => p >= g.queueFrom && p < g.clearedAt);
         const tailOp = n * (isStopped ? 0.9 : 0.5);
-        const tailL = root.getElementById("nl-tail-l");
-        const tailR = root.getElementById("nl-tail-r");
+        const tailL = document.getElementById("nl-tail-l");
+        const tailR = document.getElementById("nl-tail-r");
         if (tailL) tailL.setAttribute("opacity", String(tailOp));
         if (tailR) tailR.setAttribute("opacity", String(tailOp));
 
         // hazard flashers — slow blink, ≤ 1.5 Hz (no strobe)
         const flash = n > 0.1 ? (Math.floor(Date.now() / 600) % 2) : 0;
-        const hazFL = root.getElementById("nl-hazard-fl");
-        const hazFR = root.getElementById("nl-hazard-fr");
+        const hazFL = document.getElementById("nl-hazard-fl");
+        const hazFR = document.getElementById("nl-hazard-fr");
         if (hazFL) hazFL.setAttribute("opacity", String(n * flash * 0.8));
         if (hazFR) hazFR.setAttribute("opacity", String(n * flash * 0.8));
 
@@ -161,8 +161,7 @@ export default function CorridorRun() {
         GATES.forEach((g, i) => {
           const el = gateEls[i];
           if (el && el.getAttribute("data-state") === "hold" && nightLights) {
-            // find booth glow inside nightLights
-            const boothGlow = root.getElementById(`nl-booth-${g.id}`);
+            const boothGlow = document.getElementById(`nl-booth-${g.id}`);
             if (boothGlow) boothGlow.setAttribute("opacity", String(n * 0.5));
           }
         });
@@ -199,43 +198,43 @@ export default function CorridorRun() {
 
   if (reduced) {
     return (
-      <section className={css.static} aria-labelledby="ch6-title" data-chapter="6">
-        <h2 id="ch6-title" className={css.staticHead}>Corridor &amp; Clearance</h2>
+      <section className={`corridor corridor--${variant || ""}`} aria-labelledby="ch6-title" data-chapter="6">
+        <h2 id="ch6-title" className="corridor__static-head">Corridor &amp; Clearance</h2>
         {BEATS.map((b) => (
-          <article key={b.id} className={css.staticBeat}><BeatCopy b={b} /></article>
+          <article key={b.id} className="corridor__static-beat"><BeatCopy b={b} /></article>
         ))}
       </section>
     );
   }
 
   return (
-    <section ref={rootRef} className={css.root} aria-labelledby="ch6-title" data-chapter="6">
-      <h2 id="ch6-title" className={css.srOnly}>Corridor &amp; Clearance</h2>
-      <div className={css.stage}>
-        <svg ref={svgRef} className={css.world} aria-hidden="true" focusable="false">
+    <section ref={rootRef} className={`corridor corridor--${variant || ""}`} aria-labelledby="ch6-title" data-chapter="6">
+      <h2 id="ch6-title" className="corridor__sr-only">Corridor &amp; Clearance</h2>
+      <div className="corridor__stage">
+        <svg ref={svgRef} className="corridor__world" aria-hidden="true" focusable="false">
           <g ref={worldRef}>
-            <rect x={-40000} y={-40000} width={160000} height={90000} className={css.land} />
-            <path ref={routeRef} d={ROUTE_D} className={css.roadBed} />
-            <path d={ROUTE_D} className={css.roadLine} />
+            <rect x={-40000} y={-40000} width={160000} height={90000} className="corridor__land" />
+            <path ref={routeRef} d={ROUTE_D} className="corridor__road-bed" />
+            <path d={ROUTE_D} className="corridor__road-line" />
 
-            <g className={css.strike} data-strike data-state="ahead" data-at={STRIKE.at} data-off={GATE_OFF}>
+            <g className="corridor__strike" data-strike data-state="ahead" data-at={STRIKE.at} data-off={GATE_OFF}>
               {[-420, -140, 140, 420].map((y) => (
-                <rect key={y} x={-30} y={y - 110} width={60} height={220} rx={8} className={css.barricade} />
+                <rect key={y} x={-30} y={y - 110} width={60} height={220} rx={8} className="corridor__barricade" />
               ))}
-              <g data-upright><text className={css.label} x={0} y={-720} textAnchor="middle">BLOCKADE</text></g>
+              <g data-upright><text className="corridor__label" x={0} y={-720} textAnchor="middle">BLOCKADE</text></g>
             </g>
 
             {GATES.map((g) => (
-              <g key={g.id} className={css.gate} data-gate={g.id} data-state="ahead" data-at={g.at} data-off={GATE_OFF}>
-                <rect className={css.booth} x={-120} y={-760} width={240} height={200} rx={20} />
-                <rect className={css.boom} x={-25} y={-550} width={50} height={1100} rx={10} />
+              <g key={g.id} className="corridor__gate" data-gate={g.id} data-state="ahead" data-at={g.at} data-off={GATE_OFF}>
+                <rect className="corridor__booth" x={-120} y={-760} width={240} height={200} rx={20} />
+                <rect className="corridor__boom" x={-25} y={-550} width={50} height={1100} rx={10} />
                 <g data-upright>
-                  <text className={css.label} x={0} y={-950} textAnchor="middle">{g.name.toUpperCase()}</text>
-                  <g className={css.tagHold}>
+                  <text className="corridor__label" x={0} y={-950} textAnchor="middle">{g.name.toUpperCase()}</text>
+                  <g className="corridor__tag-hold">
                     <rect x={-300} y={640} width={600} height={240} rx={20} />
                     <text x={0} y={815} textAnchor="middle">HOLD</text>
                   </g>
-                  <g className={css.tagClear}>
+                  <g className="corridor__tag-clear">
                     <rect x={-420} y={640} width={840} height={240} rx={20} />
                     <text x={0} y={815} textAnchor="middle">CLEARED</text>
                   </g>
@@ -246,8 +245,8 @@ export default function CorridorRun() {
               <g key={`q-${g.id}`} data-at={g.at} data-off={GATE_OFF - 300} data-dy={480}><QueueTrucks /></g>
             ))}
             <g data-at={1} data-off={1600}>
-              <rect x={-20} y={-550} width={40} height={1100} className={css.finish} />
-              <g data-upright><text className={css.label} x={0} y={-720} textAnchor="middle">LUBUMBASHI</text></g>
+              <rect x={-20} y={-550} width={40} height={1100} className="corridor__finish" />
+              <g data-upright><text className="corridor__label" x={0} y={-720} textAnchor="middle">LUBUMBASHI</text></g>
             </g>
 
             <g ref={horseRef}><g transform="translate(-275 -150)"><TractorArt /></g></g>
@@ -255,9 +254,9 @@ export default function CorridorRun() {
           </g>
         </svg>
 
-        <div className={css.tint} data-hud="tint" />
-        <div className={css.nightTint} data-night-tint />
-        <svg className={css.nightLights} aria-hidden="true" focusable="false">
+        <div className="corridor__tint" data-hud="tint" />
+        <div className="corridor__night-tint" data-night-tint />
+        <svg className="corridor__night-lights" aria-hidden="true" focusable="false">
           <g ref={nightLightsRef}>
             {/* Tractor headlight beams */}
             <g opacity="0" id="nl-beam-l"><polygon points="0,0 400,-100 400,80" fill="url(#nl-headlight)" /></g>
@@ -285,9 +284,9 @@ export default function CorridorRun() {
             </radialGradient>
           </defs>
         </svg>
-        <div className={css.kickerPlate}><span>06</span> Corridor &amp; Clearance</div>
+        <div className="corridor__kicker-plate"><span>06</span> Corridor &amp; Clearance</div>
 
-        <aside className={css.hud} aria-hidden="true">
+        <aside className="corridor__hud" aria-hidden="true">
           <div><span>Cargo on the line</span><b>R 2,000,000</b></div>
           <div><span>Last checkpoint</span><b data-hud="last">Durban</b></div>
           <div><span>Next gate</span><b data-hud="next">Beitbridge</b></div>
@@ -295,12 +294,12 @@ export default function CorridorRun() {
           <div><span>Delay exposure</span><b data-hud="delay">0 h</b></div>
         </aside>
 
-        <div className={css.panels}>
+        <div className="corridor__panels">
           {BEATS.map((b) => (
-            <article key={b.id} className={css.panel} data-beat={b.id} data-active="false"><BeatCopy b={b} /></article>
+            <article key={b.id} className="corridor__panel" data-beat={b.id} data-active="false"><BeatCopy b={b} /></article>
           ))}
         </div>
-        <div className={css.bar}><i data-hud="bar" /></div>
+        <div className="corridor__bar"><i data-hud="bar" /></div>
       </div>
     </section>
   );

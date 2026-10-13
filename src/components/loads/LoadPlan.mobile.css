@@ -1,0 +1,409 @@
+/* ============================================
+   CH5 MOBILE — THE LOAD PLAN (side elevation)
+   The breath. A 460svh track with a sticky inner frame: three loads fall
+   onto the deck one at a time while the trailer slides beneath a loading
+   point fixed at the screen's centre.
+
+   Every selector is prefixed `lm-`, and this file is imported by
+   `LoadPlan.mobile.tsx` alone. It does NOT touch `LoadsCommon.css` or
+   `LoadPlan.desktop.css` — those belong to the other projection and to the
+   parallel desktop edit. The only shared names it re-declares are the two
+   SVG class names (`loads-trailer`, `loads-cargo`) that the imported,
+   unmodified drawing components carry; they are scoped under `.lm-` here so
+   nothing leaks.
+
+   The viewport lock is pure CSS — a tall track plus `position: sticky`, the
+   same shape Ch2 and desktop Ch5 use. No pin library, no scroll-jacking, no
+   section-level `scroll-snap-align` (Ch3 owns the page's only root snap). JS
+   only supplies a 0→1 progress number (`useLoadsMobileProgress`), which
+   slides the trailer, lands the loads and reveals the finale.
+
+   Sizing is fluid via clamp() and space tokens; the only hard numbers are the
+   two viewBoxes (1200×200 trailer, 1200×340 group), which the hook divides
+   out. svh/dvh only — never vh — so the mobile URL bar cannot reflow the
+   frame mid-scrub.
+   ============================================ */
+
+.lm-section {
+  position: relative;
+  width: 100%;
+  /* Four beats of SCROLL: settle, three landings, then a dwell and the
+     finale. The length buys the chapter its slow, weighted tempo rather than
+     any more content. svh, not vh: the track must not jump when the URL bar
+     shows or hides. */
+  height: 460svh;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+@supports not (height: 460svh) {
+  .lm-section {
+    height: 460vh;
+  }
+}
+
+.lm-section *,
+.lm-section *::before,
+.lm-section *::after {
+  box-sizing: border-box;
+}
+
+/* ─── Sticky frame ───
+   Top to bottom: h2, stage (flex 1), manifest card, link row, then bottom
+   padding that keeps the fixed WhatsApp icon (bottom-centre on mobile) clear
+   of every scrap of content. Nothing overlaps the h2. */
+
+.lm-frame {
+  position: sticky;
+  top: var(--nav-height, 4.5rem);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  height: calc(100svh - var(--nav-height, 4.5rem));
+  /* Nearest space token for the side padding; the base keeps the h2 off the
+     edge on the narrowest phones. Bottom padding clears the WhatsApp FAB. */
+  padding: var(--space-4) var(--space-4)
+    calc(72px + env(safe-area-inset-bottom, 0px));
+  overflow: hidden;
+}
+
+@supports not (height: 100svh) {
+  .lm-frame {
+    height: calc(100vh - var(--nav-height, 4.5rem));
+  }
+}
+
+/* ─── Heading ───
+   Display M — the same clamp as the rest of the site. Two lines, quiet: Ch5
+   is the breath and must stay denser-calmer than the chapters either side. */
+
+.lm-header {
+  flex: none;
+}
+
+/* Mobile's stage is narrower than desktop's, so a line that is Display M on
+   desktop would wrap unpredictably here (and `text-wrap: balance` would be
+   free to pull it onto one line at wider phones). The size is nudged down a
+   touch so "One Deck. One Run." — the longer of the two lines — stays on one
+   line at 360px, and the two lines are explicit blocks so the heading is
+   always exactly two lines. */
+
+.lm-heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.125rem, 4.4vw, 1.4375rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+.lm-heading-line {
+  display: block;
+}
+
+/* ─── The stage ───
+   Flexes to fill the frame between the heading and the card. `overflow: clip`
+   is THE CLIP: a load waiting for its step sits fully opaque ABOVE this box
+   and is taken out of sight by the clip — never by opacity. The trailer and
+   its three loads are one group, vertically centred so there is no big empty
+   band above or below. */
+
+.lm-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  margin-top: var(--space-4); /* ≥16px gap below the h2, for the drop line. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  overflow: clip;
+  /* NO `container-type: size` here. Nothing on this projection queries `cqh`
+     (the mobile hook writes the lift in px), and size containment would make
+     the block height ignore content — which collapses the stage to 0 under
+     reduced motion, where `flex: none` leaves its height to content and the
+     whole drawing gets clipped away. */
+}
+
+/* ─── The rig: trailer + cargo as one group ───
+   Sized in trailer units by the hook (1200·s × 340·s). Before JS measures,
+   the fallback below holds it at the stage width at its own aspect. Only the
+   rig carries `will-change` — the one element that moves every frame — and
+   the default transform is a no-op the hook overwrites with the slide (and a
+   2px contact dip, which rides on the whole group so landed cargo flexes with
+   the deck exactly when the load does). */
+
+.lm-rig {
+  position: relative;
+  flex: none;
+  /* Sizing goes through custom properties the hook writes imperatively, so a
+     React re-render never touches this element's inline style — the hook
+     owns `transform` on it and React would reset it otherwise. The
+     `aspect-ratio` is the pre-JS / no-JS fallback: it only applies while
+     `--lm-rig-h` is still `auto`. */
+  width: var(--lm-rig-w, 100%);
+  height: var(--lm-rig-h, auto);
+  aspect-ratio: 1200 / 340;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+/* The trailer drawing fills the bottom 200 of the 340-unit group, at its own
+   aspect, so the band above the deck line is stage space the freight stands
+   in — which is exactly the space `sideBlockStyle` positions against. */
+
+.lm-trailer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  aspect-ratio: 1200 / 200;
+}
+
+/* Both imported drawings hardcode `currentColor` for every ink value and put
+   their tonal steps in fill-opacity, so this one rule keeps the whole set on
+   the palette. Scoped under `.lm-` so it cannot reach the other projection. */
+
+.lm-trailer .loads-trailer,
+.lm-cargo .loads-cargo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: var(--color-ink);
+}
+
+/* ─── The loads ───
+   Absolutely positioned by `sideBlockStyle` (left/width/height/bottom as
+   percentages of the 1200×340 group): bottom edge dead on the deck line,
+   width from the scaled drawing. THE LOAD NEVER FADES — there is no opacity
+   rule, no scale, no blur on this element at all. It is hidden, before its
+   step, only by the stage's clip, and its step is one translateY written
+   straight to the node by the hook. */
+
+.lm-cargo {
+  position: absolute;
+  opacity: 1;
+}
+
+/* ─── The drop line ───
+   A fixed guide at the screen's centre (the stage is full-width and centred,
+   so 50% here is 50% of the viewport). It runs from the stage top — which is
+   ≥16px below the h2 — down to the deck. 1px dashed ink; the hook drives its
+   opacity (max 0.15) so it is visible only while a cargo is falling and gone
+   otherwise. Its height is written once per measure, never per frame. */
+
+.lm-line {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 1px dashed var(--color-ink);
+  opacity: 0;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* ─── The manifest card ───
+   Flat, no border, no accent bars, no header or caption labels. Fixed height
+   and full width so it can never resize around its content. Commodity in the
+   display font (large), tonnes in mono right-aligned, route muted on one
+   line. Hidden — opacity 0, space reserved — before the first landing, so it
+   never covers cargo or wheels and never shifts the layout when it appears.
+   The 150ms crossfade is keyed on the load id in the JSX, so text swaps only
+   at a landing, never per frame. */
+
+.lm-card {
+  flex: none;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: 76px;
+  margin-top: var(--space-3);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-snap);
+}
+
+.lm-card[data-shown="true"] {
+  opacity: 1;
+}
+
+.lm-card-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+  min-width: 0;
+  animation: lm-card-in 150ms var(--ease-snap) both;
+}
+
+.lm-card-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.lm-card-name {
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: clamp(0.9375rem, 0.6vw + 0.8rem, 1.25rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+}
+
+.lm-card-tonnes {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: clamp(0.875rem, 0.5vw + 0.75rem, 1.0625rem);
+  font-weight: 500;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+/* Longest string is "Richards Bay → Lusaka, Zambia"; the clamp keeps it on
+   one line at 360px with no truncation. */
+.lm-card-route {
+  margin: 0;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(0.625rem, 0.4vw + 0.55rem, 0.75rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: var(--color-ink-muted);
+}
+
+.lm-card-summary {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(0.75rem, 0.5vw + 0.62rem, 0.9375rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+@keyframes lm-card-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ─── The link row ───
+   A fixed 32px band. Opacity-only reveal; the anchor is a ≥44px tap target
+   that overflows the band symmetrically (the frame's bottom padding absorbs
+   it), so it is thumb-sized without stealing vertical space from the stage. */
+
+.lm-link-row {
+  flex: none;
+  display: flex;
+  align-items: center;
+  height: 32px;
+  margin-top: var(--space-2);
+}
+
+.lm-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  font-family: var(--font-mono);
+  font-size: clamp(0.75rem, 0.5vw + 0.5rem, 0.875rem);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  text-decoration: none;
+  opacity: 1;
+  transition:
+    color var(--duration-fast) var(--ease-snap),
+    opacity var(--duration-base) var(--ease-snap) 260ms;
+}
+
+.lm-link:hover,
+.lm-link:focus-visible {
+  color: var(--color-ink);
+}
+
+.lm-link:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 4px;
+}
+
+.lm-link-rule {
+  width: 1.75rem;
+  height: 1px;
+  background: currentColor;
+  transition: width var(--duration-fast) var(--ease-snap);
+}
+
+.lm-link:hover .lm-link-rule {
+  width: 2.75rem;
+}
+
+.lm-link[data-visible="false"] {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* ─── Reduced motion ───
+   Height auto, no sticky, no timeline. The hook fits the whole rig to the
+   stage width, every load is already on the deck (the CSS default: no
+   transform is written, so the resting geometry stands), the card reads the
+   run total and the link is up. Nothing here animates. */
+
+@media (prefers-reduced-motion: reduce) {
+  .lm-section {
+    height: auto;
+    min-height: 100svh;
+  }
+
+  @supports not (min-height: 100svh) {
+    .lm-section {
+      min-height: 100vh;
+    }
+  }
+
+  .lm-frame {
+    position: static;
+    height: auto;
+    min-height: 100svh;
+  }
+
+  @supports not (min-height: 100svh) {
+    .lm-frame {
+      min-height: 100vh;
+    }
+  }
+
+  .lm-stage {
+    flex: none;
+    width: 100%;
+  }
+
+  .lm-rig {
+    will-change: auto;
+  }
+
+  .lm-card,
+  .lm-card-inner,
+  .lm-link,
+  .lm-link-rule {
+    transition: none;
+    animation: none;
+  }
+}

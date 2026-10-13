@@ -1,0 +1,280 @@
+/* ============================================================
+   CH6 · CORRIDOR & CLEARANCE — shared styles.
+   Ships in the same bundle as CorridorDesktop.css + CorridorMobile.css
+   (both wrappers are statically imported by CorridorSection); the two
+   variant files are scoped under `.corridor--desktop` / `.corridor--mobile`
+   so they never collide. Positioning that DIFFERS per viewport lives in
+   those two files — keep this file layout-agnostic.
+
+   Class naming: `.corridor` (block), `.corridor__x` (element),
+   `[data-state]` / `[data-active]` (state hooks the animation writes).
+
+   The whole scene colors itself from ONE variable: `--n` (0 = day,
+   1 = night), rewritten on the section root every frame by
+   useCorridorAnimation. Use color-mix with `--n` for anything that
+   should shift day↔night.
+   ============================================================ */
+
+.corridor {
+  --n: 0; /* day=0 night=1, driven each frame */
+  position: relative;
+  background: var(--cf-ink, #0b1512);
+  color: var(--cf-cream, #f4eee3);
+}
+
+/* Full-viewport stage; overflow hidden so the world SVG can be huge. */
+.corridor__stage {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* z-order: world 1 · tint 2 · night tint 3 · lights 4 · HUD 10 · copy 20 */
+.corridor__world {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 1;
+}
+
+.corridor__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- world colours (day↔night via --n) ---------- */
+
+.corridor__land {
+  fill: color-mix(in srgb, #0F1B17 calc(var(--n) * 100%), #F7F3EC);
+}
+
+.corridor__road-bed {
+  fill: none;
+  stroke: color-mix(in srgb, #1a2020 calc(var(--n) * 100%), #4a4e52);
+  stroke-width: 1100;
+  stroke-linejoin: round;
+}
+
+.corridor__road-line {
+  fill: none;
+  stroke: color-mix(in srgb, rgba(244, 238, 227, 0.3) calc(var(--n) * 100%), rgba(244, 238, 227, 0.45));
+  stroke-width: 14;
+  stroke-dasharray: 140 220;
+}
+
+.corridor__label {
+  font: 700 260px var(--font-mono, ui-monospace, "JetBrains Mono", monospace);
+  fill: color-mix(in srgb, #F4EEE3 calc(var(--n) * 100%), #0b1512);
+  letter-spacing: 0.04em;
+}
+
+.corridor__queue-truck { fill: #3a4247; }
+.corridor__finish { fill: var(--cf-gold, #d9a441); }
+.corridor__barricade { fill: var(--cf-red, #c8352b); }
+
+/* ---------- blockade state machine (data-state on [data-strike]) ---------- */
+
+.corridor__strike { transition: opacity 0.5s; }
+.corridor__strike[data-state="ahead"] { opacity: 0; }
+.corridor__strike[data-state="active"] { opacity: 1; }
+.corridor__strike[data-state="lifted"] { opacity: 0.2; }
+
+/* ---------- gate state machine (data-state on [data-gate]) ----------
+   "ahead" → "hold" (boom down, red, HOLD tag) → "cleared" (boom lifts,
+   CLEARED tag pops). Transition timing lives here; the animation only
+   flips the attribute. */
+
+.corridor__booth {
+  fill: color-mix(in srgb, #2a3035 calc(var(--n) * 100%), #3a4247);
+}
+
+.corridor__boom {
+  fill: color-mix(in srgb, #8a8580 calc(var(--n) * 100%), #d8d2c4);
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+  transition: transform 0.6s cubic-bezier(0.3, 0.9, 0.3, 1), fill 0.3s;
+}
+
+.corridor__gate[data-state="hold"] .corridor__boom { fill: var(--cf-red, #c8352b); }
+.corridor__gate[data-state="cleared"] .corridor__boom { fill: #2f7a5f; transform: scaleY(0.08); }
+
+.corridor__tag-hold,
+.corridor__tag-clear {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: opacity 0.25s, transform 0.4s cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+
+.corridor__tag-hold rect { fill: var(--cf-amber, #f2a91b); }
+.corridor__tag-hold text { fill: #1e2326; font: 800 190px var(--font-mono, ui-monospace, monospace); }
+.corridor__tag-clear { transform: scale(1.7); }
+.corridor__tag-clear rect { fill: #2f7a5f; }
+.corridor__tag-clear text { fill: var(--cf-cream, #f4eee3); font: 800 190px var(--font-mono, ui-monospace, monospace); }
+.corridor__gate[data-state="hold"] .corridor__tag-hold { opacity: 1; }
+.corridor__gate[data-state="cleared"] .corridor__tag-clear { opacity: 1; transform: scale(1); }
+
+/* ---------- overlays (z: visuals 1 / data 10 / text 20) ---------- */
+
+/* Story tint (TINT_KEYS): fear dims the scene, clearance brings light back. */
+.corridor__tint {
+  position: absolute;
+  inset: 0;
+  background: #050a08;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Night tint: multiplies the whole scene at night (NIGHT_KEYS). */
+.corridor__night-tint {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  background: #0a0f0d;
+  mix-blend-mode: multiply;
+  opacity: 0;
+}
+
+/* Night lights: screen-blended layer ABOVE the tint (see view/NightLights.tsx). */
+.corridor__night-lights {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  mix-blend-mode: screen;
+}
+
+/* ---------- chapter plate (same on both variants) ---------- */
+
+.corridor__kicker-plate {
+  position: absolute;
+  z-index: 20;
+  top: calc(var(--header-h, 90px) + 1.25rem);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.4rem 0.9rem;
+  background: color-mix(in srgb, rgba(15, 27, 23, 0.85) calc(var(--n) * 100%), rgba(11, 21, 18, 0.8));
+  border: 1px solid color-mix(in srgb, rgba(217, 164, 65, 0.5) calc(var(--n) * 100%), rgba(217, 164, 65, 0.4));
+  color: color-mix(in srgb, #F4EEE3 calc(var(--n) * 100%), var(--cf-cream, #f4eee3));
+  font: 600 clamp(0.625rem, 0.3vw + 0.55rem, 0.75rem) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.14em;
+}
+
+.corridor__kicker-plate span { color: var(--cf-gold, #d9a441); margin-right: 0.5em; }
+
+/* ---------- HUD card — shared look; position in variant files ---------- */
+
+.corridor__hud {
+  position: absolute;
+  z-index: 10;
+  display: grid;
+  gap: 0.6rem;
+  background: color-mix(in srgb, rgba(15, 27, 23, 0.85) calc(var(--n) * 100%), rgba(11, 21, 18, 0.78));
+  border: 1px solid color-mix(in srgb, rgba(244, 238, 227, 0.2) calc(var(--n) * 100%), rgba(244, 238, 227, 0.14));
+  backdrop-filter: blur(6px);
+}
+
+.corridor__hud span {
+  font: 500 0.65rem var(--font-mono, ui-monospace, monospace);
+  opacity: 0.62;
+}
+
+.corridor__hud b {
+  font: 700 0.8rem var(--font-mono, ui-monospace, monospace);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- copy panels — shared look; position in variant files ---------- */
+
+.corridor__panels { position: absolute; z-index: 20; }
+
+.corridor__panel {
+  position: absolute;
+  width: 100%;
+  padding: 0.9rem 1.1rem;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.45s, transform 0.45s;
+  pointer-events: none;
+  background: color-mix(in srgb, rgba(15, 27, 23, 0.8) calc(var(--n) * 100%), rgba(11, 21, 18, 0.74));
+  border-left: 3px solid var(--cf-gold, #d9a441);
+  backdrop-filter: blur(6px);
+}
+
+.corridor__panel[data-active="true"] { opacity: 1; transform: none; }
+
+/* Copy typography (shared by animated panels and the static fallback). */
+
+.corridor__kicker {
+  margin: 0 0 0.5rem;
+  color: var(--cf-gold, #d9a441);
+  font: 600 clamp(0.625rem, 0.3vw + 0.55rem, 0.75rem) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.1em;
+}
+
+.corridor__title {
+  margin: 0 0 1rem;
+  font-size: clamp(1.25rem, 1vw + 1rem, 1.75rem);
+  line-height: 1.05;
+  font-weight: 700;
+}
+
+.corridor__triad { margin: 0; display: grid; gap: 0.7rem; }
+.corridor__triad dt { font: 500 0.625rem var(--font-mono, ui-monospace, monospace); opacity: 0.6; }
+.corridor__triad dd {
+  margin: 0.15rem 0 0;
+  font-size: clamp(0.8rem, 0.25vw + 0.74rem, 0.9375rem);
+  line-height: 1.4;
+  max-width: 60ch;
+  color: color-mix(in srgb, #E8E4DD calc(var(--n) * 100%), var(--cf-cream, #f4eee3));
+}
+
+/* ---------- bottom progress bar (identical on both variants) ---------- */
+
+.corridor__bar {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(244, 238, 227, 0.12);
+}
+
+.corridor__bar i {
+  display: block;
+  height: 100%;
+  background: var(--cf-gold, #d9a441);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+/* ---------- reduced-motion static article (no stage, no SVG) ---------- */
+
+.corridor__static {
+  padding: clamp(2rem, 5vw, 8rem);
+  background: var(--cf-ink, #0b1512);
+  color: var(--cf-cream, #f4eee3);
+  display: grid;
+  gap: 2.5rem;
+}
+
+.corridor__static-head {
+  margin: 0;
+  font-size: clamp(2rem, 5vw + 1rem, 6rem);
+  line-height: 1;
+}
+
+.corridor__static-beat {
+  max-width: 40rem;
+  border-left: 3px solid var(--cf-gold, #d9a441);
+  padding-left: 1.25rem;
+}

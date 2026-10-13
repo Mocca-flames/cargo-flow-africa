@@ -15,7 +15,7 @@ export const ROUTE_D =
 
 /** Truck art contract — must match the Gemini prompts (cft-* / cfl-*). */
 export const TRACTOR = { pivotX: 275, pivotY: 150, wheelbase: 300 };
-export const TRAILER = { pivotX: 1300, pivotY: 150, bogieX: 290 };
+export const TRAILER = { pivotX: 400, pivotY: 150, bogieX: 290 };
 export const TRAILER_L = TRAILER.pivotX - TRAILER.bogieX; // kingpin → bogie centre
 
 export const TOTAL_KM = 2900; // TODO(verify) placeholder for HUD "Remaining"
