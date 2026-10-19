@@ -7,37 +7,37 @@ export type HeroImage = {
 
 export const heroImages = {
   trucksDesktop: {
-    src: "/images/hero/a-trucks-desktop.png",
+    src: "/images/hero/a-trucks-desktop.avif",
     width: 1536,
     height: 1024,
     alt: "MAN, Scania and FAW truck heads parked side by side",
   },
   manMobile: {
-    src: "/images/hero/a-man-mobile.png",
+    src: "/images/hero/a-man-mobile.avif",
     width: 758,
     height: 1024,
     alt: "MAN truck cab",
   },
   lowbedDesktop: {
-    src: "/images/hero/b-lowbed-desktop.png",
+    src: "/images/hero/b-lowbed-desktop.avif",
     width: 2172,
     height: 514,
     alt: "Lowbed trailer with gooseneck",
   },
   lowbedMobile: {
-    src: "/images/hero/b-lowbed-mobile.png",
+    src: "/images/hero/b-lowbed-mobile.avif",
     width: 605,
     height: 514,
     alt: "Gooseneck and front deck of a lowbed trailer",
   },
   triDesktop: {
-    src: "/images/hero/c-tri-desktop.png",
+    src: "/images/hero/c-tri-desktop.avif",
     width: 2048,
     height: 482,
     alt: "Tri-axle flatbed trailer",
   },
   wheelsMobile: {
-    src: "/images/hero/c-wheels-mobile.png",
+    src: "/images/hero/c-wheels-mobile.avif",
     width: 968,
     height: 482,
     alt: "Wheels of a tri-axle flatbed trailer",

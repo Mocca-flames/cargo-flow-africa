@@ -7,10 +7,10 @@
      the intro finished, every layer must sit exactly on the old
      static values. Dolly transforms are pure calc() on --pe1 and
      resolve to identity at --pe1: 0.
-   - Three pinned beats, measured in vh of scroll inside the track:
-     --p1/--pe1 V1 dolly (0 -> --seg-v1-end), --pg gate lift
-     (--seg-v1-end -> --seg-gate-end), --p2 V2 route
-     (--seg-gate-end -> --seg-v2-end).
+    - Three pinned beats, measured in vh of scroll inside the track:
+      --p1/--pe1 V1 dolly (0 -> --seg-v1-end), --pg gate dissolve
+      (--seg-v1-end -> --seg-gate-end), --p2 V2 route
+      (--seg-gate-end -> --seg-v2-end).
    - .intro wrappers carry load keyframes only (fill-mode:
      backwards, so nothing is left behind once they end).
    - .dolly wrappers carry scroll variables only (transform /
@@ -23,9 +23,9 @@
 
 :root {
   --hero-track: auto;
-  --seg-v1-end: 120vh;
-  --seg-gate-end: 190vh;
-  --seg-v2-end: 400vh;
+  --seg-v1-end: 20vh;
+  --seg-gate-end: 40vh;
+  --seg-v2-end: 140vh;
   --gate-latch-px: 6px;
   --gate-latch-frac: 0.12;
 }
@@ -42,7 +42,7 @@
   --hero-perspective-origin: 50% 40%;
 
   /* ── Headline ── */
-  --headline-top: calc(9% - 12px);
+  --headline-top: calc(9% + var(--nav-height, 4.5rem) - 12px);
   --headline-size: clamp(40px, 5.4vw, 84px);
   --headline-weight: 800;
   --headline-color: #111;
@@ -52,7 +52,7 @@
   --subline-scale: 0.28;
 
   /* ── Hero Glass Cards ── */
-  --card-top: 26%;
+  --card-top: calc(26% + (var(--nav-height, 4.5rem) / 2));
   --card-left: 3%;
   --card-right: 3%;
   --card-width: clamp(200px, 17vw, 280px);
@@ -83,19 +83,19 @@
   --grass-width: 38%;
 
   /* ── truck-scania ── */
-  --scania-width: 38%;
-  --scania-left: 11%;
-  --scania-bottom: 9%;
+  --scania-width: 43%;
+  --scania-left: 2%;
+  --scania-bottom: 12%;
 
   /* ── truck-faw ── */
-  --faw-width: 38%;
-  --faw-right: 11%;
-  --faw-bottom: 9%;
+  --faw-width: 43%;
+  --faw-right: 2%;
+  --faw-bottom: 12%;
 
   /* ── truck-man ── */
-  --man-width: 49%;
+  --man-width: 53%;
   --man-left: 50%;
-  --man-bottom: 3%;
+  --man-bottom: 5%;
 
   /* ── shadows ── */
   --shadow-core-width: 60%;
@@ -127,12 +127,6 @@
   --dust-drift: 2%;
   --streaks-drift: -1.5%;
   --pointer-range: 12px;
-  --pointer-gate-off: clamp(0, calc(var(--pg, 0) * 10000), 1);
-  --pointer-fade: clamp(
-    0,
-    calc((1 - var(--pe1, 0) / 0.5) * (1 - var(--pointer-gate-off))),
-    1
-  );
   --mx: 0;
   --my: 0;
 
@@ -143,9 +137,22 @@
   --tint-opacity: 0.09;
 
   /* ── scroll dolly end values (desktop) ── */
-  --dolly-scene-scale: 1.15;
-  --dolly-man-extra: 1.05;
-  --dolly-spread: 10%;
+  /* Scene scale kept modest so the MAN zoom is the cinematic star. */
+  --dolly-scene-scale: 3.06;
+  --dolly-man-zoom: 10.0;
+  --dolly-man-final-push: 1;
+  --dolly-truck-zoom: 5.0;
+  --dolly-spread: 38%;
+
+  /* ── MAN windscreen approach: at full zoom the windscreen lands at
+     the viewport middle. Anchor at 33% (cab roof ~0%, windscreen ~33%,
+     grille ~80%, bumper 100%). --man-bottom is 0 so base is at 100vh. ── */
+  --man-windscreen-y: 33%;
+  --man-windscreen-vp-y: 50vh;
+  --man-approach: calc(
+    var(--man-windscreen-vp-y) - 100vh +
+    (1 - var(--man-windscreen-y)) * (53vw * 2 / 3)
+  );
   --dolly-headline-y: -40px;
   --dolly-headline-fade: 0.4;
   --dolly-streaks-end: 0.45;
@@ -157,7 +164,7 @@
   --dolly-shadow-soften: 0.25;
 
   /* ── intro timing ── */
-  --intro-word-stagger: 80ms;
+  --intro-word-stagger: 40ms;
   --intro-copy-delay: calc(
     1300ms + 5 * var(--intro-word-stagger) + 240ms + 200ms
   );
@@ -306,9 +313,10 @@
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: #8a8f98;
-  opacity: clamp(0, calc(var(--p2, 0) / 0.08), 1);
-  transform: translateY(calc((1 - clamp(0, calc(var(--p2, 0) / 0.08), 1)) * 8px));
-  transition: opacity 260ms ease, transform 260ms ease;
+  opacity: clamp(0, calc(max(var(--pg, 0), var(--p2, 0) / 0.08)), 1);
+  transform: translateY(calc(
+    (1 - clamp(0, calc(max(var(--pg, 0), var(--p2, 0) / 0.08)), 1)) * 8px
+  ));
 }
 
 .v2-header-label,
@@ -654,6 +662,7 @@
   margin: -3px 0 0 -3px;
   border-radius: 50%;
   background: #c9a24b;
+  will-change: transform;
 }
 
 .v2-trail-dot--0 { opacity: 0.6; }
@@ -1053,15 +1062,24 @@
   transform: translateY(0);
 }
 
-/* ── V1 slab: one rigid piece, lifted away by the gate ── */
+/* ── V1 slab: one rigid piece, dissolved away by the gate.
+   Full-bleed: no top padding — the sky/road layers reach the viewport
+   top and slide under the floating nav. Copy clearance lives in
+   --headline-top / --card-top above, not in slab padding. ── */
 .v1-slab {
+  --pointer-gate-off: clamp(0, calc(var(--pg, 0) * 10000), 1);
+  --pointer-fade: clamp(
+    0,
+    calc((1 - var(--pe1, 0) / 0.5) * (1 - var(--pointer-gate-off))),
+    1
+  );
   position: absolute;
   inset: 0;
   z-index: 1;
   background: var(--hero-bg);
-  padding-top: var(--nav-height, 4.5rem);
+  padding-top: 0;
   overflow: hidden;
-  will-change: transform;
+  will-change: opacity;
 }
 
 /* ── Gate edge: rides the slab's bottom edge ── */
@@ -1515,6 +1533,20 @@
   }
 
   /* Whole scene push-in. */
+  .dolly--scene,
+  .dolly--sky,
+  .dolly--road,
+  .dolly--headline,
+  .dolly--dust,
+  .hero-grass .dolly,
+  .truck-wrap .dolly {
+    will-change: transform;
+  }
+
+  .truck-wrap[data-side] .dolly {
+    will-change: transform, filter, opacity;
+  }
+
   .dolly--scene {
     transform-origin: 50% 78%;
     transform: scale(calc(1 + (var(--dolly-scene-scale) - 1) * var(--pe1, 0)));
@@ -1563,18 +1595,36 @@
     opacity: clamp(0, calc(1 - var(--pe1, 0) / var(--dolly-headline-fade)), 1);
   }
 
-  /* Side trucks spread outward; keyed off data-side. */
+  /* Side trucks slide off-screen only — no zoom growth.
+     They blur and fade progressively so the MAN hero dominates. */
   .truck-wrap[data-side="left"] .dolly {
+    transform-origin: 50% 100%;
     transform: translateX(calc(-1 * var(--dolly-spread) * var(--pe1, 0)));
+    filter: blur(calc(var(--ptr, 0) * 12px));
+    opacity: calc(1 - var(--ptr, 0) * 0.65);
   }
 
   .truck-wrap[data-side="right"] .dolly {
+    transform-origin: 50% 100%;
     transform: translateX(calc(var(--dolly-spread) * var(--pe1, 0)));
+    filter: blur(calc(var(--ptr, 0) * 12px));
+    opacity: calc(1 - var(--ptr, 0) * 0.65);
   }
 
-  /* MAN pushes in on top of the scene scale. */
+  /* MAN pushes in on top of the scene scale, anchored to the windscreen
+     glass so the zoom converges on it at the viewport middle; scale about
+     that origin means the tyres drop out of frame instead of filling it.
+     --pg adds a final roll so the truck keeps moving into the glass while
+     the scene dissolves. */
   .truck-wrap--man .dolly {
-    transform: scale(calc(1 + (var(--dolly-man-extra) - 1) * var(--pe1, 0)));
+    transform-origin: 50% var(--man-windscreen-y, 28%);
+    transform:
+      translateY(calc(var(--man-approach, 0px) * var(--ptr, 0)))
+      scale(calc(
+        1 +
+        (var(--dolly-man-zoom) - 1) * var(--ptr, 0) +
+        var(--dolly-man-final-push, 0) * var(--pg, 0)
+      ));
   }
 
   .truck-wrap--scania {
@@ -1619,11 +1669,14 @@
   }
 }
 
-/* Gate lift: --pg carries the -102% half, --gate-latch the settle.
-   Reduced motion skips it entirely: the slab stays put, V2 unshadowed. */
+/* Gate dissolve: --pg fades the slab in place — no translation, so the
+   handover reads as a screen-to-screen dissolve, not a scroll. The V2
+   title fades in on the same var so it leads the reveal. Reduced motion
+   skips it entirely: the slab stays put, V2 unshadowed. */
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
   .v1-slab {
-    transform: translate3d(0, calc(var(--pg, 0) * -102% + var(--gate-latch, 0px)), 0);
+    opacity: calc(1 - var(--pg, 0));
+    transition: opacity 320ms ease;
   }
 
   .hero-stage.gate-done .v1-slab {

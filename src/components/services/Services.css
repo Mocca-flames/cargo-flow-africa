@@ -1,0 +1,350 @@
+/* ============================================
+   SERVICES — All breakpoints
+   Light theme, minimal texture
+   ============================================ */
+
+.services {
+  overflow: clip;
+  background: var(--color-canvas, #f8f4eb);
+  color: var(--color-ink, #12382f);
+}
+
+.services-track {
+  position: relative;
+}
+
+/* Subtle blueprint grid texture */
+.services::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      rgba(18, 56, 47, 0.035) 0 1px,
+      transparent 1px 28px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(18, 56, 47, 0.035) 0 1px,
+      transparent 1px 28px
+    );
+}
+
+/* ---------- Images ---------- */
+.services-image {
+  opacity: 0;
+  transition: opacity 0.7s ease-out;
+}
+
+.services-image.is-active {
+  opacity: 1;
+}
+
+.services-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ---------- Panels — default hidden ---------- */
+.services-panel {
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.6s ease-out,
+    transform 0.6s ease-out;
+}
+
+.services-panel.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.services-panel__num {
+  font-family: var(--font-mono, monospace);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-accent-gold, #c9a84c);
+  margin-bottom: var(--space-4, 1rem);
+  display: block;
+}
+
+.services-panel__title {
+  font-family: var(--font-display, serif);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-ink, #12382f);
+  margin: 0 0 1.5rem;
+  max-width: 28ch;
+}
+
+.services-panel__body {
+  font-family: var(--font-body, sans-serif);
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgba(18, 56, 47, 0.75);
+  margin: 0;
+  max-width: 580px;
+}
+
+/* ---------- Progress rail ---------- */
+.services-rail {
+  --rail-span: 80%;
+  --rail-offset: calc((100% - var(--rail-span)) / 2);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.services-rail__track {
+  position: absolute;
+  top: var(--rail-offset);
+  left: 50%;
+  width: 1px;
+  height: var(--rail-span);
+  background: rgba(18, 56, 47, 0.08);
+  border-radius: 1px;
+  transform: translateX(-50%);
+}
+
+.services-rail__fill {
+  position: absolute;
+  top: var(--rail-offset);
+  left: 50%;
+  width: 1px;
+  height: calc(var(--rail-span) * var(--rail-p, 0));
+  background: var(--color-accent-gold, #c9a84c);
+  border-radius: 1px;
+  transform: translateX(-50%);
+  transition: height 0.6s ease-out;
+}
+
+.services-rail__dots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  height: var(--rail-span);
+  position: relative;
+  z-index: 1;
+}
+
+.services-rail__dots li {
+  display: flex;
+  justify-content: center;
+}
+
+.services-rail__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(18, 56, 47, 0.2);
+  background: var(--color-canvas, #f8f4eb);
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease-out;
+  flex-shrink: 0;
+}
+
+.services-rail__dot.is-active {
+  width: 16px;
+  height: 16px;
+  border-color: var(--color-accent-gold, #c9a84c);
+  background: var(--color-accent-gold, #c9a84c);
+}
+
+.services-rail__dot.is-past {
+  border-color: var(--color-accent-gold, #c9a84c);
+  background: var(--color-accent-gold, #c9a84c);
+}
+
+.services-rail__dot:hover:not(.is-active) {
+  border-color: rgba(18, 56, 47, 0.5);
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .services-panel,
+  .services-image,
+  .services-rail__fill {
+    transition: none;
+  }
+}
+
+/* ========== Desktop (>1024px) ========== */
+
+.services--desktop .services-track {
+  height: calc(5 * 100svh);
+}
+
+.services--desktop .services-sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0 var(--section-padding, 2rem);
+  max-width: none;
+  margin: 0;
+  align-items: stretch;
+  /* Fixed nav pill overlaps a `top: 0` sticky stage — clear it so the
+     whole stage (rail, panels, image) sits below the header. */
+  padding:
+    var(--nav-height, 5rem)
+    0
+    1.5rem
+    max(0px, calc((100vw - var(--container-max, 1440px)) / 2));
+  box-sizing: border-box;
+}
+
+.services--desktop .services-rail {
+  grid-column: 1;
+  grid-row: 1;
+  height: auto;
+  align-self: stretch;
+}
+
+.services--desktop .services-panels {
+  grid-column: 2;
+  grid-row: 1;
+  display: grid;
+  grid-template-areas: "p";
+  align-content: center;
+  padding-left: 1rem;
+}
+
+.services--desktop .services-panel {
+  grid-area: p;
+}
+
+.services--desktop .services-panel__title {
+  font-size: clamp(2rem, 3.5vw, 3.5rem);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+.services--desktop .services-panel__body {
+  font-size: var(--text-body-l, 1.125rem);
+}
+
+.services--desktop .services-images {
+  grid-column: 3;
+  grid-row: 1;
+  position: relative;
+  height: 100%;
+  margin-right: 0;
+  margin-bottom: 0;
+  align-self: center;
+  max-height: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.services--desktop .services-image {
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(18, 56, 47, 0.15);
+}
+
+.services--desktop .services-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.services--desktop .services-progress {
+  display: none;
+}
+
+/* ========== Mobile (≤1024px): native scroll ========== */
+
+.services--mobile .services-track {
+  height: auto;
+}
+
+.services--mobile .services-sticky {
+  display: contents;
+}
+
+.services--mobile .services-rail {
+  display: none;
+}
+
+.services--mobile .services-images {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  z-index: 0;
+  contain: strict;
+}
+
+.services--mobile .services-image {
+  position: absolute;
+  inset: 0;
+}
+
+.services--mobile .services-image img {
+  object-fit: cover;
+  object-position: center center;
+}
+
+.services--mobile .services-images::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(248, 244, 235, 0.15) 0%,
+    rgba(13, 31, 60, 0.55) 55%,
+    rgba(13, 31, 60, 0.75) 100%
+  );
+}
+
+.services--mobile .services-panels {
+  position: relative;
+  z-index: 1;
+  margin-top: -100svh;
+  padding: 0 var(--container-pad, 1.5rem);
+}
+
+.services--mobile .services-panel {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  max-width: 34rem;
+}
+
+.services--mobile .services-panel__title {
+  font-size: clamp(var(--text-2xl, 1.5rem), 7vw, var(--text-4xl, 2.25rem));
+  color: var(--color-canvas, #f8f4eb);
+}
+
+.services--mobile .services-panel__body {
+  font-size: var(--text-base, 1rem);
+  color: rgba(248, 244, 235, 0.8);
+}
+
+.services--mobile .services-progress {
+  display: none;
+}

@@ -42,3 +42,19 @@ next-env.d.ts
 
 # kilo
 .kilo
+
+# archives and generated files
+png_archive/
+archive/
+map_build/out/
+map_build/node_modules/
+
+# test/debug artifacts
+audit/
+test-screenshots/
+test-chrome.png
+dev.log
+*.log
+
+# tools (binary executables)
+tools/

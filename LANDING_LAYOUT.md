@@ -1,396 +1,480 @@
-# Cargo Flow Africa — Landing Page Layout & Narrative Arc
+# Cargo Flow Africa — Landing Page Layout & Section Order
 
-**Scope note (important):** The site has TWO different "heroes":
-- The **actual site HERO** (`src/components/hero`, V1 pseudo-3D
-  truck scene + V2 corridor-telemetry control room) is COMPLETE,
-  shipped, and **frozen — do not touch it, do not replace it with
-  story-driven layout**. It is not part of this arc.
-- The **Value Proposition** section that follows it is likewise
-  complete and frozen.
-- **This document's story begins AFTER the actual Hero and Value
-  Proposition.** Chapter 1 (Premise) below describes that transition
-  point conceptually; the built hero stays as-is.
+**Status:** current governing doc for the landing page. This version
+replaces the old story-arc draft entirely (see "What changed" below).
 
-This file governs *rhythm and emotional texture*, not content. DESIGN.md
-defines what things look like (color, type, spacing, motion tokens).
-This file defines how the page *moves through time and feeling* —
-scale, density, tempo, symmetry, emotional beat — so the story is felt
-structurally, even with placeholder copy and `[TBC PHOTO]` assets in
-every section.
+**Relationship to other docs:** DESIGN.md is canonical for how things
+*look* (color, type, spacing, motion tokens). This file governs
+*section order, layout intent, and conversion purpose* — which sections
+exist, in what order, what job each one does, and how they hand off to
+each other. Where the two disagree on a value, DESIGN.md wins.
 
-**The test for this document:** strip every word and every image from
-the page. Leave only boxes, whitespace, and scroll timing. A reader
-should still be able to tell you where the story is calm, where it's
-building, where it peaks, and where it resolves — purely from the
-shape of the page.
-
-**This version reconciles two prior drafts.** The emotional
-rollercoaster (desperation → reassurance → fear → relief → deeper
-fear → trust → contact) is real and stays — but it now runs *inside*
-our seven content chapters (Premise, Threat, Engine, Proof, Loads,
-Corridor & Clearance, Verdict), rather than as a separate,
-content-agnostic structure. Every section below still ties to real
-fleet, commodity, consolidation, and corridor content, and still links
-to its matching sub-page.
+**The job of this page:** get clients. Every section earns the scroll
+by answering the buyer's next question. If a section answers no
+question, it doesn't ship.
 
 ---
 
-## The Story Being Told
+## What changed from the old draft (read once, then forget it)
 
-Desperation (felt, unstated) → Fear named + immediately met →
-Building proof → Widening proof → The breath → Deeper fear resolving
-into trust → Contact.
-
-This maps directly to real user behavior: a fast first scroll
-(scanning), then a scroll back up (reading), and somewhere in that
-second pass, a decision to reach for WhatsApp or a sub-page.
-
----
-
-## The Core Rule: No Two Adjacent Sections Share a Rhythm
-
-Each section is scored against five axes. **Adjacent sections must
-differ on at least three of five.**
-
-1. **Density** (1 = vast negative space, 5 = maximum visual/data load)
-2. **Symmetry** (centered/mirrored vs. radically off-axis)
-3. **Viewport scale** (contained ~100vh vs. extended pinned sequence)
-4. **Motion tempo** (slow/lingering vs. quick/snapping)
-5. **Visual weight position** (where the heaviest element sits)
-
-**On tension cues (revised):** earlier drafting explored literal
-instability — tilted images (2–3°), "reverse parallax" meant to
-suggest loss of control, data scattered like debris. Cut. For a
-procurement audience evaluating a serious operational partner,
-visible disorientation risks reading as a rendering bug, not drama.
-Tension is instead built through **desaturation, tighter framing,
-reduced whitespace, and slower/heavier motion timing** — it reads as
-weight and seriousness without ever looking broken.
+- **The emotional-arc spine is retired.** "Desperation → fear → relief
+  → climax → close" is gone. It was a useful writing exercise but it
+  produced an order that served the story, not the buyer. Replaced by
+  the buyer-question sequence below.
+- **Chapter numbers are dead.** The old doc's "Ch1–Ch7" numbering
+  contradicted the live page (which also runs Services before Premise)
+  and every new section would have renumbered everything again.
+  Sections are identified by **name only**. Eyebrow labels in the UI
+  use section names, never "04 / PROOF" style numbers. Existing
+  hardcoded numbers in built components (e.g. the `04 / PROOF` eyebrow
+  in `src/components/proof`, `data-chapter="6"` on
+  `src/components/corridor/CorridorRun.tsx`) are copy debt to clean up
+  opportunistically — they do not re-enter this doc as a system.
+- **The build-status table is now part of the doc.** The old version
+  described sections that didn't match the DOM, which is what made it
+  confusing to build from. This file always states what is shipped vs
+  what is planned.
 
 ---
 
-## The Arc, Section by Section
+## The governing rule: one buyer question per section, in order
 
-### 1 — The Premise (Hero) · Desperation, felt not stated · **START**
-- **Emotional target:** the world before Cargo Flow. Not explained —
-  felt. The weight of a real deadline, real cargo, real distance.
-- **Composition:** full-bleed visual, edge to edge, no margin. No
-  kicker label — the system hasn't introduced itself yet, the client's
-  problem comes first. No data/proof layer at all — proof is earned in
-  Chapter 2, not claimed here. Headline sits low, small, understated —
-  closer to an internal monologue than a slogan.
-- **Density:** 2. **Symmetry:** centered — the only other centered
-  section is the Verdict (deliberate bookend).
-- **Viewport:** 100vh, no pin.
-- **Motion tempo:** slow, ambient. Video/image breathes; nothing
-  counts up, nothing arrives yet.
-- **Weight position:** centered mass, generous margin.
-- **Reduced motion:** static hero image, no ambient drift.
+The page is a sales conversation. Each section answers exactly one
+question the buyer is asking at that moment. The order below is the
+order those questions actually get asked.
 
-### 2 — The Threat · Fear named, met immediately · **RISING TENSION**
-- **Emotional target:** the fear made concrete, and answered in the
-  same breath — this is where the system first speaks. Kicker label
-  debuts here ("02"), the brand's first appearance, arriving exactly
-  when the client needs it, not before.
-- **Composition:** mirrored bilateral split. Left: the broker gamble —
-  desaturated, tightly framed, cramped composition (the "fear" side,
-  built through tone and framing, not tilt). Right: the Cargo Flow
-  standard — full color, open framing, more breathing room. The
-  contrast in *framing and color*, not distortion, does the emotional
-  work.
-- **Density:** 3. **Symmetry:** mirrored — symmetry used deliberately
-  as two forces in balance.
-- **Viewport:** 150vh pinned, scroll-scrubbed wipe, left panel opening
-  into right as the user scrolls.
-- **Motion tempo:** mechanical, tied directly to scroll position.
-- **Weight position:** balanced, shifting right as the wipe resolves.
-- **Reduced motion:** static split image, no scroll-scrub; the wipe
-  position settles at 50/50.
+| # | Section | Buyer's question | The answer it must land |
+|---|---|---|---|
+| 1 | Hero | Who are you? | We move heavy freight across southern Africa's corridors. *(frozen)* |
+| 2 | Services | What do you actually do? | Clearance, consolidation, corridor runs. *(frozen)* |
+| 3 | Premise | Is my problem understood? | The world of missed cut-offs and broker roulette. |
+| 4 | Threat | Why not just use a broker? | Named risk, side by side with the Cargo Flow standard. |
+| 5 | Engine | Can you physically handle it? | The fleet, inspectable, spec by spec. |
+| 6 | Proof | Do you handle *my* commodity? | Sulphur, steel, fertiliser, machinery — each tied to the trailer it rides on. |
+| 7 | Loads | Is your consolidation real? | A literal load plan filling slot by slot. |
+| 8 | Corridor | Can you get it across the border? | One lane, end to end: gates, blockade, clearance, delivery. |
+| 9 | **Coverage** | Do you run *my* route? | An interactive footprint: countries, border posts, authorities, clearance times. **(NEW — to build)** |
+| 10 | **Portfolio** | Has anyone like me used you? | Previous huge jobs + named testimony. **(NEW — to build)** |
+| 11 | **Process** | What happens after I enquire? | Three steps from spec to truck rolling. **(NEW — to build)** |
+| 12 | Verdict | How do I start? | The quote form. The quietest section on the page. |
+| 13 | **Contact** | What if I just want to talk or visit? | Direct channels (email, WhatsApp, call) + 2 branches (Botswana, Johannesburg). **(NEW — to build, post-Verdict utility close)** |
 
-### 3 — The Engine (Fleet) · Reassurance, first proof · **SHIPPED**
-- **Emotional target:** credibility. "Look closer, we can take it."
-- **Chapter heading:** "Our Fleet" is deliberately **not** inside Ch3 —
-  it is a standalone 56svh title band (`src/components/fleet`) sitting
-  between Ch2 and Ch3. Ch3 therefore opens directly on the instrument:
-  no kicker/headline/subhead stack competing with the switcher, and the
-  snap target below stays clean.
-- **Composition:** left-anchored asset switcher, spec panel beneath the
-  visual. First section where the client is rewarded for inspecting
-  rather than just scrolling past. Visual = render-safe side-elevation
-  schematic at true scale (28px = 1m) inside a `[TBC PHOTO]` frame —
-  the data carries the chapter, photography is an upgrade path.
-- **Density:** 4. **Symmetry:** broken, left-anchored.
-- **Viewport:** 100svh contained (mobile content runs to ~116vh, inside
-  the original 120vh budget), user-paced not scroll-forced. No pin, no
-  scroll-scrub.
-- **Scroll snap:** the page's *only* snap point lives on this section
-  (`scroll-snap-type: y proximity` on the root,
-  `scroll-snap-align: start` here). Proximity means it invites a stop
-  rather than forcing one — the reader can rest anywhere in the band.
-- **Motion tempo:** snappy, responsive to interaction.
-- **Weight position:** left-anchored, asymmetric.
-- **Secondary link:** quiet text link to `/fleet`, not a button.
-- **Reduced motion:** tab switches fade instead of slide; count-ups
-  settle immediately.
+Sections 1–8 are shipped and frozen/built. Sections 9–11 are the new
+work. Section 12 is built and stays as-is. Section 13 is new planned
+work — a short utility close after Verdict, not a sales section.
 
-### 4 — The Proof (Commodities) · Reassurance widening · **BUILDING FURTHER**
-- **Emotional target:** breadth. "We handle everything serious."
-- **Composition:** four cargo-tag cards, one commodity each, every
-  card pointing back to the trailer it rides on (Ch3's four fleet
-  classes). **Mobile is the designed form:** a horizontal
-  scroll-snap deck — native `scroll-snap-type: x mandatory` on an
-  inner scroller, no scroll-jacking — one card per screen, the next
-  card peeking in from the right to invite the swipe. **Desktop**
-  re-lays the same cards as a 4-step staggered diagonal of columns
-  at uneven heights. The deck's snap lives on the inner container,
-  not the root — Ch3 stays the page's only root snap point. Ch4 has
-  **no section-level `scroll-snap-align`** of any kind (`start` or
-  `end`): only the inner deck snaps, horizontally (`x mandatory`).
-  That lets Ch4 grow past 100svh without fighting the root's
-  proximity snap.
-- **Blueprint grid (Ch3 bleed):** Ch3's 28px grid enters Ch4 only in
-  the top bleed zone and fades to zero **before the end of the Ch4
-  header** — below the header there is no grid. The card area is
-  flat "paperwork": solid canvas, no grid, no frame.
-- **Heading:** compact and inside the section — mono eyebrow
-  (`04 / PROOF`) + display h2 ("What We Move") directly above the
-  deck. No standalone title band as in Ch3: the section must stay
-  one screen, and a tall band would push cards below the fold.
-- **Counter:** `01 / 04`, mono, top-right of the deck frame —
-  mirrors Ch3's frame index. **Mobile-only** (it belongs to the
-  swipe deck): hidden on desktop, where all four cards are visible.
-- **Density:** 3. **Symmetry:** staggered/diagonal (desktop),
-  sequential (mobile).
-- **Viewport:** 100svh contained as `min-height` — on short screens
-  (landscape phones) the section grows rather than clipping header,
-  card, counter, and ticker. No pin, no scroll-scrub.
-- **Motion tempo:** medium — each card plays one small scene beat
-  and a fleet-tag stamp when it snaps into view, then settles to a
-  subtle idle loop; only the active card moves, off-screen cards
-  pause. Desktop: idle until hover.
-- **Weight position:** diagonal sweep, top-left heavy (desktop);
-  centered card with right-edge peek (mobile).
-- **Reduced motion:** scenes static at final frame, no stamp
-  animation, ticker becomes a wrapped line.
-- **Closing:** the deck ends with a slow ticker — `Sulphur · Steel ·
-  Fertilisers · Machinery · + more` — then "Where it goes →" into
-  Ch6. "+ more" is a closing line, never a fifth card.
-
-### 5 — The Loads (Consolidation) · Relief, the breath · **THE BREATH**
-- **Emotional target:** quiet confidence, the calm beat immediately
-  before the climax. This dip is deliberate — it should feel almost
-  too quiet on first review. That discomfort is the point.
-- **Composition:** vast negative space around a flat load plan built
-  on the flatdeck trailer — a side elevation on desktop (full
-  viewport width, freight drawn on the deck), a vertical top view on
-  mobile. Three dashed empty slots sit on the deck from first paint,
-  each labelled S1–S3; a row of origin chips names the yards above;
-  each load falls into its slot one at a time, left to right,
-  counter-driven, slot turning solid as it fills. Mono-labelled
-  commodity / tonnes. No canvas, no 3D.
-- **Density:** 1–2, the sparsest section after the hero.
-  **Symmetry:** radically off-axis, object low and small relative to
-  the canvas around it.
-- **Viewport:** 130vh pinned, slow pace.
-- **Motion tempo:** slow, physical, weighted.
-- **Weight position:** off-center, low, minor relative to whitespace.
-- **Secondary link:** quiet text link to `/loads`.
-- **Reduced motion:** fully loaded state shown statically.
-- **Note:** 3D truck model is out of scope for the landing page;
-  reserved for a standalone truck story. Commodity freight art is
-  desktop-only for now; the mobile top view uses tinted footprints
-  until its cargo drawings land.
-
-### 6 — Corridor & Clearance · Deeper fear → Trust · **CLIMAX**
-- **Emotional target:** this is where "deeper fear" belongs — border
-  closures, strikes, political risk — and it's the *right* home for
-  it, because this chapter's actual content is border risk. The
-  section opens with tension, then resolves into the page's largest,
-  most confident statement.
-- **Composition, two movements within one pinned sequence:**
-  - **Opening (fear):** a diagonal-split composition — desaturated,
-    tightly cropped border-crossing imagery on one side; the gap
-    between the two halves is real (2vw), narrowing as the user
-    scrolls, the tension visibly resolving rather than being told to.
-    No tilt, no reverse-parallax — tension here comes from
-    desaturation and tight cropping alone.
-  - **Resolution (trust/climax):** the gap closes into the full route
-    map — Durban to the DRC, drawing on scroll, border markers
-    surfacing agent/clearance status on tap. This is the single
-    largest, most complex composition on the page.
-- **Density:** 5, the maximum on the page.
-  **Symmetry:** none — organic, geography-driven, not grid-based.
-- **Viewport:** 200vh+ pinned, the longest sustained sequence on the
-  page, earning its length after the quiet Chapter 5.
-- **Motion tempo:** builds from slow (gap narrowing, line drawing) to
-  quick (border markers populate) — the only section with its own
-  internal tempo arc.
-- **Weight position:** full-bleed, environmental, no single focal
-  point.
-- **Secondary link:** quiet text link to `/corridors`.
-- **Reduced motion:** route line appears fully drawn on load, no
-  progressive animation; markers are static and tappable immediately.
-
-### 7 — The Verdict · Contact · **DECREASE → CLOSE**
-- **Emotional target:** resolution, intimacy. The client has been on
-  a journey; the CTA is its natural conclusion, not a demand.
-- **Composition:** no dominant image — after six sections of visual
-  storytelling, absence is the statement. No kicker label — the
-  narrative is complete, the system steps aside, bookending Chapter
-  1's own absence of branding. Centered headline, centered form,
-  generous padding, one small final stat in mono-font beneath the
-  form as quiet confirmation rather than persuasion.
-- **Density:** 1, the sparsest section on the page, full stop.
-  **Symmetry:** centered — closes the bracket opened by the hero.
-- **Viewport:** 80vh, no pin, no scroll-scrub.
-- **Motion tempo:** minimal, one fade-in only.
-- **Weight position:** centered, small, maximum surrounding whitespace.
-- **Reduced motion:** no change needed, already minimal.
-
----
-
-## Density Curve (for build reference)
+**Final DOM order for `src/app/page.tsx`:**
 
 ```
-5 |                                   ●
-4 |                 ●
-3 |        ●                 ●
-2 |   ●                              
-1 |                        ●              ●
-0 +---+---+---+---+---+---+---+
-    Ch1 Ch2 Ch3 Ch4 Ch5 Ch6 Ch7
-  DESPAIR FEAR BUILD WIDE BREATH TRUST CLOSE
+HeroScene
+ServicesSection
+PremiseSection
+ThreatSection
+FleetHeading
+EngineSection
+ProofSection
+LoadsSection
+CorridorSection
+CoverageSection      ← NEW
+PortfolioSection     ← NEW
+ProcessSection       ← NEW
+VerdictSection
+ContactSection       ← NEW (post-Verdict utility close)
 ```
 
-If Ch5 and Ch6's opening movement feel similar in energy during
-review, pull Ch5 back further rather than pushing Ch6 harder — the
-dip has to be uncomfortable for the climax to land.
+Note the placement logic: the three new sections are appended **after
+Corridor**, so nothing existing is renumbered, remounted, or restyled
+to make room. Coverage follows Corridor deliberately — Corridor is the
+*story* of one flagship lane; Coverage is the *zoom-out* to the whole
+footprint. The escalation only works in that order. Contact is appended
+**after Verdict** deliberately — Verdict stays the exhale (form only);
+Contact is the utility close for buyers who skip the form and want a
+human or a door to walk through. It must never pull form, proof, or
+sales copy back into Verdict to make room.
 
 ---
 
-## Transition Rules Between Sections
+## Build status of every section
 
-- **Ch1 → Ch2:** hard cut. Calm hero ends, tension begins abruptly —
-  no bleed, no crossfade.
-- **Ch2 → Ch3:** the wipe resolves fully before Ch3 begins, a clean
-  settle. The standalone "Our Fleet" title band lives inside that
-  settle — one beat of calm canvas, then the configurator.
-- **Ch3 → Ch4:** soft bleed, both are "what we haul" content. Made
-  literal and strictly bounded: Ch3's 28px blueprint grid carries
-  into Ch4's top bleed zone only, fading to zero before the end of
-  the Ch4 header — below the header there is no grid, and the card
-  area is flat "paperwork". Every card's fleet tag links back to
-  the trailer just inspected.
-- **Ch4 → Ch5:** hard cut into negative space — the sudden emptiness
-  is itself the pacing signal.
-- **Ch5 → Ch6:** slow build-in. Ch6 doesn't open at full density, it
-  escalates from its own quiet fear-opening into the climax, so the
-  transition from Ch5's calm doesn't jar, it *becomes* the climax.
-- **Ch6 → Ch7:** hard cut to minimal. After 200vh of maximum density,
-  the drop to near-empty is the resolution — it should feel like
-  exhaling.
+| Section | Component | Status | Notes |
+|---|---|---|---|
+| Hero | `src/components/hero` | Shipped, **frozen** | Do not touch. |
+| Services | `src/components/services` | Shipped, **frozen** | |
+| Premise | `src/components/premise` | Shipped | |
+| Threat | `src/components/threat` | Shipped | Mirrored split, pinned wipe. |
+| Fleet band | `src/components/fleet` | Shipped | Standalone title band between Threat and Engine. |
+| Engine | `src/components/engine` | Shipped | Holds the page's only root scroll-snap point. |
+| Proof | `src/components/proof` | Shipped | Closing "Where it goes →" link must be retargeted to Coverage when Coverage mounts (see Open Questions). |
+| Loads | `src/components/loads` | Shipped | Contains an explicitly **unmounted** geographic map component (`CorridorMap.tsx`). It stays unmounted — see Coverage. |
+| Corridor | `src/components/corridor` | Shipped | Symbolic route scene, longest pinned sequence. |
+| Coverage | — | **To build** | Spec below. |
+| Portfolio | — | **To build** | Spec below. |
+| Process | — | **To build** | Spec below. |
+| Verdict | `src/components/verdict` | Shipped | Form + WhatsApp; mono stat placeholder stays empty until Portfolio data exists. |
+| Contact | `src/components/contact` | **Shipped (v1)** | Post-Verdict utility close. Data in `src/data/contact.ts` all `[TODO owner]`. |
+| WhatsApp FAB | system-level | Shipped | Rules below. |
 
 ---
 
-## WhatsApp — System-Level Persistent Element
+## Pacing rules (the honest version)
 
-Not a chapter. Not a section. A fixed system component present from
-first pixel, outside the chapter flow entirely.
+The old doc had a density curve tied to the retired story arc. What's
+still true, and still enforced:
 
-- **Position:** fixed, bottom-right on desktop, bottom-center on
-  mobile (thumb-reachable).
-- **Label:** "Chat with Dispatch — Online Now" — states what it is,
-  doesn't make the user tap to find out.
-- **Ch1–Ch4:** icon-only, low visual weight, present but not competing.
+- **Pinned sequences are capped at two: Loads and Corridor.** No new
+  section may pin. The page is already long — appending three more
+  sections is only acceptable because they're contained and short.
+- **Everything else is contained, ~90–130svh.** No scroll-jacking, no
+  scrub on mobile (see SERVICE.md for the mobile scroll policy that
+  governs here too).
+- **Verdict stays the shortest and emptiest *sales* section on the page.** It
+  is the exhale, not a sales wall. Contact (Section 13) sits after it
+  as a post-conversion utility close — short, dense, footer-adjacent —
+  and is exempt from the "Verdict is shortest" comparison. Nothing
+  moves from Contact back into Verdict.
+- **Adjacent sections must not repeat the same layout shape.** If two
+  neighbours could be mistaken for each other, change one of them —
+  this rule is what the Corridor → Coverage seam needs most (see
+  Transitions).
+- **Reduced motion:** every pinned/scrubbed/pinned sequence needs a
+  static fallback state that shows the final composition on load.
+  Already implemented per section; keep it that way when editing.
+
+---
+
+## Section specs — existing sections (condensed, for reference)
+
+**Premise.** Full-bleed, no kicker, no proof layer. Headline low and
+understated. The problem stated before the brand speaks.
+
+**Threat.** Mirrored bilateral split — desaturated broker gamble
+(desaturated, tight framing) vs. the Cargo Flow standard (full color,
+open framing). Pinned ~150vh, scroll-scrubbed wipe. Tension comes from
+color and framing, never from tilt or disorientation.
+
+**Engine.** Left-anchored fleet switcher with spec panel. The page's
+only root `scroll-snap-align` point (proximity). Snappy, interaction-
+paced. Quiet text link to `/fleet`.
+
+**Proof.** Commodity deck — mobile horizontal snap deck (inner
+container), desktop staggered diagonal. Each card tags back to the
+trailer from Engine. Ends on a commodity ticker + "Where it goes →"
+link. **Link retarget: to Coverage (not Corridor) once Coverage
+mounts.**
+
+**Loads.** The breath: vast whitespace, one flat load plan on the
+flatdeck, slots S1–S3 filling counter-driven. Pinned ~130vh, slow and
+weighted. Quiet link to `/loads`.
+
+**Corridor & Clearance.** The climax of the shipped page, and the
+emotional peak of the whole site. Symbolic route scene — diagonal-split
+fear opening (border queues, blockade) resolving into the full route
+draw with gates and clearance markers, ending at Lubumbashi. ~200vh
+pinned. Quiet link to `/corridors`. **This is not a geographic map and
+must never be redrawn as one — that's Coverage's job.**
+
+---
+
+## Section specs — new sections (to build)
+
+### 9 — Coverage / "Where We Operate"
+
+**STATUS: built (v1 skeleton)** — spec and build map in `COVERAGE.md`.
+Components in `src/components/coverage/`, records in `src/data/coverage.ts`
+(all TODO). The basemap and country geometry are real, not drawn:
+hillshade from `map_build/`, Natural Earth outlines projected into the
+basemap's pixel space by `map_build/build_coverage.js` (regenerate with
+`node map_build/build_coverage.js`).
+
+**Purpose:** answer "do you run my route?" in one glance, and end with
+a WhatsApp lead for every country — active or not.
+
+**Concept (approved):** an interactive map of southern Africa.
+
+- **The map:** terrain map of the region covering South Africa,
+  Zimbabwe, Zambia, DRC, Botswana, Malawi, Tanzania, Mozambique.
+  Countries are stroked paths over the terrain; the **selected country
+  outline glows** (accent orange for active, hollow/muted for
+  expanding).
+- **The country rail:** left-side list of country names as **real
+  text** (not SVG-only labels) — required for SEO and screen readers.
+  Hover or click selects that country; the map outline follows.
+- **The country card** (bottom-left): fixed schema —
+  `Country → border post(s) → authority → clearance/transit time →
+  status`. Format follows the approved example: *"Active — Tlokweng &
+  Kazungula, BURS clearance, 2–4h fastest corridor."*
+
+**Two states, no dead ends:**
+
+- **Active** (orange): real operational data, full card, ends with a
+  **"Run this lane" WhatsApp deep-link** prefilled with the country
+  name and lane.
+- **Expanding** (muted, hollow outline): card reads as a lane opening,
+  not a rejection — *"This lane is opening. Tell us your volume."* —
+  with the same WhatsApp deep-link. A planned lane is still a lead.
+
+**What this section must NOT do:**
+- Must not become a second geography of Corridor. Corridor is one
+  symbolic lane; this is the footprint. Different treatment, different
+  content.
+- The existing unmounted `loads/CorridorMap.tsx` is the only other
+  geographic map component in the repo — it **stays unmounted**.
+  Coverage owns the page's one map.
+- The card answers WHERE only. Fleet class, tonnage, past jobs → that's
+  Portfolio's job. No card creep.
+
+**Layout/rhythm:** contained, ~110svh, no pin. Left rail + map + card,
+desktop. Mobile: rail becomes horizontal scroll chips, map becomes the
+backdrop, card becomes a bottom sheet. Adjacent to Corridor (full-bleed
+dark, organic) — Coverage must change shape treatment on purpose so the
+two map-adjacent sections never blur together (see Transitions).
+
+**Assets:** basemap is the user-built hillshade
+(`public/southern-africa-hillshade-{5000,1600}.webp`, SRTM via
+terrarium tiles, Web Mercator, city-verified in `map_manifest.json`).
+Country data (posts, authorities, clearance times, active/expanding
+status) `[TBC dispatch]`. **Open palette decision:** the dark terrain
+field makes this the page's second dark section — either document a
+DESIGN.md exception (like the WhatsApp green) or decide the field is
+light; see COVERAGE.md "Open decisions".
+
+### 10 — Portfolio / "Previous Huge Jobs"
+
+**Purpose:** prove someone like the buyer already ships with us —
+with names and numbers, not adjectives.
+
+- **2–3 jobs maximum. One flagship.** A wall of logos is noise.
+- **Every job carries the same record:** client (company **and**
+  named role), commodity + tonnage, route + border posts crossed,
+  dates, and **one outcome metric** (delay avoided, cost variance,
+  uptime). One number per job, not a stats wall.
+- **Testimony rule:** quotes are attributed — real person, real role,
+  real company, tied to the job record above. Anonymous testimonial =
+  fabricated testimonial; does not ship.
+- **Credentials strip, folded in:** permits, abnormal-load escort,
+  cross-border documentation, insurance — one quiet strip alongside
+  the jobs. Which apply `[TBC]`. It lives here, not as its own orphan
+  section and never inside Verdict.
+- **Rhythm:** editorial card layout, ~130svh max, contained, no pin.
+  Medium density — it sits between a map and a 3-step strip, so it
+  must feel like paper, not screen.
+- **Optional:** quiet link to a fuller portfolio sub-page if/when one
+  exists `[TBC]`.
+
+### 11 — Process / "How a Job Runs"
+
+**Purpose:** answer the last friction question before the CTA — "what
+actually happens after I hit send?"
+
+- **Three steps, one screen, contained (~90svh), no pin.** Numbered
+  horizontal or vertical strip.
+- **Skeleton (copy `[TBC]` later):** 01 Send the spec → 02 We plan the
+  load, route and clearances → 03 Truck rolls, you track, it lands.
+- **Hand-off into Verdict:** the section's own link/CTA points at the
+  quote form — "Start at step 01". The CTA is now an invitation, not a
+  demand, because the buyer has seen exactly what it starts.
+
+### 13 — Contact / "Talk to Dispatch — or Visit Us"
+
+**STATUS: built (v1)** — components in `src/components/contact/`
+(`ContactSection` + Desktop/Mobile + shared cards + glyphs), records in
+`src/data/contact.ts` (all TODO(owner)). Mounted in `src/app/page.tsx`
+after Verdict.
+
+**Purpose:** catch the buyer who scrolled past the form — "Ready to
+move? Then — or contact us directly. Even better, visit one of our
+branches." Three tiers, escalating commitment:
+
+1. **Ready to move** → anchor link back up to the Verdict quote form
+   (`#verdict` / `#quote`). One line, no duplicate form here.
+2. **Contact us directly** → three channels, each a real link:
+   - Email — `mailto:` `[TODO owner: dispatch email address]`
+   - WhatsApp — `wa.me` deep-link with prefilled text
+     `[TODO owner: WhatsApp number + default message]`
+   - Direct call — `tel:` `[TODO owner: dispatch phone number(s),
+     per-branch if different + hours to call]`
+3. **Even better, visit us** → two branch cards:
+   - **Branch 1 — Botswana** `[TODO owner: confirm if HQ, city,
+     street address, hours, phone, Google Maps link]`
+   - **Branch 2 — Johannesburg** `[TODO owner: city, street address,
+     hours, phone, Google Maps link]`
+   - Each card: branch label (+ "HQ" tag on whichever is HQ
+     `[TODO owner: which branch is HQ?]`), address lines, hours line,
+     "Get directions →" maps link, tap-to-call link. Copy tone
+     `[TODO owner: final branch welcome copy]`.
+
+**What this section must NOT do:**
+
+- Must not duplicate the Verdict form. One anchor back up, never a
+  second form.
+- Must not pull proof, stats, testimonials, or credentials down into
+  itself — those live in Portfolio. This is utility only.
+- Must not pin, scrub, or snap. Static, footer-adjacent close.
+- Must not invent contact values. Every number, address, hour, and
+  link ships as `[TODO owner]` until the owner supplies real data.
+
+**Layout/rhythm:** contained, short (~60–80svh, shorter than Verdict
+in feel but denser), no pin, no snap. Desktop: 3-column or
+channels-row-over-branches-2-col; mobile: stacked — anchor line,
+channel list, branch cards. Visually distinct from Verdict (Verdict is
+empty/exhale; Contact is compact/utility) so the two never blur.
+Footer follows Contact, not Verdict.
+
+**Data schema (for build, all `[TODO owner]`):**
+
+```ts
+// src/data/contact.ts (planned)
+type Branch = {
+  label: string;        // e.g. "Gaborone" [TODO owner]
+  isHq: boolean;        // [TODO owner: which branch is HQ?]
+  address: string[];    // [TODO owner]
+  hours: string;        // [TODO owner]
+  phone: string;        // tel: link [TODO owner]
+  mapsUrl: string;      // Get directions [TODO owner]
+};
+type ContactInfo = {
+  email: string;        // [TODO owner]
+  whatsapp: string;     // wa.me number [TODO owner]
+  whatsappText: string; // prefilled message [TODO owner]
+  phone: string;        // tel: [TODO owner]
+  branches: Branch[];   // Botswana + Johannesburg [TODO owner]
+};
+```
+
+---
+
+## Transitions between sections
+
+- **Hero → Services → Premise → Threat:** built as-is; do not
+  re-open these seams.
+- **Threat → Fleet band → Engine:** the wipe settles into the title
+  band, one beat of calm, then the switcher. Built.
+- **Engine → Proof:** soft bleed — Engine's blueprint grid carries into
+  Proof's header zone only, fades to zero below it. Built.
+- **Proof → Loads:** hard cut into negative space. Built.
+- **Loads → Corridor:** slow build-in; Corridor escalates from its own
+  quiet fear-opening. Built.
+- **Corridor → Coverage: the highest-risk seam on the page.** Two
+  map-adjacent sections back to back blur unless the treatment changes
+  hard: Corridor is full-bleed dark and symbolic; Coverage must arrive
+  as a distinct composed panel (terrain + rail + card), clearly a
+  different instrument. Review this seam explicitly at build time.
+- **Coverage → Portfolio:** cut from map to editorial cards — the
+  visual switch from geography to paper is itself the pacing signal.
+- **Portfolio → Process:** cards become a numbered strip; density
+  drops.
+- **Process → Verdict:** short drop to the emptiest section. Verdict
+  stays the exhale. Three new sections must not turn the tail into a
+  sales wall — that's the whole reason Process is capped at 3 steps.
+- **Verdict → Contact:** hard cut from exhale to utility. Verdict is
+  empty and quiet (form only); Contact is compact and dense
+  (channels + 2 branch cards). Different shape on purpose — never two
+  airy sections in a row. Contact then hands off to the footer.
+
+---
+
+## WhatsApp — system-level persistent element
+
+Not a section. A fixed system component present from first pixel,
+outside the section flow entirely.
+
+- **Position:** fixed, bottom-right desktop, bottom-center mobile
+  (thumb-reachable).
+- **Label:** "Chat with Dispatch — Online Now".
+- **Default state:** icon-only, low visual weight.
 - **On upward scroll-reversal (any point):** brief pulse/expand to
-  icon+text — responds to the actual behavioral signal (the client
-  scrolling back to re-check something), not a timer.
-- **Ch6 (climax):** stays icon-only even here — the map/data moment is
-  the page's climax, WhatsApp should not compete with it.
-- **Ch7 (verdict):** expands to full icon+text by default, sitting as
-  a genuine equal option beside the form.
-- **Color:** solid WhatsApp green (`#25D366`), white icon. This is a
-  deliberate, documented exception to the brand palette — it's a
-  recognition color, not a brand color, and should be marked as an
-  allowed exception in DESIGN.md so it isn't mistaken for a broken
-  token later.
-- **Z-index:** above all chapter content, `z-index: 9999`.
+  icon + text — it responds to the buyer scrolling back to re-check
+  something, not to a timer.
+- **Through Coverage and Portfolio:** stays icon-only — the map and
+  the jobs are the new trust peak, WhatsApp must not compete with
+  them.
+- **At Verdict:** expands to full icon + text, sitting as a genuine
+  equal option beside the form.
+- **At Contact:** stays icon-only — the section already has its own
+  explicit WhatsApp channel row; the FAB must not double up beside it.
+- **Color:** WhatsApp green (`#25D366`), white icon — a documented
+  exception to the brand palette (recognition color, not brand color;
+  noted in DESIGN.md).
+- **Z-index:** above all section content, `9999`.
+- **New usage — deep links:** Coverage's per-country "Run this lane"
+  links, and Portfolio/Process CTAs, use prefilled WhatsApp links
+  (`wa.me` with text payload) so the conversation starts with context.
 
 ---
 
-## Z-Index Tokens
+## Z-index tokens
 
 ```
-z-index: 1    — Visual layers (images, video, 3D)
-z-index: 10   — Data/stat layers (floating proof)
-z-index: 20   — Text layers (headline, kicker, body)
-z-index: 100  — Nav / header
-z-index: 9999 — WhatsApp persistent element (above all, always)
+1     — Visual layers (images, video, 3D, map basemap)
+10    — Data/stat layers (floating proof)
+20    — Text layers (headline, kicker, body)
+100   — Nav / header
+9999  — WhatsApp persistent element (above all, always)
 ```
 
-*(These should also be copied into DESIGN.md as a system-wide
-convention — noting here since they're landing-page-critical, but
-DESIGN.md is the canonical home.)*
+## Fluid sizing system
+
+All dimensions use `clamp()`:
+
+- Headlines: `clamp(2rem, 5vw + 1rem, 6rem)`
+- Kicker labels: `clamp(0.625rem, 0.5vw + 0.5rem, 0.875rem)`
+- Data stats: `clamp(1.5rem, 3vw + 0.5rem, 3.5rem)`
+- Body copy: `clamp(0.875rem, 0.5vw + 0.75rem, 1.125rem)`
+- Section padding: `clamp(2rem, 5vw, 8rem)`
 
 ---
 
-## Fluid Sizing System
+## Explicitly rejected
 
-All dimensions use `clamp()`, no breakpoints, no snap points:
-
-- **Headlines:** `clamp(2rem, 5vw + 1rem, 6rem)`
-- **Kicker labels:** `clamp(0.625rem, 0.5vw + 0.5rem, 0.875rem)`
-- **Data stats:** `clamp(1.5rem, 3vw + 0.5rem, 3.5rem)`
-- **Body copy:** `clamp(0.875rem, 0.5vw + 0.75rem, 1.125rem)`
-- **Section padding:** `clamp(2rem, 5vw, 8rem)`
-
----
-
-## Layout Shape Registry — Zero Repetition
-
-| Section | Shape | Symmetry | Density | Bleed |
-|---|---|---|---|---|
-| 1 Premise | Full-bleed rect | Centered | 2 | All edges |
-| 2 Threat | Mirrored split | Bilateral symmetric | 3 | None |
-| 3 Engine | Left-anchored panel | Broken, left-heavy | 4 | None |
-| 4 Proof | Cargo-tag snap deck (staggered diagonal on desktop) | Staggered/diagonal | 3 | None |
-| 5 Loads | Single off-center object | Radically off-axis | 1–2 | None |
-| 6 Corridor & Clearance | Diagonal split → full map | None, organic | 5 | Full-bleed |
-| 7 Verdict | None (empty-led) | Centered | 1 | None |
-
-Every section is structurally unique — no symmetry type, density
-level, or bleed pattern repeats consecutively.
+- **The emotional story-arc as the ordering principle.** Sections are
+  ordered by the buyer's question sequence. Emotional pacing still
+  matters inside a section, but it never sets the order again.
+- **Chapter numbers in copy.** Eyebrows use section names.
+- **A second geographic map.** `loads/CorridorMap.tsx` stays
+  unmounted; Coverage owns the page's one map.
+- **Dead-end states on the Coverage map.** Every country resolves to
+  either an active lane or an opening lane with a WhatsApp link.
+- **Testimonials, stats walls, or credential strips inside Verdict.**
+  Verdict stays the emptiest sales section. (Contact after it is a
+  dense utility close — exempt by design, never a back door for sales
+  copy into Verdict.)
+- **A second quote form inside Contact.** Contact links back up to
+  Verdict (`#verdict`); it never hosts its own form.
+- **Pinning any new section.** Pins are capped at Loads and Corridor.
+- **Redrawing Corridor as a geographic route map.** It is symbolic on
+  purpose.
+- **Coverage card creep** into fleet/tonnage/jobs detail — that's
+  Portfolio's content.
 
 ---
 
-## The "Felt Without Content" Test
+## Open questions (resolved during planning, before build)
 
-Build each section as gray/placeholder blocks at the specified
-density, symmetry, and viewport values before any copywriting or
-final assets. Scroll through with no text, no images. If the arc
-doesn't read — desperation, named fear, building trust, the breath,
-deeper fear resolving into climax, quiet close — fix the layout before
-adding a single word.
-
----
-
-## Explicitly Rejected
-
-- Literal tilt/rotation or "reverse parallax" as a fear mechanism —
-  replaced with desaturation, tight framing, reduced whitespace,
-  slower motion
-- A separate, content-agnostic emotional structure running parallel
-  to the real chapters — the emotional arc lives *inside* Premise,
-  Threat, Engine, Proof, Loads, Corridor & Clearance, and Verdict, not
-  alongside them
-- Any section reusing another's density + symmetry + tempo
-  combination
-- Climax placed anywhere but Chapter 6; Verdict stays the quietest
-  section on the page
-- HUD/data readout in the Hero — all proof is deferred to Chapter 2,
-  where the system first speaks
-- WhatsApp element treated as static/unchanging — it responds to
-  scroll-reversal behavior, matching the rest of the page's
-  behavior-driven philosophy
-
-
+1. **Coverage basemap:** stylized dark terrain (recommended) vs.
+   licensed satellite imagery. → next Coverage planning session.
+2. **Country data:** per-country border posts, authorities, clearance
+   times, and active/expanding status `[TBC dispatch]`.
+3. **Country path extent:** does any reusable geometry cover Tanzania
+   and Malawi, or are paths sourced fresh?
+4. **Credentials strip:** which of permits / abnormal-load escort /
+   cross-border docs / insurance actually apply `[TBC]`.
+5. **Portfolio content:** which 2–3 jobs make the cut, and who can
+   give a named testimony `[TBC]`.
+6. **Process copy:** final three-step wording (skeleton above is a
+   placeholder).
+7. **Proof's "Where it goes →" anchor:** retarget from
+   `#corridor-section` to Coverage at the moment Coverage mounts.
+   Until then, leave the existing link as-is rather than pointing at a
+   section that doesn't exist.
+8. **Real copy and final assets:** all `[TBC]` copy, photos, and the
+  verdict mono-stat number are a later pass, after planning locks the
+  structure.
+9. **Contact values `[TODO owner — fill before build]:** (a) dispatch
+   email address; (b) WhatsApp number + prefilled message text;
+   (c) direct-call number(s) — one or per-branch — + hours to call;
+   (d) Botswana branch: city, street address, hours, phone, Google
+   Maps link; (e) Johannesburg branch: same five fields;
+   (f) which branch carries the "HQ" tag; (g) final welcome/visit
+   copy for both cards + the "Ready to move / contact directly /
+   visit us" tier headings. No invented placeholders — build waits
+   for these.

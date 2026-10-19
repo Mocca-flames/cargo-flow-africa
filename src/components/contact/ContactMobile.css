@@ -1,0 +1,14 @@
+/* Mobile: everything stacked, thumb-reachable links. */
+
+.contact--mobile .contact__people {
+  grid-template-columns: 1fr;
+}
+
+.contact--mobile .contact__branches {
+  grid-template-columns: 1fr;
+}
+
+.contact--mobile .contact__ready {
+  flex-direction: column;
+  align-items: flex-start;
+}

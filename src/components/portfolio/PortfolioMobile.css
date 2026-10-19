@@ -1,0 +1,268 @@
+/* ============================================
+   PORTFOLIO — mobile focus carousel
+   A4 portrait pages (1 : 1.414). Active centred
+   full size, ~40px of each neighbour peeking.
+   Circular offsets: same positioning as desktop
+   but with mobile x/scale. Touch swipe support.
+   ============================================ */
+
+.portfolio--mobile {
+  /* 72vw → 82vw and a slimmer height allowance so phones (360–430px
+     wide, incl. 390x844) fit the full name and the Our-rate row. */
+  --card-w: min(82vw, calc((100svh - 230px) / 1.414));
+  --card-h: calc(var(--card-w) * 1.414);
+}
+
+/* ─── Phone fit overrides (desktop keeps the shared spec values) ─── */
+
+.portfolio--mobile .portfolio__logo-plate {
+  height: 14%;
+}
+
+.portfolio--mobile .portfolio__body {
+  padding: 5.5cqw;
+  gap: 2.3cqw;
+}
+
+.portfolio--mobile .portfolio__price-our-figure {
+  font-size: clamp(32px, 11.5cqw, 54px);
+}
+
+.portfolio--mobile .portfolio__info-label,
+.portfolio--mobile .portfolio__price-others-label,
+.portfolio--mobile .portfolio__price-our-label,
+.portfolio--mobile .portfolio__saving,
+.portfolio--mobile .portfolio__price-per {
+  line-height: 1.25;
+}
+
+/* ─── Header ─── */
+
+.portfolio--mobile .portfolio__header-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.portfolio--mobile .portfolio__header-left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.portfolio--mobile .portfolio__header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.portfolio--mobile .portfolio__eyebrow { margin: 0; }
+.portfolio--mobile .portfolio__heading { margin: 0; }
+
+.portfolio--mobile .portfolio__counter {
+  font-family: var(--font-mono);
+  font-size: var(--text-body-m);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-muted);
+  white-space: nowrap;
+}
+
+/* ─── Play/Pause ─── */
+
+.portfolio--mobile .portfolio__play-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--duration-fast) var(--ease-snap),
+    border-color var(--duration-fast) var(--ease-snap);
+}
+
+.portfolio--mobile .portfolio__play-btn:hover,
+.portfolio--mobile .portfolio__play-btn:focus-visible {
+  color: var(--color-ink);
+  border-color: var(--color-accent-gold);
+}
+
+.portfolio--mobile .portfolio__play-btn:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+.portfolio--mobile .portfolio__standfirst {
+  margin: var(--space-3) 0 0;
+}
+
+/* ─── Stage ─── */
+
+.portfolio--mobile .portfolio__stage {
+  position: relative;
+  height: calc(var(--card-h) + 48px); /* 24px above and below so shadows are not cut */
+  overflow: hidden;
+  width: 100%;
+  outline: none;
+}
+
+/* ── Arrows ─── */
+
+.portfolio--mobile .portfolio__arrow {
+  position: absolute;
+  z-index: 2;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--color-ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.portfolio--mobile .portfolio__arrow svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.portfolio--mobile .portfolio__arrow--prev { left: 0.25rem; }
+.portfolio--mobile .portfolio__arrow--next { right: 0.25rem; }
+
+.portfolio--mobile .portfolio__arrow:disabled {
+  opacity: 0.2;
+  cursor: default;
+}
+
+.portfolio--mobile .portfolio__arrow:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+/* ── Carousel track ─── */
+
+.portfolio--mobile .portfolio__carousel-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* ─── Card positioning ─── */
+
+.portfolio--mobile .portfolio__card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--card-w);
+  height: var(--card-h);
+  transform: translate(-50%, -50%) translateX(var(--x)) scale(var(--s));
+  opacity: var(--o);
+  transition: transform .5s cubic-bezier(.22,.8,.3,1), opacity .5s ease;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  overflow: hidden;
+  container-type: inline-size;
+  box-shadow: 0 24px 48px -24px rgba(20,40,30,.35);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Active */
+.portfolio--mobile .portfolio__card[data-pos="0"] {
+  --x: 0;
+  --s: 1;
+  --o: 1;
+  z-index: 3;
+}
+
+/* Neighbours — mobile x/scale only (mirrored gaps) */
+.portfolio--mobile .portfolio__card[data-pos="-1"] {
+  --x: calc(var(--card-w) * -0.925 - 12px);
+  --s: .85;
+  --o: .55;
+  z-index: 2;
+}
+
+.portfolio--mobile .portfolio__card[data-pos="1"] {
+  --x: calc(var(--card-w) * 0.925 + 12px);
+  --s: .85;
+  --o: .55;
+  z-index: 2;
+}
+
+/* Outer + far — mobile x/scale only, faded out */
+.portfolio--mobile .portfolio__card[data-pos="-2"],
+.portfolio--mobile .portfolio__card[data-pos="far"][data-sign="-1"] {
+  --x: calc(var(--card-w) * -1.5 - 24px);
+  --s: .7;
+  --o: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.portfolio--mobile .portfolio__card[data-pos="2"],
+.portfolio--mobile .portfolio__card[data-pos="far"][data-sign="1"] {
+  --x: calc(var(--card-w) * 1.5 + 24px);
+  --s: .7;
+  --o: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ─── Dots ── */
+
+.portfolio--mobile .portfolio__dots {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.portfolio--mobile .portfolio__dot {
+  position: relative;
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-border);
+  cursor: pointer;
+  transition: width 0.3s var(--ease-snap);
+  padding: 0;
+  overflow: hidden;
+}
+
+.portfolio--mobile .portfolio__dot--active {
+  width: 1.25rem;
+  border-radius: 1rem;
+  background: var(--color-border);
+}
+
+.portfolio--mobile .portfolio__dot--active::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: calc(var(--dot-progress, 0) * 100%);
+  background: var(--color-accent-gold);
+  border-radius: 1rem;
+}
+
+.portfolio--mobile .portfolio__dot:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}

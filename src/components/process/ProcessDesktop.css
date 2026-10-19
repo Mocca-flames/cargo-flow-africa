@@ -1,0 +1,32 @@
+/* ============================================
+   PROCESS — desktop drawing
+   A five-column row: step, connector, step, connector, step.
+   Connectors are direct grid items, so they run exactly between
+   glyph edges with no measuring; the draw direction is left → right,
+   set by ProcessCommon.css.
+   ============================================ */
+
+.process--desktop .process__row {
+  display: grid;
+  grid-template-columns: auto minmax(2rem, 1fr) auto minmax(2rem, 1fr) auto;
+  align-items: start;
+  column-gap: var(--space-4);
+  margin-inline: auto;
+  width: 100%;
+}
+
+.process--desktop .process__step {
+  min-width: 0;
+}
+
+/* Sits at the glyph's vertical centre: the glyph box is exactly
+   --glyph tall from the row's top, so half of it is the centreline. */
+.process--desktop .process__connector {
+  margin-top: calc(var(--glyph, 4.25rem) / 2);
+  height: 1px;
+  min-width: 0;
+}
+
+.process--desktop .process__foot {
+  margin-top: clamp(1rem, 3vh, 2rem);
+}

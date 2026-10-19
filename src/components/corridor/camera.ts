@@ -2,37 +2,54 @@
 // that differ between desktop and mobile live (layout/CSS lives in
 // CorridorDesktop.css / CorridorMobile.css).
 //
-// The camera is a pure translate+scale on the world <g>: it frames the truck
-// slightly ahead of the cab and applies a per-beat zoom (ZOOM_KEYS in config.ts)
-// scaled by `zoomMul`. Anchor fractions are of the viewport (stage) size.
+// The camera is a pure translate+scale on the world <g>. It looks at the
+// rig's midpoint (RIG_LOOK behind the kingpin pivot, config.ts) so the
+// tractor AND the trailer are both in frame, then scales the world so that
+// the whole rig (RIG_SPAN) spans `fill` of the stage width. Per-beat punch-ins
+// are relative multipliers in ZOOM_KEYS (config.ts): 1 = full rig in frame.
+// That makes the framing resolution-independent — a 1440px stage and a
+// 390px stage both frame the same rig.
 
 export type CameraLayout = {
-  /** Multiplies the keyframed zoom — mobile pulls back so the rig fits the narrow frame. */
-  zoomMul: number;
+  /** Fraction of the stage width the whole rig spans at ZOOM_KEYS = 1. */
+  fill: number;
   /** Horizontal anchor as a fraction of stage width (0 = left edge, 1 = right). */
   anchorX: number;
   /** Vertical anchor as a fraction of stage height (0 = top, 1 = bottom). */
   anchorY: number;
+  /**
+   * Extra rotation of the whole world, in degrees. The route is authored
+   * left→right; rotating it -90 turns it into a bottom→top run so a portrait
+   * phone scrolls the truck UP the screen instead of across it. Labels are
+   * counter-rotated per element (see useCorridorAnimation's [data-at] sweep).
+   */
+  worldRotate: number;
 };
 
 /**
- * Desktop: truck rides right-of-centre, copy panel owns the left column.
- * Matches `.corridor__panels` in CorridorDesktop.css.
+ * Desktop: rig rides right-of-centre, the copy panel owns the left rail,
+ * the HUD card sits top-right. Matches `.corridor__panels` / `.corridor__hud`
+ * in CorridorDesktop.css — keep the three in sync.
  */
 export const DESKTOP_CAMERA: CameraLayout = {
-  zoomMul: 1,
-  anchorX: 0.62,
-  anchorY: 0.54,
+  fill: 0.6,
+  anchorX: 0.54,
+  anchorY: 0.56,
+  worldRotate: 0,
 };
 
 /**
- * Mobile: truck centred and higher up; the copy sheet sits along the bottom
- * so it never covers the rig. Matches `.corridor__panels` in CorridorMobile.css.
+ * Mobile: rig centred and raised above the bottom sheet; the HUD becomes a
+ * strip under the header. The world is rotated -90° so the corridor runs
+ * bottom→top and the truck climbs the screen with the scroll. Matches
+ * `.corridor__panels` / `.corridor__hud` in CorridorMobile.css — keep the
+ * three in sync.
  */
 export const MOBILE_CAMERA: CameraLayout = {
-  zoomMul: 0.62,
+  fill: 0.88,
   anchorX: 0.5,
-  anchorY: 0.34,
+  anchorY: 0.5,
+  worldRotate: -90,
 };
 
 export type CorridorVariant = "desktop" | "mobile";

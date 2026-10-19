@@ -1,0 +1,286 @@
+/* ============================================
+   PROCESS — "HOW A JOB RUNS"
+   LANDING_LAYOUT.md section 11 · SPEC: PROCESS.md
+
+   Three steps, one screen, immediately before the Verdict. Zero
+   photography — glyphs are inline SVG, the connector is a CSS dashed
+   rule that draws itself on entrance. ~90svh, contained, no pin.
+
+   ── Progressive rendering ──
+   The section paints COMPLETE from the server: steps visible,
+   connector drawn. JS only arms the entrance (`process--armed`, set
+   on mount) and completes it (`process--entered`, set once by
+   `useReveal`). No JS → nothing ever hides. Reduced motion → the
+   armed pre-state is neutralised below and the entrance never runs.
+
+   ── Split ──
+   Layout lives in the two variant files; this file owns the shared
+   root, typography, entrance timing, connector draw, CTA, and the
+   reduced-motion contract.
+   ============================================ */
+
+.process {
+  position: relative;
+  width: 100%;
+  min-height: 90svh;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+@supports not (min-height: 90svh) {
+  .process {
+    min-height: 90vh;
+  }
+}
+
+.process__inner {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding: clamp(3rem, 9vh, 7rem) var(--section-padding);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 6vh, 4.5rem);
+}
+
+/* ─── Header ───
+   Eyebrow is a HUD label (mono, DESIGN.md allows short caps here);
+   the Sora heading directly under it is the label it pairs with. */
+
+.process__header {
+  max-width: 46ch;
+}
+
+.process__eyebrow {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent-gold);
+}
+
+.process__heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-display-l);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--color-ink);
+}
+
+.process__standfirst {
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-body);
+  font-size: var(--text-body-l);
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+}
+
+/* ─── Steps ─── */
+
+.process__step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Glyph box: fixed so both variants share one geometry variable. The
+   connectors align to its centre — see the variant files. */
+.process__glyph-cell {
+  --glyph: clamp(3rem, 5vw, 4.25rem);
+  width: var(--glyph);
+  height: var(--glyph);
+  color: var(--color-ink);
+}
+
+.process__glyph {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* DESIGN.md: mono data readouts never stand alone — the number sits
+   directly above its Sora step title. */
+.process__number {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent-gold);
+}
+
+.process__title {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-display-m);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-ink);
+}
+
+.process__body {
+  margin: 0;
+  max-width: 32ch;
+  font-family: var(--font-body);
+  font-size: var(--text-body-m);
+  line-height: 1.55;
+  color: var(--color-ink-muted);
+}
+
+/* ─── Connector ───
+   A div, not SVG: `background-size` grows a repeating gradient, which
+   truthfully DRAWS a dashed line (a stroke-dashoffset on a dash
+   pattern only slides the dashes). Default = fully drawn, so no-JS
+   and SSR see a complete section. */
+
+.process__connector {
+  display: block;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--color-accent-gold) 0 4px,
+    transparent 4px 9px
+  );
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 100% 1px;
+  transition: background-size 900ms var(--ease-cinematic);
+}
+
+.process__connector[data-orientation="vertical"] {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--color-accent-gold) 0 4px,
+    transparent 4px 9px
+  );
+  background-position: center top;
+  background-size: 1px 100%;
+}
+
+/* ─── Entrance: armed (JS mounted, pre-state) → entered (reveal) ───
+   Only JS ever adds these classes; the server-rendered section is
+   already in its final state without them. */
+
+.process--armed .process__header,
+.process--armed .process__step,
+.process--armed .process__foot {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+}
+
+.process--armed .process__connector {
+  background-size: 0% 1px;
+}
+
+.process--armed .process__connector[data-orientation="vertical"] {
+  background-size: 1px 0%;
+}
+
+.process--armed.process--entered .process__header {
+  animation: process-enter var(--duration-base) var(--ease-snap) both 0ms;
+}
+
+.process--armed.process--entered .process__step {
+  animation: process-enter var(--duration-base) var(--ease-snap) both;
+  animation-delay: calc(var(--i) * 120ms);
+}
+
+.process--armed.process--entered .process__foot {
+  animation: process-enter var(--duration-base) var(--ease-snap) both 400ms;
+}
+
+.process--armed.process--entered .process__connector {
+  background-size: 100% 1px;
+}
+
+.process--armed.process--entered .process__connector[data-orientation="vertical"] {
+  background-size: 1px 100%;
+}
+
+@keyframes process-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* ─── CTA — quiet text link, never a button ───
+   Same shape as Ch3's and Ch5's quiet links: mono, leading hairline
+   that grows on hover. The Verdict owns the page's only primary
+   button, so this scrolls into it instead of competing. */
+
+.process__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-snap);
+}
+
+.process__cta:hover,
+.process__cta:focus-visible {
+  color: var(--color-ink);
+}
+
+.process__cta:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 4px;
+}
+
+.process__cta-rule {
+  width: 1.75rem;
+  height: 1px;
+  background: currentColor;
+  transition: width var(--duration-fast) var(--ease-snap);
+}
+
+.process__cta:hover .process__cta-rule,
+.process__cta:focus-visible .process__cta-rule {
+  width: 2.75rem;
+}
+
+/* ─── Reduced motion ───
+   Settled state, statically: steps visible, connectors fully drawn,
+   no entrance, no transition. Mirrors the SSR paint exactly. */
+
+@media (prefers-reduced-motion: reduce) {
+  .process--armed .process__header,
+  .process--armed .process__step,
+  .process--armed .process__foot {
+    opacity: 1;
+    transform: none;
+  }
+
+  .process--armed.process--entered .process__header,
+  .process--armed.process--entered .process__step,
+  .process--armed.process--entered .process__foot {
+    animation: none;
+  }
+
+  .process--armed .process__connector,
+  .process--armed.process--entered .process__connector {
+    background-size: 100% 1px;
+    transition: none;
+  }
+
+  .process--armed .process__connector[data-orientation="vertical"],
+  .process--armed.process--entered .process__connector[data-orientation="vertical"] {
+    background-size: 1px 100%;
+  }
+}

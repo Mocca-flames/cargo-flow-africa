@@ -14,6 +14,13 @@
    "paperwork": solid canvas, no grid, no frame.
    ============================================ */
 
+/* ── Scrub mode: no overflow on the section so sticky survives.
+   Use clip on the stage instead. ─── */
+
+.proof--scrub {
+  overflow: visible;
+}
+
 .proof {
   position: relative;
   display: flex;

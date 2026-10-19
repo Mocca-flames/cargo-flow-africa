@@ -3,7 +3,7 @@
 /** [progress 0..1, value, ease?]. ease=1 → smoothstep on the segment ENDING at this key. */
 export type Key = [p: number, v: number, ease?: 0 | 1];
 
-export const PIN_SCREENS = 5; // ~500vh pinned (LANDING_LAYOUT.md Ch6 must be updated from 200vh)
+export const PIN_SCREENS = 2; // ~200vh pinned — snappy, fast and responsive
 export const MOBILE_MAX = 767;
 
 /** World units: 1 unit = 1 cm (100 units = 1 m). Stylised, not geographic. Stops sit on straights; bends between them show the trailer articulating. */
@@ -15,85 +15,99 @@ export const ROUTE_D =
 
 /** Truck art contract — must match the Gemini prompts (cft-* / cfl-*). */
 export const TRACTOR = { pivotX: 275, pivotY: 150, wheelbase: 300 };
-export const TRAILER = { pivotX: 400, pivotY: 150, bogieX: 290 };
+export const TRAILER = { pivotX: 1300, pivotY: 150, bogieX: 290 };
 export const TRAILER_L = TRAILER.pivotX - TRAILER.bogieX; // kingpin → bogie centre
 
-export const TOTAL_KM = 2900; // TODO(verify) placeholder for HUD "Remaining"
-export const GATE_OFF = 1300; // boom sits this far ahead of the stopped truck's pivot
+/** Rig extents in world units RELATIVE to the kingpin pivot (see art/* frames).
+ *  Tractor faces +x: nose ≈ +410, mirrors ≈ +400, tail of tractor ≈ -217.
+ *  Trailer tail is the back of the whole rig. These MUST match the art or the
+ *  camera pads the frame with dead space (a too-large front puts the road
+ *  between the cab and the boom; a too-small one crops the tractor). */
+export const RIG = { back: -1300, front: 440, half: 150 };
+/** Nose-to-tail length of the whole rig (tractor nose → trailer tail). */
+export const RIG_SPAN = RIG.front - RIG.back;
+/** Rig midpoint relative to the pivot (negative = behind it). */
+export const RIG_CENTER = (RIG.front + RIG.back) / 2;
+/** How far BEHIND the pivot the camera looks — the rig's midpoint, so the
+ *  whole truck + trailer stays in frame (RIG_LOOK, see camera maths in
+ *  useCorridorAnimation). */
+export const RIG_LOOK = -RIG_CENTER;
 
-/** Scroll progress → fraction of route length. Plateaus = truck stopped while we explain. */
+export const TOTAL_KM = 2900;
+/** Boom sits this far ahead of the stopped truck's kingpin — clear of the
+ *  tractor nose (+410) with room to stop short of it. */
+export const GATE_OFF = 1000;
+
+/** Carriageway half-width in world units (7.6 m road) — the road-bed stroke
+ *  width is 2× this. Everything roadside (booms, booths, tags, barricades)
+ *  is authored against it, and it deliberately stays in scale with the rig:
+ *  the truck is 250 wide / 300 tall, so a boom that spans the whole road is
+ *  the tallest thing in the frame — but not a skyscraper. */
+export const ROAD_HALF = 380;
+
+/** Gate booth box, shared by CorridorRun (the booth) and NightLights (the glow). */
+export const BOOTH = { w: 180, h: 140, cy: -(ROAD_HALF + 95), glowR: 130 };
+
+/** Scroll progress → fraction of route length.
+ *  Continuous drive with curve slowdowns and a prominent, clearly visible border clearance at midpoint. */
 export const ROUTE_KEYS: Key[] = [
   [0, 0],
-  [0.12, 0.24, 1], // depart → strike hold
-  [0.30, 0.24],
-  [0.40, 0.46, 1], // → border 1
-  [0.56, 0.46],
-  [0.66, 0.68, 1], // → border 2
-  [0.70, 0.68],
-  [0.80, 0.90, 1], // → border 3
-  [0.92, 0.90],
-  [1, 1, 1], // → delivered
+  [0.08, 0.14, 1], // Straight 1: Fast departure out of Durban
+  [0.22, 0.25, 1], // Curve 1: Turning slowdown (front wheels steer, trailer articulates)
+  [0.32, 0.36, 1], // Straight 2: Accelerate forward
+  [0.44, 0.46, 1], // Curve 2: Turn & trailer sway
+  [0.48, 0.49, 1], // Approaching Beitbridge Gateway in full view ahead
+  [0.53, 0.51, 1], // At Checkpoint: Brief verification slowdown
+  [0.57, 0.54, 1], // Instant Clearance: Boom up & throttle surge!
+  [0.68, 0.67, 1], // Curve 3: Turn onto night highway
+  [0.78, 0.78, 1], // Straight 4: Night cruising
+  [0.88, 0.88, 1], // Curve 4: Final bend
+  [1.00, 1.00, 1], // Final Sprint: Fast delivery to Lubumbashi
 ];
 
+/** Camera punch-in per beat. Pulls back wide at the border (0.86) so the entire gantry, booth & truck are framed clearly. */
 export const ZOOM_KEYS: Key[] = [
-  [0, 0.3],
-  [0.1, 0.3, 1],
-  [0.14, 0.22, 1],
-  [0.3, 0.22],
-  [0.38, 0.3, 1],
-  [0.58, 0.3],
-  [0.64, 0.11, 1],
-  [0.72, 0.11],
-  [0.78, 0.3, 1],
-  [0.94, 0.3],
-  [1, 0.09, 1],
+  [0, 1],
+  [0.20, 1.05, 1],
+  [0.42, 0.94, 1], // Pull back during Curve 2
+  [0.51, 0.86, 1], // Wide framing at the border so the entire checkpoint structure and truck are visible!
+  [0.58, 0.98, 1], // Re-anchor as truck passes through
+  [0.72, 1.05, 1],
+  [1, 1.05, 1],   // Delivery framing
 ];
 
-/** Darkness overlay: fear dims the scene, clearance brings the light back. */
+/** Darkness overlay: subtle depth without obscuring the vehicle. */
 export const TINT_KEYS: Key[] = [
   [0, 0],
-  [0.12, 0.15],
-  [0.3, 0.55],
-  [0.4, 0.6],
-  [0.54, 0.3],
-  [0.8, 0.45],
-  [0.92, 0.1],
+  [0.48, 0],
+  [0.65, 0.15],
+  [0.80, 0.05],
   [1, 0],
 ];
 
-/** Day=0 Night=1 scalar per progress. Drives --n on stage each frame. */
+/** Day=0 Night=1 scalar per progress. Daytime at departure & border, night on the long haul. */
 export const NIGHT_KEYS: Key[] = [
   [0, 0],
-  [0.08, 0],
-  [0.22, 0.55], // dusk at strike
-  [0.34, 1],
-  [0.56, 1],   // night through border 1
-  [0.66, 0.35], // dawn after clearance
-  [0.80, 0.10],
-  [1, 0],
+  [0.48, 0],    // Bright daylight at border crossing
+  [0.66, 0.72], // Night transit with headlights on
+  [0.84, 0.25], // Dawn approaching destination
+  [1, 0],       // Daylight arrival
 ];
 
-/** TODO(copy/data): placeholder "delay exposure" hours. */
+/** Delay exposure stays at 0 h — brief checkpoint scan then cleared back to 0 h. */
 export const DELAY_KEYS: Key[] = [
   [0, 0],
-  [0.12, 0],
-  [0.3, 6],
-  [0.36, 3],
-  [0.46, 8],
-  [0.56, 2],
-  [0.72, 2],
-  [0.86, 4],
-  [0.92, 1],
+  [0.47, 0],
+  [0.51, 0.4], // Brief scan at checkpoint
+  [0.54, 0],   // Instant clearance back to 0 h
   [1, 0],
 ];
 
-export const STRIKE = { at: 0.24, from: 0.12, until: 0.31 };
+export const STRIKE = { at: 0.40, from: 0.32, until: 0.44 };
 
-/** TODO(verify) border names/route with real playbook. queueFrom→clearedAt = HOLD window. */
+/** Express border gateway at midpoint (0.50) — visible from afar, clear approach, instant pass. */
 export const GATES = [
-  { id: "g1", name: "Beitbridge", at: 0.46, queueFrom: 0.38, clearedAt: 0.54, queue: true },
-  { id: "g2", name: "Chirundu", at: 0.68, queueFrom: 0.64, clearedAt: 0.69, queue: false },
-  { id: "g3", name: "Kasumbalesa", at: 0.9, queueFrom: 0.78, clearedAt: 0.9, queue: true },
+  { id: "g1", name: "Beitbridge Gateway", at: 0.50, queueFrom: 0.47, clearedAt: 0.54, queue: false },
 ] as const;
 
 export interface Beat {
@@ -102,17 +116,12 @@ export interface Beat {
   to: number;
   kicker: string;
   title: string;
-  happened: string;
-  did: string;
-  saw: string;
 }
 
+/** 4 streamlined, client-reassuring beats synchronized with the journey */
 export const BEATS: Beat[] = [
-  { id: "depart", from: 0, to: 0.12, kicker: "01 · Departure", title: "Rolling out of Durban", happened: "Your cargo leaves Durban sealed, documented and on a planned route.", did: "Route, border sequence and agents are agreed before the wheels turn.", saw: "A live tracking card from the first kilometre." },
-  { id: "strike", from: 0.12, to: 0.34, kicker: "02 · Strike / blockade", title: "The road shuts", happened: "A strike blocks the road ahead.", did: "We switch to the pre-planned alternate route, or hold the trailer sealed in a secure yard until the road opens.", saw: "A message from us before you had to ask, with the new plan." },
-  { id: "queue", from: 0.34, to: 0.46, kicker: "03 · Border queue", title: "Held at the first border", happened: "The queue builds and the gate slows to a crawl.", did: "Our agent is already on site with documents pre-checked and a plan for the crossing.", saw: "Queue status and a revised ETA on your tracking card." },
-  { id: "clear1", from: 0.46, to: 0.58, kicker: "04 · Clearance", title: "Cleared, with a name on it", happened: "Customs inspects the manifest.", did: "A named agent walks the file through: manifest, customs and permits, each checked off.", saw: "HOLD flips to CLEARED and you get the confirmation." },
-  { id: "transit", from: 0.58, to: 0.76, kicker: "05 · Long haul", title: "Two more borders, same discipline", happened: "Two more crossings lie ahead.", did: "Same checklist, a named agent at each, staged before we arrive.", saw: "Every checkpoint logged as it clears, and the delay clock stays managed." },
-  { id: "final", from: 0.76, to: 0.94, kicker: "06 · Final gate", title: "The last crossing into the DRC", happened: "The final border stands between the cargo and its destination.", did: "Documents re-verified and the load seal checked against the log before the gate.", saw: "The seal number and clearance status, shared the moment they're confirmed." },
-  { id: "delivered", from: 0.94, to: 1.0001, kicker: "07 · Delivered", title: "Exposure back to zero", happened: "The truck reaches Lubumbashi.", did: "Seal checked, load handed over, proof of delivery captured.", saw: "R 2,000,000 delivered, with the whole journey on record." },
+  { id: "depart", from: 0, to: 0.22, kicker: "01 · Express Dispatch", title: "Out of Durban · Full Throttle" },
+  { id: "transit", from: 0.22, to: 0.46, kicker: "02 · Route Agility", title: "Handling Bends & Challenges Safely" },
+  { id: "clear", from: 0.46, to: 0.70, kicker: "03 · Priority Border Clearance", title: "Pre-Cleared · Always Green" },
+  { id: "delivered", from: 0.70, to: 1.0001, kicker: "04 · Guaranteed Delivery", title: "Lubumbashi · On Time & Intact" },
 ];

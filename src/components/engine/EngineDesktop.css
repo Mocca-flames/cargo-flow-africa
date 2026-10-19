@@ -9,9 +9,12 @@
 .engine--desktop .engine__layout {
   max-width: min(1560px, 100%);
   margin: 0 auto;
-  grid-template-columns: minmax(0, 24rem) minmax(0, 1fr);
+  /* 24rem → 21rem: the rail still holds a 9.5rem thumb + name, but the
+     photo column gains ~48px of width — every pixel of it lands on the
+     truck, since the frame photo is width-bound. */
+  grid-template-columns: minmax(0, 21rem) minmax(0, 1fr);
   grid-template-rows: minmax(auto, 1fr) auto auto;
-  column-gap: clamp(2rem, 4vw, 4.5rem);
+  column-gap: clamp(1.5rem, 3vw, 3.5rem);
   row-gap: clamp(1.25rem, 2.4vw, 2rem);
   align-content: stretch;
 }

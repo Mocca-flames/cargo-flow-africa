@@ -42,6 +42,10 @@
   background: var(--color-canvas);
   color: var(--color-ink);
 
+  /* Fixed NavBar (`--nav-height: 4.5rem`) overlaps anchor jumps to
+     `#loads-section` — hold the section below it. */
+  scroll-margin-top: var(--nav-height, 4.5rem);
+
   /* Contact dip, 0->1->0 over the last 15% of a landing: the trailer flexes
       2px under the load and returns to rest exactly at touch-down. Written per
       frame by the scrub onto the sticky frame; inherited down to the trailer
@@ -88,11 +92,7 @@
   }
 }
 
-/* ---- Heading ----
-   Display M, not Display L. Ch4's h2 is the chapter's loudest moment; Ch5 is
-   scored density 2-3 and has to stay quieter than what comes before it.
-   h2 only: the eyebrow, the standfirst and the origin chips are gone - the
-   manifest card and the load sheet carry the chapter's information now. */
+/* ---- Heading ---- */
 
 .loads__heading {
   margin: 0;
@@ -108,6 +108,30 @@
 .loads__header {
   flex: none;
   max-width: 42ch;
+}
+
+/* ---- Standfirst ----
+    One line, punchy: the consolidation pitch. Sits directly under the h2. */
+
+.loads__standfirst {
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-body);
+  font-size: clamp(0.9375rem, 0.4vw + 0.8rem, 1.125rem);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+
+/* ---- Shared-trailer note ----
+    Smaller, muted: explains the consolidation model. One short paragraph. */
+
+.loads__note {
+  margin: var(--space-2) 0 0;
+  font-family: var(--font-body);
+  font-size: clamp(0.8125rem, 0.3vw + 0.7rem, 0.9375rem);
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--color-ink-muted);
 }
 
 /* ─── The plan ───

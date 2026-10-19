@@ -1,0 +1,253 @@
+/* ============================================
+   PORTFOLIO — desktop focus carousel
+   A4 portrait pages (1 : 1.414). Active centred
+   full size, one dimmed page each side, outer
+   pages faded out. All 8 cards always rendered.
+   ============================================ */
+
+.portfolio--desktop {
+  /* Floor raised 420 → 470px for short laptop viewports (e.g. 1366x700):
+     the full DMS client name needs the extra body height. */
+  --card-h: clamp(470px, calc(100svh - 340px), 580px);
+  --card-w: calc(var(--card-h) / 1.414);
+}
+
+/* ── Header ─── */
+
+.portfolio--desktop .portfolio__header-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--space-4);
+  margin-bottom: var(--space-2);
+}
+
+.portfolio--desktop .portfolio__header-left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.portfolio--desktop .portfolio__header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.portfolio--desktop .portfolio__eyebrow { margin: 0; }
+.portfolio--desktop .portfolio__heading { margin: 0; }
+
+.portfolio--desktop .portfolio__counter {
+  font-family: var(--font-mono);
+  font-size: var(--text-body-l);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-muted);
+  white-space: nowrap;
+}
+
+.portfolio--desktop .portfolio__play-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--duration-fast) var(--ease-snap),
+    border-color var(--duration-fast) var(--ease-snap);
+}
+
+.portfolio--desktop .portfolio__play-btn:hover,
+.portfolio--desktop .portfolio__play-btn:focus-visible {
+  color: var(--color-ink);
+  border-color: var(--color-accent-gold);
+}
+
+.portfolio--desktop .portfolio__play-btn:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+.portfolio--desktop .portfolio__standfirst {
+  margin: var(--space-3) 0 0;
+}
+
+/* ─── Stage ─── */
+
+.portfolio--desktop .portfolio__stage {
+  position: relative;
+  height: calc(var(--card-h) + 48px); /* 24px above and below so shadows are not cut */
+  overflow: hidden;
+  width: 100%;
+  outline: none;
+}
+
+/* ─── Arrows ─── */
+
+.portfolio--desktop .portfolio__arrow {
+  position: absolute;
+  z-index: 20;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--color-ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: background var(--duration-fast) var(--ease-snap);
+}
+
+.portfolio--desktop .portfolio__arrow svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.portfolio--desktop .portfolio__arrow--prev { left: 0.5rem; }
+.portfolio--desktop .portfolio__arrow--next { right: 0.5rem; }
+
+.portfolio--desktop .portfolio__arrow:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.portfolio--desktop .portfolio__arrow:disabled {
+  opacity: 0.15;
+  cursor: default;
+}
+
+.portfolio--desktop .portfolio__arrow:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+/* ─── Track ─── */
+
+.portfolio--desktop .portfolio__carousel-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* ─── Cards ── */
+
+.portfolio--desktop .portfolio__card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--card-w);
+  height: var(--card-h);
+  transform: translate(-50%, -50%) translateX(var(--x)) scale(var(--s));
+  opacity: var(--o);
+  transition: transform .5s cubic-bezier(.22,.8,.3,1), opacity .5s ease;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  overflow: hidden;
+  container-type: inline-size;
+  box-shadow: 0 24px 48px -24px rgba(20,40,30,.35);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Active: centred, full size */
+.portfolio--desktop .portfolio__card[data-pos="0"] {
+  --x: 0;
+  --s: 1;
+  --o: 1;
+  z-index: 3;
+}
+
+/* Neighbour -1 */
+.portfolio--desktop .portfolio__card[data-pos="-1"] {
+  --x: calc(var(--card-w) * -0.91 - 24px);
+  --s: .82;
+  --o: .55;
+  z-index: 2;
+}
+
+/* Neighbour +1 */
+.portfolio--desktop .portfolio__card[data-pos="1"] {
+  --x: calc(var(--card-w) * 0.91 + 24px);
+  --s: .82;
+  --o: .55;
+  z-index: 2;
+}
+
+/* 2nd neighbour -2 */
+.portfolio--desktop .portfolio__card[data-pos="-2"],
+.portfolio--desktop .portfolio__card[data-pos="far"][data-sign="-1"] {
+  --x: calc(var(--card-w) * -1.65 - 48px);
+  --s: .66;
+  --o: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* 2nd neighbour +2 */
+.portfolio--desktop .portfolio__card[data-pos="2"],
+.portfolio--desktop .portfolio__card[data-pos="far"][data-sign="1"] {
+  --x: calc(var(--card-w) * 1.65 + 48px);
+  --s: .66;
+  --o: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ─── Dots ─── */
+
+.portfolio--desktop .portfolio__dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.portfolio--desktop .portfolio__dot {
+  position: relative;
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-border);
+  cursor: pointer;
+  transition: width 0.3s var(--ease-snap);
+  padding: 0;
+  overflow: hidden;
+}
+
+.portfolio--desktop .portfolio__dot:hover {
+  background: var(--color-ink-muted);
+}
+
+.portfolio--desktop .portfolio__dot--active {
+  width: 1.25rem;
+  border-radius: 1rem;
+  background: var(--color-border);
+}
+
+.portfolio--desktop .portfolio__dot--active::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: calc(var(--dot-progress, 0) * 100%);
+  background: var(--color-accent-gold);
+  border-radius: 1rem;
+}
+
+.portfolio--desktop .portfolio__dot:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}

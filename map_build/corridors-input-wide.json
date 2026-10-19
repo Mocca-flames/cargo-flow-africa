@@ -1,0 +1,199 @@
+{
+  "places": {
+    "jhb": {
+      "name": "Johannesburg HQ",
+      "type": "hub",
+      "lat": -26.2041,
+      "lon": 28.0473
+    },
+    "gbe": {
+      "name": "Gaborone HQ",
+      "type": "hub",
+      "lat": -24.6282,
+      "lon": 25.9231
+    },
+    "wdh": {
+      "name": "Windhoek",
+      "type": "city",
+      "lat": -22.5609,
+      "lon": 17.0658
+    },
+    "hre": {
+      "name": "Harare",
+      "type": "city",
+      "lat": -17.8292,
+      "lon": 31.0522
+    },
+    "byo": {
+      "name": "Bulawayo",
+      "type": "city",
+      "lat": -20.1325,
+      "lon": 28.6265
+    },
+    "lun": {
+      "name": "Lusaka",
+      "type": "city",
+      "lat": -15.3875,
+      "lon": 28.3228
+    },
+    "lub": {
+      "name": "Lubumbashi",
+      "type": "city",
+      "lat": -11.6609,
+      "lon": 27.4794
+    },
+    "beitbridge": {
+      "name": "Beitbridge",
+      "type": "border",
+      "lat": -22.2186,
+      "lon": 30.0003
+    },
+    "skilpadshek": {
+      "name": "Skilpadshek",
+      "type": "border",
+      "lat": -25.23,
+      "lon": 25.66
+    },
+    "ramatlabama": {
+      "name": "Ramatlabama",
+      "type": "border",
+      "lat": -25.61,
+      "lon": 25.61
+    },
+    "nakop": {
+      "name": "Nakop",
+      "type": "border",
+      "lat": -28.1,
+      "lon": 19.98
+    },
+    "kazungula": {
+      "name": "Kazungula",
+      "type": "border",
+      "lat": -17.7886,
+      "lon": 25.2692
+    },
+    "plumtree": {
+      "name": "Plumtree",
+      "type": "border",
+      "lat": -20.4833,
+      "lon": 27.8167
+    },
+    "buitepos": {
+      "name": "Buitepos",
+      "type": "border",
+      "lat": -22.2,
+      "lon": 20
+    },
+    "katima": {
+      "name": "Katima Mulilo",
+      "type": "border",
+      "lat": -17.49,
+      "lon": 24.28
+    },
+    "chirundu": {
+      "name": "Chirundu",
+      "type": "border",
+      "lat": -16.0333,
+      "lon": 28.85
+    },
+    "kasumbalesa": {
+      "name": "Kasumbalesa",
+      "type": "border",
+      "lat": -12.2667,
+      "lon": 27.8
+    },
+    "dbn": {
+      "name": "Durban",
+      "type": "port",
+      "lat": -29.8587,
+      "lon": 31.0218
+    }
+  },
+  "corridors": {
+    "A": {
+      "name": "North-South",
+      "main": [
+        "jhb",
+        "beitbridge",
+        "hre",
+        "chirundu",
+        "lun",
+        "kasumbalesa",
+        "lub"
+      ],
+      "feeders": [
+        [
+          "dbn",
+          "jhb"
+        ]
+      ]
+    },
+    "B": {
+      "name": "Kazungula",
+      "main": [
+        "gbe",
+        "kazungula",
+        "lun",
+        "kasumbalesa",
+        "lub"
+      ],
+      "feeders": [
+        [
+          "jhb",
+          "skilpadshek",
+          "gbe"
+        ],
+        [
+          "jhb",
+          "ramatlabama",
+          "gbe"
+        ],
+        [
+          "dbn",
+          "jhb"
+        ]
+      ]
+    },
+    "C": {
+      "name": "Trans-Kalahari",
+      "main": [
+        "gbe",
+        "buitepos",
+        "wdh",
+        "katima",
+        "lun",
+        "kasumbalesa",
+        "lub"
+      ],
+      "feeders": [
+        [
+          "jhb",
+          "nakop",
+          "wdh"
+        ],
+        [
+          "dbn",
+          "jhb"
+        ]
+      ]
+    },
+    "D": {
+      "name": "Zimbabwe",
+      "main": [
+        "gbe",
+        "plumtree",
+        "byo",
+        "chirundu",
+        "lun",
+        "kasumbalesa",
+        "lub"
+      ],
+      "feeders": [
+        [
+          "dbn",
+          "jhb"
+        ]
+      ]
+    }
+  }
+}

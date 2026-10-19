@@ -13,6 +13,9 @@ const pad = (n: number) => String(n).padStart(2, "0");
 export default function ProofDeck({ variant }: { variant: ProofVariant }) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const deckRef = useRef<HTMLDivElement | null>(null);
+  const pinRef = useRef<HTMLDivElement | null>(null);
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const frameRef = useRef<HTMLDivElement | null>(null);
   const [entered, setEntered] = useState(false);
   /* ProofSection gates on matchMedia, so this component only ever
      renders client-side — the capability check is safe here. */
@@ -22,6 +25,12 @@ export default function ProofDeck({ variant }: { variant: ProofVariant }) {
   const [inView, setInView] = useState(noIo);
   const [active, setActive] = useState(0);
   const [arrive, setArrive] = useState(false);
+  /* Client-only (ProofSection gates on matchMedia), so this is safe. */
+  const [scrub] = useState(
+    () =>
+      variant === "mobile" &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
 
   /* Reveal on approach + the motion gate. `entered` is one-way (the
      entrance never replays); `inView` toggles both ways so every scene
@@ -56,13 +65,74 @@ export default function ProofDeck({ variant }: { variant: ProofVariant }) {
     };
   }, [noIo]);
 
-  /* Mobile: which card is snapped. Root = the deck itself, never the
-     viewport — otherwise all four cards read as visible on desktop.
-     At threshold 0.6 only one card can qualify at a time (two would
-     need 120% of the viewport), so the counter and scenes track the
-     card under the thumb. */
+  /* Mobile, scrubbed: scroll progress through the pin drives the deck.
+     No React state per frame; only a transform write. `active` updates
+     only when the card index actually changes. */
   useEffect(() => {
-    if (variant !== "mobile") return;
+    if (!scrub) return;
+    const pin = pinRef.current;
+    const stage = stageRef.current;
+    const frame = frameRef.current;
+    const deck = deckRef.current;
+    if (!pin || !stage || !frame || !deck) return;
+
+    const last = commodities.length - 1;
+    const HOLD = 0.06;
+    const clamp = (v: number) => Math.min(1, Math.max(0, v));
+
+    let maxX = 0;
+    let range = 1;
+    let raf = 0;
+    let lastP = -1;
+    let lastIdx = -1;
+
+    const measure = () => {
+      maxX = Math.max(0, deck.scrollWidth - frame.clientWidth);
+      range = Math.max(1, pin.offsetHeight - stage.offsetHeight);
+    };
+
+    const tick = () => {
+      raf = 0;
+      const raw = clamp(-pin.getBoundingClientRect().top / range);
+      const p = clamp((raw - HOLD) / (1 - HOLD * 2));
+      if (p === lastP) return;
+      lastP = p;
+      deck.style.transform = `translate3d(${-p * maxX}px,0,0)`;
+      const idx = Math.round(p * last);
+      if (idx !== lastIdx) {
+        lastIdx = idx;
+        setActive(idx);
+      }
+    };
+
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    const onResize = () => {
+      measure();
+      lastP = -1;
+      schedule();
+    };
+
+    measure();
+    tick();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", onResize);
+    const ro = new ResizeObserver(onResize);
+    ro.observe(deck);
+
+    return () => {
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", onResize);
+      ro.disconnect();
+      if (raf) cancelAnimationFrame(raf);
+      deck.style.transform = "";
+    };
+  }, [scrub]);
+
+  /* Mobile fallback (reduced motion): the original native snap deck. */
+  useEffect(() => {
+    if (variant !== "mobile" || scrub) return;
     const deck = deckRef.current;
     if (!deck || typeof IntersectionObserver === "undefined") return;
 
@@ -88,7 +158,7 @@ export default function ProofDeck({ variant }: { variant: ProofVariant }) {
       observer.observe(el);
     });
     return () => observer.disconnect();
-  }, [variant]);
+  }, [variant, scrub]);
 
   /* Desktop without a usable hover pointer (touch laptops): one beat on
      arrival, then idle — hover is never the only way to see the flair.
@@ -116,6 +186,7 @@ export default function ProofDeck({ variant }: { variant: ProofVariant }) {
       className={[
         "proof",
         `proof--${variant}`,
+        scrub ? "proof--scrub" : "",
         entered ? "proof--entered" : "",
         inView ? "proof--inview" : "",
       ]
@@ -123,21 +194,27 @@ export default function ProofDeck({ variant }: { variant: ProofVariant }) {
         .join(" ")}
       aria-labelledby="proof-heading"
     >
-      <header className="proof__header">
-        <p className="proof__eyebrow">
-          <span className="proof__eyebrow-index">04</span> / PROOF
-        </p>
-        <h2 className="proof__heading" id="proof-heading">
-          What We Move
-        </h2>
-      </header>
+      <div
+        className="proof__pin"
+        ref={pinRef}
+        style={{ "--proof-steps": commodities.length - 1 } as React.CSSProperties}
+      >
+        <div className="proof__stage" ref={stageRef}>
+          <header className="proof__header">
+            <p className="proof__eyebrow">
+              <span className="proof__eyebrow-index">04</span> / PROOF
+            </p>
+            <h2 className="proof__heading" id="proof-heading">
+              What We Move
+            </h2>
+          </header>
 
-      <div className="proof__deck-frame">
-        <span className="proof__counter" aria-hidden="true">
-          {pad(active + 1)} / {pad(commodities.length)}
-        </span>
+          <div className="proof__deck-frame" ref={frameRef}>
+            <span className="proof__counter" aria-hidden="true">
+              {pad(active + 1)} / {pad(commodities.length)}
+            </span>
 
-        <div className="proof__deck" ref={deckRef}>
+            <div className="proof__deck" ref={deckRef}>
           {commodities.map((item, index) => {
             const trailer = fleetByCode(item.fleet[0]);
             const corridor = corridors[item.corridorId];
@@ -192,21 +269,23 @@ export default function ProofDeck({ variant }: { variant: ProofVariant }) {
               </article>
             );
           })}
+            </div>
+          </div>
+
+          <footer className="proof__closing">
+            <div className="proof__ticker" aria-hidden="true">
+              <div className="proof__ticker-track">
+                <span className="proof__ticker-run">{tickerText}</span>
+                <span className="proof__ticker-run">{tickerText}</span>
+              </div>
+            </div>
+            <p className="proof__ticker-static">{tickerText}</p>
+            <a className="proof__where" href="#corridor-section">
+              Where it goes <span aria-hidden="true">→</span>
+            </a>
+          </footer>
         </div>
       </div>
-
-      <footer className="proof__closing">
-        <div className="proof__ticker" aria-hidden="true">
-          <div className="proof__ticker-track">
-            <span className="proof__ticker-run">{tickerText}</span>
-            <span className="proof__ticker-run">{tickerText}</span>
-          </div>
-        </div>
-        <p className="proof__ticker-static">{tickerText}</p>
-        <a className="proof__where" href="#corridor-section">
-          Where it goes <span aria-hidden="true">→</span>
-        </a>
-      </footer>
     </section>
   );
 }

@@ -1,51 +1,18 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import type { useQuoteForm } from "./useQuoteForm";
+import { QuoteFormContent } from "./QuoteFormContent";
 import "./VerdictCommon.css";
 import "./VerdictDesktop.css";
 
-gsap.registerPlugin(ScrollTrigger);
+type Props = ReturnType<typeof useQuoteForm>;
 
-export default function VerdictDesktop() {
-  const sectionRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    if (!sectionRef.current) return;
-
-    let ctx: gsap.Context | undefined;
-    const frame = requestAnimationFrame(() => {
-      ctx = gsap.context(() => {
-        ScrollTrigger.create({
-          trigger: sectionRef.current,
-          start: "top top",
-          end: "+=80%",
-          pin: true,
-          scrub: 0.3,
-          anticipatePin: 1,
-          refreshPriority: 0,
-        });
-        ScrollTrigger.refresh();
-      }, sectionRef);
-    });
-
-    return () => {
-      cancelAnimationFrame(frame);
-      ctx?.revert();
-    };
-  }, []);
-
+export default function VerdictDesktop(form: Props) {
   return (
-    <section id="verdict-section" ref={sectionRef} className="verdict verdict--desktop">
+    <section id="verdict-section" className="verdict verdict--desktop">
       <div className="verdict__content">
-        <h2 className="verdict__headline" />
-        <form className="verdict__form">
-          <div className="verdict__field" />
-          <div className="verdict__field" />
-          <div className="verdict__field" />
-          <button className="verdict__cta" />
-        </form>
+        <h2 className="verdict__headline">Ready to move?</h2>
+        <QuoteFormContent {...form} />
         <p className="verdict__stat" />
       </div>
     </section>

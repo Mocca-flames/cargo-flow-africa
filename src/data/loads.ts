@@ -2,15 +2,15 @@
  * Ch5's loading plan — three shippers, one flatdeck, one run.
  *
  * The chapter is a LOAD PLAN rather than a 3D assembly: the flatdeck trailer,
- * and one piece of freight per shipper standing on the deck. This file is the
- * single source of truth for what is on the deck, in what order, how heavy it
+ * and one piece of freight per shipper standing on the trailer. This file is the
+ * single source of truth for what is on the trailer, in what order, how heavy it
  * is and where it came from and went to — so the drawing, the map and the mono
  * counter can never disagree with each other.
  *
  * Convention, same as the rest of the data layer: dimensions are metres,
  * authored here and interpreted by the component. `startM` is a load's left
- * edge measured from the deck centre, `sizeM` its extent along the deck,
- * `heightM` its stack height above the deck top. **Positive metres are toward
+ * edge measured from the trailer centre, `sizeM` its extent along the trailer,
+ * `heightM` its stack height above the trailer top. **Positive metres are toward
  * the REAR of the trailer** (over the tri-axle bogie); negative is toward the
  * front (over the kingpin). `order` is the 1-based landing order, which is also
  * the left-to-right position in the side elevation, because that drawing is
@@ -18,14 +18,14 @@
  * flip.
  *
  * `cargoBox` is the commodity drawing's own frame — its natural width and
- * height above the deck contact. `planGeometry.ts` scales every drawing by one
+ * height above the trailer contact. `planGeometry.ts` scales every drawing by one
  * shared factor, so the freight is sized by the drawings rather than the other
  * way round, and the dashed slot is cut to whatever width that produces.
  * These are the drawings' intrinsic dimensions; do not "correct" them.
  *
  * Lane geometry — which yard each load came from, which town it is bound for,
  * and where both sit on the map — lives in `data/corridors-ch5.ts`, not here.
- * The deck's physical facts and the map's geographic facts are separate
+ * The trailer's physical facts and the map's geographic facts are separate
  * concerns, and only the load `id` joins them.
  */
 
@@ -36,11 +36,11 @@ export type LoadUnitId = "steel-coil" | "sulphur" | "fertiliser";
 export type CargoId = LoadUnitId;
 
 export type CargoBox = {
-  /** Which commodity drawing to stand on the deck. */
+  /** Which commodity drawing to stand on the trailer. */
   id: CargoId;
   /** Natural width of the drawing, in its own viewBox units. */
   w: number;
-  /** Natural height of the drawing above its deck contact, same units. */
+  /** Natural height of the drawing above its trailer contact, same units. */
   h: number;
 };
 
@@ -59,16 +59,16 @@ export type LoadUnitRecord = {
       the geometry lives. */
   destination: string;
   country: string;
-  /** Tonnes this unit adds to the deck. Sums to the plate total. */
+  /** Tonnes this unit adds to the trailer. Sums to the plate total. */
   tonnes: number;
-  /** Left edge, metres from the deck centre. Positive is toward the rear. */
+  /** Left edge, metres from the trailer centre. Positive is toward the rear. */
   startM: number;
-  /** Extent along the deck, metres. */
+  /** Extent along the trailer, metres. */
   sizeM: number;
-  /** Stack height above the deck top, metres. Drives the mobile top-view
+  /** Stack height above the trailer top, metres. Drives the mobile top-view
       footprint, which has no drawing of its own yet. */
   heightM: number;
-  /** The freight standing on the deck for this unit. */
+  /** The freight standing on the trailer for this unit. */
   cargo: CargoBox;
 };
 
@@ -84,13 +84,13 @@ export const loadsDeck = {
 } as const;
 
 /* ─── The plan ───
-   Deck-space is claimed by the drawings, not by hand. Each `sizeM` below is the
-   width its freight occupies once scaled to the band above the deck line (see
+   Trailer-space is claimed by the drawings, not by hand. Each `sizeM` below is the
+   width its freight occupies once scaled to the band above the trailer line (see
    `planGeometry.ts`), so the dashed slot is exactly the footprint of the cargo
    that lands in it.
 
    Placement follows the real load plan, heaviest forward of the bogie:
-   steel coils sit over the rear tri-axle, sulphur is mid-deck, fertiliser
+   steel coils sit over the rear tri-axle, sulphur is mid-trailer, fertiliser
    goes over the kingpin at the front. Landing order is therefore rear → front,
    which is left → right in the (mirrored) side elevation. */
 
@@ -196,14 +196,16 @@ export function unitWindow(unit: LoadUnitRecord) {
 
 export const loadsCopy = {
   eyebrow: "LOADS",
-  heading: "Three Shippers. One Deck. One Run.",
+  heading: "Three Shippers. One Trailer. One Run.",
   standfirst:
-    "34 tonnes from three origins, weighed, placed and strapped before the wheels turn.",
+    "One truck. Three clients. Share the trailer and split the cost.",
+  sharedTrailerNote:
+    "CONSOLIDATION load. Your load shares a truck with other clients’ loads. You only pay for the space you use.",
   readoutLabel: "Load sheet",
   bracket: "3 shippers → 1 truck",
   cta: "See how we load",
   /** Shown in place of a landing caption while the deck is still empty. */
-  captionIdle: "Deck empty · awaiting first load",
+  captionIdle: "Trailer empty — waiting for first load",
 } as const;
 
 /** The per-landing caption: `STEEL COIL · 13.0 T → NDOLA, ZAMBIA`. */

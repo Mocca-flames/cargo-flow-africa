@@ -1,8 +1,11 @@
-// Frame: viewBox -200 -100 1900 500, faces +x, kingpin pivot (1300,150). Swap this whole <g> for the Gemini SVG.
+// Frame: viewBox 0 0 1400 300, faces +x, kingpin pivot (1300,150). Swap this whole <g> for the Gemini SVG.
+// width/height are MANDATORY: a nested <svg> defaults to 100% of the parent
+// viewport, which would scale the art off its pivot. Keep them in world units
+// matching the viewBox; the parent <g> translate(-1300 -150) lands the pivot.
 
 export function TrailerArt() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="10 0 1400 300">
+    <svg xmlns="http://www.w3.org/2000/svg" x={0} y={0} width={1400} height={300} viewBox="0 0 1400 300">
   <defs>
     <linearGradient id="tarp-base" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stopColor="#14392F"/>

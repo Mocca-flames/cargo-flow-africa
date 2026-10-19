@@ -1,0 +1,17 @@
+/* Desktop: people in 3 columns, branches in 2 columns. */
+
+.contact--desktop .contact__people {
+  grid-template-columns: repeat(3, 1fr);
+  align-items: stretch;
+}
+
+.contact--desktop .contact__branches {
+  grid-template-columns: repeat(2, 1fr);
+  align-items: stretch;
+}
+
+@media (max-width: 1024px) {
+  .contact--desktop .contact__people {
+    grid-template-columns: 1fr 1fr;
+  }
+}

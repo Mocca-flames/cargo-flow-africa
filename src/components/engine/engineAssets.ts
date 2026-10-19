@@ -17,6 +17,7 @@ export type EngineAsset = {
   code: string;
   name: string;
   summary: string;
+  image: string;
   deckLengthM: number;
   loadingHeightM: number;
   stats: EngineStat[];

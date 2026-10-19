@@ -46,14 +46,14 @@ export default function ThreatMobile() {
           {/* Cargo Flow standard — base layer */}
           <img
             className="threat__layer threat__layer--right"
-            src="/images/premise/mobile_right_panel.png"
+            src="/images/premise/mobile_right_panel.avif"
             alt="A Cargo Flow truck on an open corridor"
           />
 
           {/* Broker / fear photo — revealed by wipe (vertical, bottom-up) */}
           <img
             className="threat__layer threat__layer--fear threat__layer--left"
-            src="/images/premise/mobile_left_panel.png"
+            src="/images/premise/mobile_left_panel.avif"
             alt="Trucks queued at a border crossing"
           />
 

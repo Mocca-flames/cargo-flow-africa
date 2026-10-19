@@ -169,6 +169,15 @@ function cardAt(p: number) {
   return -1;
 }
 
+/** How many loads have fully landed at progress `p` (0–3). Drives the load
+ *  sheet counter (`00 / 03 · 0.0 T` → `03 / 03 · 34.0 T`). */
+function landedAt(p: number) {
+  if (p >= CARD_LANDED_AT[2]) return 3;
+  if (p >= CARD_LANDED_AT[1]) return 2;
+  if (p >= CARD_LANDED_AT[0]) return 1;
+  return 0;
+}
+
 /** Triangle over the last 15% of a fall — the deck taking the weight. */
 function dipShape(t: number) {
   if (t <= DIP_START || t >= 1) return 0;
@@ -186,6 +195,7 @@ export function useLoadsMobileProgress({
   reduced,
   onScale,
   onCard,
+  onLanded,
   onLink,
 }: {
   sectionRef: React.RefObject<HTMLElement | null>;
@@ -200,6 +210,8 @@ export function useLoadsMobileProgress({
   onScale: (scale: number) => void;
   /** Manifest reading. Fires only when a threshold is crossed. */
   onCard: (step: number) => void;
+  /** Loads fully landed (0–3). Fires only when a threshold is crossed. */
+  onLanded: (landed: number) => void;
   /** Closing link visibility. Fires only when its threshold is crossed. */
   onLink: (shown: boolean) => void;
 }) {
@@ -212,6 +224,7 @@ export function useLoadsMobileProgress({
     cargo: ["", "", ""],
     line: -1,
     card: -2,
+    landed: -1,
     link: false,
   });
 
@@ -235,6 +248,9 @@ export function useLoadsMobileProgress({
         onScale(s);
       };
       fit();
+      onCard(3);
+      onLanded(3);
+      onLink(true);
       window.addEventListener("resize", fit);
       return () => window.removeEventListener("resize", fit);
     }
@@ -361,11 +377,16 @@ export function useLoadsMobileProgress({
       }
 
       /* React hears about landings and nothing else — five events for the
-         whole chapter, never a per-frame setState. */
+          whole chapter, never a per-frame setState. */
       const step = cardAt(p);
       if (step !== last.card) {
         last.card = step;
         onCard(step);
+      }
+      const landed = landedAt(p);
+      if (landed !== last.landed) {
+        last.landed = landed;
+        onLanded(landed);
       }
       const showLink = p >= LINK_AT;
       if (showLink !== last.link) {
@@ -454,6 +475,7 @@ export function useLoadsMobileProgress({
     reduced,
     onScale,
     onCard,
+    onLanded,
     onLink,
   ]);
 }

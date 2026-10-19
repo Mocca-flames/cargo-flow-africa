@@ -115,8 +115,8 @@ page, deliberately restrained.
 ### Ch3 — The Engine / Fleet
 **Visual:** left-anchored asset switcher (full-height thumb-rail of
 truck cards), right side = the rig frame that swaps + spec panel below.
-- Tabs = real assets: `side-loader`, `flatdeck`, `lowbed`,
-  `tautliner` (mono codes `SL-104 / FD-120 / LB-36 / TL-13`). Each
+- Tabs = real assets: `side-tipper`, `flatdeck`, `lowbed`,
+  `tautliner` (mono codes `ST-34 / FD-120 / LB-36 / TL-13`). Each
   swap re-renders the drawing with a quick snap transition
   (`--ease-snap`, 200ms) and the frame index (`01 / 04`) moves with it.
 - The visual is a **render-safe SVG side elevation drawn at true
@@ -243,7 +243,7 @@ drift):
 
 | # | Commodity | Tag | Hook (draft) | Scene |
 | --- | --- | --- | --- | --- |
-| 01 | Sulphur granules | SL-104 (TBC — containerised only) | "Yellow, gritty, and always on schedule." | `pour` |
+| 01 | Sulphur granules | ST-34 (Side tipper, bulk) | "Yellow, gritty, and always on schedule." | `pour` |
 | 02 | Steel | FD-120 | "Heavy, blunt, and perfectly balanced." | `stack` |
 | 03 | Fertilisers | TL-13 | "Bagged, palletised, kept dry." | `drop` |
 | 04 | Mining machinery | LB-36 | "Oversized, overweight, and on the low deck." | `ramp` |

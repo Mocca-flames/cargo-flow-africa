@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useQuoteForm } from "./useQuoteForm";
 import VerdictDesktop from "./VerdictDesktop";
 import VerdictMobile from "./VerdictMobile";
 
 export default function VerdictSection() {
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
+  const form = useQuoteForm();
 
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 767px)");
@@ -17,5 +19,9 @@ export default function VerdictSection() {
 
   if (isMobile === null) return null;
 
-  return isMobile ? <VerdictMobile key="mobile" /> : <VerdictDesktop key="desktop" />;
+  return isMobile ? (
+    <VerdictMobile key="mobile" {...form} />
+  ) : (
+    <VerdictDesktop key="desktop" {...form} />
+  );
 }

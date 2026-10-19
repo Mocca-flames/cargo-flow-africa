@@ -1,37 +1,73 @@
 /* ============================================================
    CH6 · CORRIDOR — MOBILE layout (≤767px; CorridorSection picks this
-   variant). Framing numbers: MOBILE_CAMERA in camera.ts (truck centred,
-   raised to anchorY 0.34 so the bottom sheet never covers it).
+   variant). Framing numbers: MOBILE_CAMERA in camera.ts (rig centred
+   at anchorY 0.5 so the truck sits mid-screen).
 
    Mobile composition:
-     · HUD = full-width 2-column strip under the header (labels stacked
-       above values — horizontal room is too tight for label-left/value-right)
-     · copy = bottom sheet, pinned to the bottom edge
+     · the world is rotated -90° (MOBILE_CAMERA.worldRotate) so the
+       corridor runs bottom→top and the truck climbs the screen
+     · HUD = two compact horizontal pills: "Next gate" pinned bottom-left,
+       "Remaining" pinned top-right (label + value side-by-side); the
+       delay stat is hidden — always 0 h, not important
+     · copy = bottom sheet, pinned to the bottom edge, kicker + title only
    Anything shared with desktop belongs in CorridorCommon.css.
    ============================================================ */
 
+/* HUD: transparent full-stage container; stats positioned absolutely. */
 .corridor--mobile .corridor__hud {
-  right: 0.75rem;
-  left: 0.75rem;
-  top: calc(var(--header-h, 70px) + 3.2rem);
-  grid-template-columns: 1fr 1fr;
-  min-width: 0;
-  padding: 0.6rem 0.75rem;
+  inset: 0;
+  display: block;
+  background: transparent;
+  border: none;
+  backdrop-filter: none;
+  padding: 0;
+  pointer-events: none;
 }
 
-/* Stacked label-over-value cells in the 2-col grid. */
+/* Each stat is a compact horizontal pill (label left, value right). */
 .corridor--mobile .corridor__hud div {
+  position: absolute;
   display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.35rem;
+  padding: 0.4rem 0.65rem;
+  background: color-mix(in srgb, rgba(15, 27, 23, 0.85) calc(var(--n) * 100%), rgba(11, 21, 18, 0.78));
+  border: 1px solid color-mix(in srgb, rgba(244, 238, 227, 0.2) calc(var(--n) * 100%), rgba(244, 238, 227, 0.14));
+  backdrop-filter: blur(6px);
+  pointer-events: auto;
 }
 
+/* Next gate: bottom-left, above the copy sheet. */
+.corridor--mobile .corridor__hud div:nth-child(1) {
+  bottom: calc(1rem + 4.5rem);
+  left: 0.75rem;
+}
+
+/* Remaining: top-right, under the header. */
+.corridor--mobile .corridor__hud div:nth-child(2) {
+  top: calc(var(--nav-height, 4.5rem) + 0.75rem);
+  right: 0.75rem;
+}
+
+/* Hide the delay stat — always 0 h, not important on mobile. */
+.corridor--mobile .corridor__hud div:nth-child(3) {
+  display: none;
+}
+
+/* The chapter plate would sit on top of the corner HUD pills, and it
+   repeats what the section heading already says — mobile gives it up. */
+.corridor--mobile .corridor__kicker-plate { display: none; }
+
+/* Sheet: full-width along the bottom edge, capped so the rig stays visible. */
 .corridor--mobile .corridor__panels {
   left: 0.75rem;
   right: 0.75rem;
   width: auto;
   top: auto;
   bottom: 1rem;
+  max-width: 32rem;
+  margin-inline: auto;
 }
 
 /* Sheet panels stretch full-width along the bottom edge. */

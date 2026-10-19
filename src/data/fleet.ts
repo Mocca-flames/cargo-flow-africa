@@ -7,15 +7,17 @@
  * drift apart. Edit the record once; both chapters follow.
  */
 
-export type FleetId = "side-loader" | "flatdeck" | "lowbed" | "tautliner";
+export type FleetId = "side-tipper" | "flatdeck" | "lowbed" | "tautliner";
 
-export type FleetCode = "SL-104" | "FD-120" | "LB-36" | "TL-13";
+export type FleetCode = "ST-34" | "FD-120" | "LB-36" | "TL-13";
 
 export type FleetClassRecord = {
   id: FleetId;
   code: FleetCode;
   name: string;
   summary: string;
+  /** Public photo used by Ch3's frame — the SVG rig stays as the rail thumb. */
+  image: string;
   payloadT: number;
   deckLengthM: number;
   loadingHeightM: number;
@@ -26,23 +28,21 @@ export type FleetClassRecord = {
 
 export const fleetClasses: FleetClassRecord[] = [
   {
-    id: "side-loader",
-    code: "SL-104",
-    name: "Side-loader",
+    id: "side-tipper",
+    code: "ST-34",
+    name: "Side tipper",
     summary:
-      "Deck stanchions and a swing ramp. Load it from the side, run it long.",
-    payloadT: 26,
+      "High-walled bulk body that tips off the flank. Load it from the side, run it long.",
+    image: "/fleet/side_tipper.avif",
+    payloadT: 34,
     deckLengthM: 13.6,
     loadingHeightM: 1.35,
     axles: "6×4 tractor · tri-axle bogie",
     commodities: [
-      "Palletised freight",
+      "sulphur granules",
       "bagged grain",
       "mining spares",
-      // TBC — containerised only. If sulphur runs in bulk tippers,
-      // SL-104 is the wrong tag: swap the commodity's fleet code, not
-      // the scene (data/commodities.ts keeps sceneId independent).
-      "sulphur granules",
+      "aggregates",
     ],
   },
   {
@@ -51,6 +51,7 @@ export const fleetClasses: FleetClassRecord[] = [
     name: "Flatdeck",
     summary:
       "Nothing built in. Lash points the length of the bed, for whatever the load turns out to be.",
+    image: "/fleet/flatbed.avif",
     payloadT: 30,
     deckLengthM: 12,
     loadingHeightM: 1.4,
@@ -63,6 +64,7 @@ export const fleetClasses: FleetClassRecord[] = [
     name: "Lowbed",
     summary:
       "The bed drops under a metre. Everything above that clearance is yours to use.",
+    image: "/fleet/lowbed.avif",
     // TBC: needs abnormal load permit above ~34–38 t.
     payloadT: 44,
     deckLengthM: 11,
@@ -76,6 +78,7 @@ export const fleetClasses: FleetClassRecord[] = [
     name: "Tautliner",
     summary:
       "Closed, ribbed and long. Volume that survives the distance and the weather.",
+    image: "/fleet/tautliner.avif",
     payloadT: 27,
     deckLengthM: 13.6,
     loadingHeightM: 1.3,

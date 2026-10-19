@@ -157,19 +157,25 @@ function Trailer({ asset, rear, deckY }: { asset: EngineAsset; rear: number; dec
   const length = rear - DECK_FRONT;
 
   switch (asset.id) {
-    case "side-loader": {
-      const postTop = yAt(2.45);
+    case "side-tipper": {
+      const bodyTop = yAt(2.75);
       return (
         <g>
           <rect className="engine-rig__body" x={DECK_FRONT} y={deckY} width={length} height={DECK_THICK} />
-          {[0.07, 0.29, 0.51, 0.73].map((f) => (
-            <rect
+          <path
+            className="engine-rig__body"
+            d={`M${DECK_FRONT} ${deckY} L${DECK_FRONT} ${bodyTop} L${DECK_FRONT + 10} ${bodyTop} L${DECK_FRONT + 10} ${
+              deckY - 8
+            } L${rear - 10} ${deckY - 8} L${rear - 10} ${bodyTop} L${rear} ${bodyTop} L${rear} ${deckY} Z`}
+          />
+          {[0.22, 0.42, 0.62, 0.82].map((f) => (
+            <line
               key={f}
-              className="engine-rig__body"
-              x={DECK_FRONT + length * f}
-              y={postTop}
-              width={4}
-              height={deckY - postTop}
+              className="engine-rig__line"
+              x1={DECK_FRONT + 10 + (length - 20) * f}
+              y1={bodyTop + 4}
+              x2={DECK_FRONT + 10 + (length - 20) * f}
+              y2={deckY - 12}
             />
           ))}
           <rect

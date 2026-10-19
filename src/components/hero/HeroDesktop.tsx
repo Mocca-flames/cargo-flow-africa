@@ -266,6 +266,7 @@ function Truck({ className, src, depth, side, glow = "both" }: TruckProps) {
 
 export default function HeroScene() {
   const stageRef = useRef<HTMLElement | null>(null);
+  const slabRef = useRef<HTMLDivElement | null>(null);
   const markerRef = useRef<HTMLDivElement | null>(null);
   const v2RootRef = useRef<HTMLDivElement | null>(null);
   const trailRefs = useRef<Array<HTMLSpanElement | null>>([]);
@@ -275,7 +276,7 @@ export default function HeroScene() {
 
   const routeNodes = useMemo(() => controlRoomConfig.route.nodes, []);
 
-  useHeroScroll(stageRef);
+  useHeroScroll(stageRef, slabRef, v2RootRef);
   useHeroPointer(stageRef);
 
   useEffect(() => {
@@ -321,13 +322,38 @@ export default function HeroScene() {
     const ticksGroup = svg?.querySelector(".v2-route-ticks") as SVGGElement | null;
     const marker = markerRef.current;
     const v2Root = v2RootRef.current;
+    const panel = svg?.parentElement as HTMLElement | null;
 
-    if (!stage || !svg || !routePath || !marker || !v2Root) {
+    if (!stage || !svg || !routePath || !marker || !v2Root || !panel) {
       return;
     }
 
     const routeLength = routePath.getTotalLength();
     let rafId = 0;
+
+    /* Path lookup table: sampled once so per-frame syncing never calls
+       getPointAtLength or triggers SVG geometry work. */
+    const SAMPLE_COUNT = 240;
+    const sampleX = new Float64Array(SAMPLE_COUNT + 1);
+    const sampleY = new Float64Array(SAMPLE_COUNT + 1);
+    for (let i = 0; i <= SAMPLE_COUNT; i += 1) {
+      const sample = routePath.getPointAtLength((routeLength * i) / SAMPLE_COUNT);
+      sampleX[i] = sample.x;
+      sampleY[i] = sample.y;
+    }
+
+    const clampUnit = (value: number): number =>
+      value < 0 ? 0 : value > 1 ? 1 : value;
+
+    const pointAt = (fraction: number) => {
+      const unit = clampUnit(fraction) * SAMPLE_COUNT;
+      const index = Math.min(Math.floor(unit), SAMPLE_COUNT - 1);
+      const local = unit - index;
+      return {
+        x: sampleX[index] + (sampleX[index + 1] - sampleX[index]) * local,
+        y: sampleY[index] + (sampleY[index + 1] - sampleY[index]) * local,
+      };
+    };
 
     /* Ruler ticks: built once, perpendicular to the path tangent. */
     const ticks: SVGLineElement[] = [];
@@ -358,26 +384,52 @@ export default function HeroScene() {
       }
     }
 
+    let panelWidth = 0;
+    let panelHeight = 0;
+
+    /* Marker + trail move via transform only (composite, no layout).
+       Node landing points are static, so they are set on layout/resize. */
+    const setDot = (element: HTMLElement, x: number, y: number): void => {
+      element.style.transform = `translate3d(${((x / 360) * panelWidth).toFixed(2)}px, ${(
+        (y / 560) *
+        panelHeight
+      ).toFixed(2)}px, 0)`;
+    };
+
+    const layout = (): void => {
+      panelWidth = panel.clientWidth || 1;
+      panelHeight = panel.clientHeight || 1;
+      routeNodeRefs.current.forEach((node, index) => {
+        const current = routeNodes[index];
+        if (!node || !current) return;
+        const point = pointAt(current.fraction);
+        node.style.left = `${(point.x / 360) * 100}%`;
+        node.style.top = `${(point.y / 560) * 100}%`;
+      });
+    };
+
+    const positionDots = (r: number): void => {
+      const point = pointAt(r);
+      setDot(marker, point.x, point.y);
+      trailRefs.current.forEach((dot, index) => {
+        if (!dot) return;
+        const back = Math.max(r - (index + 1) * 0.012, 0);
+        const trailPoint = pointAt(back);
+        setDot(dot, trailPoint.x, trailPoint.y);
+      });
+    };
+
     let lastTickIndex = -2;
     let arrived = false;
 
     const syncRoute = () => {
-      const rawR = Number.parseFloat(stage.style.getPropertyValue("--r") || "0");
-      const r = Number.isFinite(rawR) ? rawR : 0;
-      const point = routePath.getPointAtLength(routeLength * r);
-      const left = (point.x / 360) * 100;
-      const top = (point.y / 560) * 100;
-      marker.style.left = `${left}%`;
-      marker.style.top = `${top}%`;
+      /* The route only becomes visible once the gate is done; skip all work
+         while the V1 scene is still on top (also covers reduced motion). */
+      if (!stage.classList.contains("gate-done")) return;
 
-      /* Trail dots sit slightly behind the marker along the path. */
-      trailRefs.current.forEach((dot, index) => {
-        if (!dot) return;
-        const back = Math.max(r - (index + 1) * 0.012, 0);
-        const tp = routePath.getPointAtLength(routeLength * back);
-        dot.style.left = `${(tp.x / 360) * 100}%`;
-        dot.style.top = `${(tp.y / 560) * 100}%`;
-      });
+      const rawR = Number.parseFloat(v2Root.style.getPropertyValue("--r") || "0");
+      const r = Number.isFinite(rawR) ? rawR : 0;
+      positionDots(r);
 
       /* Ticks behind the marker fade out; toggled only when the index moves. */
       if (ticks.length) {
@@ -408,16 +460,13 @@ export default function HeroScene() {
         v2Root.classList.remove("arrived");
       }
       v2Root.classList.toggle("is-travelling", r > 0.05);
-      const rawP2 = Number.parseFloat(stage.style.getPropertyValue("--p2") || "0");
+      const rawP2 = Number.parseFloat(v2Root.style.getPropertyValue("--p2") || "0");
       const p2 = Number.isFinite(rawP2) ? rawP2 : 0;
       v2Root.classList.toggle("is-hold", p2 >= 0.7 && p2 <= 0.88);
 
       routeNodeRefs.current.forEach((node, index) => {
         const current = routeNodes[index];
         if (!node || !current) return;
-        const currentPoint = routePath.getPointAtLength(routeLength * current.fraction);
-        node.style.left = `${(currentPoint.x / 360) * 100}%`;
-        node.style.top = `${(currentPoint.y / 560) * 100}%`;
         node.classList.toggle("is-active", r >= current.fraction);
       });
 
@@ -443,13 +492,24 @@ export default function HeroScene() {
       });
     };
 
+    const onResize = () => {
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+      layout();
+      syncRoute();
+    };
+
+    layout();
+    positionDots(0);
     syncRoute();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", onResize);
 
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", onResize);
       if (rafId) window.cancelAnimationFrame(rafId);
     };
   }, [routeNodes]);
@@ -686,7 +746,7 @@ export default function HeroScene() {
           <div className="v2-shadow" aria-hidden="true" />
         </div>
 
-        <div className="v1-slab">
+        <div className="v1-slab" ref={slabRef}>
           <div className="hero-scene dolly dolly--scene">
             <div className="hero-layer hero-sky" data-depth="0.05" style={depthStyle("0.05")}>
               <div className="intro intro--reveal intro--sky">

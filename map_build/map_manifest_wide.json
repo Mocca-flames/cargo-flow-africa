@@ -1,0 +1,123 @@
+{
+  "frame_degrees": {
+    "west": 5,
+    "east": 44,
+    "north": -8,
+    "south": -32
+  },
+  "mercator_extent_m": {
+    "xmin": 556597.4539663679,
+    "xmax": 4898057.594904037,
+    "ymin": -3763310.627144653,
+    "ymax": -893463.751012646
+  },
+  "projection": "Web Mercator (EPSG:3857)",
+  "zoom": 8,
+  "source": "SRTM (90m / 30m) via AWS terrarium elevation-tiles-prod, zoom 8",
+  "dimensions_6000": {
+    "width": 6000,
+    "height": 3966
+  },
+  "dimensions_2400": {
+    "width": 2400,
+    "height": 1586
+  },
+  "files": {
+    "image_6000": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\map_build\\out\\southern-africa-wide-hillshade-6000.png",
+    "image_6000_bytes": 16270151,
+    "image_2400": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\map_build\\out\\southern-africa-wide-hillshade-2400.png",
+    "image_2400_bytes": 2751249
+  },
+  "verification_6000px": [
+    {
+      "place": "Johannesburg",
+      "lat": -26.2041,
+      "lon": 28.0473,
+      "x_px": 3545.7,
+      "y_px": 2944.8,
+      "x_pct": 59.1,
+      "y_pct": 74.25,
+      "inside": true
+    },
+    {
+      "place": "Durban",
+      "lat": -29.8587,
+      "lon": 31.0218,
+      "x_px": 4003.4,
+      "y_px": 3581.9,
+      "x_pct": 66.72,
+      "y_pct": 90.32,
+      "inside": true
+    },
+    {
+      "place": "Gaborone",
+      "lat": -24.6282,
+      "lon": 25.9231,
+      "x_px": 3218.9,
+      "y_px": 2676.4,
+      "x_pct": 53.65,
+      "y_pct": 67.48,
+      "inside": true
+    },
+    {
+      "place": "Windhoek",
+      "lat": -22.5609,
+      "lon": 17.0658,
+      "x_px": 1856.3,
+      "y_px": 2329.3,
+      "x_pct": 30.94,
+      "y_pct": 58.73,
+      "inside": true
+    },
+    {
+      "place": "Lusaka",
+      "lat": -15.3875,
+      "lon": 28.3228,
+      "x_px": 3588.1,
+      "y_px": 1161.4,
+      "x_pct": 59.8,
+      "y_pct": 29.29,
+      "inside": true
+    },
+    {
+      "place": "Beitbridge",
+      "lat": -22.2186,
+      "lon": 30.0003,
+      "x_px": 3846.2,
+      "y_px": 2272.4,
+      "x_pct": 64.1,
+      "y_pct": 57.3,
+      "inside": true
+    },
+    {
+      "place": "Lubumbashi",
+      "lat": -11.6609,
+      "lon": 27.4794,
+      "x_px": 3458.4,
+      "y_px": 571.7,
+      "x_pct": 57.64,
+      "y_pct": 14.41,
+      "inside": true
+    },
+    {
+      "place": "Kolwezi",
+      "lat": -10.7148,
+      "lon": 25.4666,
+      "x_px": 3148.7,
+      "y_px": 423.3,
+      "x_pct": 52.48,
+      "y_pct": 10.67,
+      "inside": true
+    },
+    {
+      "place": "Cape Town",
+      "lat": -33.9249,
+      "lon": 18.4241,
+      "x_px": 2065.2,
+      "y_px": 4319,
+      "x_pct": 34.42,
+      "y_pct": 108.9,
+      "inside": false
+    }
+  ]
+}

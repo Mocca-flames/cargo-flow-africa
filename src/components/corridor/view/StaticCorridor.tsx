@@ -12,7 +12,7 @@ import { BeatCopy } from "./BeatCopy";
  */
 export function StaticCorridor() {
   return (
-    <section className="corridor__static" aria-labelledby="ch6-title" data-chapter="6">
+    <section id="corridor-section" className="corridor__static" aria-labelledby="ch6-title" data-chapter="6">
       <h2 id="ch6-title" className="corridor__static-head">Corridor &amp; Clearance</h2>
       {BEATS.map((b) => (
         <article key={b.id} className="corridor__static-beat"><BeatCopy b={b} /></article>

@@ -1,0 +1,378 @@
+/* ============================================
+   PORTFOLIO — "JOBS WE'VE CARRIED"
+   LANDING_LAYOUT.md section 10
+
+   Records, not adjectives: jobs in a focus carousel
+   with logo plates. Light section
+   — the dark field stays reserved for the Corridor.
+
+   ── Progressive rendering ──
+   Paints COMPLETE from the server. JS only arms the
+   entrance (`portfolio--armed`, set on mount) and
+   completes it once (`portfolio--entered`, via `useReveal`).
+   No JS → nothing hides. Reduced motion → neutralised.
+
+   ── Split ──
+   The shared root, typography, card content and CTA.
+   Stage sizing and card positioning live in the two variant CSS files.
+   ============================================ */
+
+.portfolio {
+  position: relative;
+  width: 100%;
+  min-height: 90svh;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+@supports not (min-height: 90svh) {
+  .portfolio {
+    min-height: 90vh;
+  }
+}
+
+.portfolio__inner {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding: clamp(3rem, 9vh, 7rem) var(--section-padding);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2rem, 5vh, 3.5rem);
+}
+
+/* ─── Header ─── */
+
+.portfolio__header {
+  max-width: 100%;
+}
+
+.portfolio__eyebrow {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent-gold);
+}
+
+.portfolio__heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-display-l);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--color-ink);
+}
+
+.portfolio__standfirst {
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-body);
+  font-size: var(--text-body-l);
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+}
+
+/* ── CTA ─── */
+
+.portfolio__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-snap);
+}
+
+.portfolio__cta:hover,
+.portfolio__cta:focus-visible {
+  color: var(--color-ink);
+}
+
+.portfolio__cta:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 4px;
+}
+
+.portfolio__cta-rule {
+  width: 1.75rem;
+  height: 1px;
+  background: currentColor;
+  transition: width var(--duration-fast) var(--ease-snap);
+}
+
+.portfolio__cta:hover .portfolio__cta-rule,
+.portfolio__cta:focus-visible .portfolio__cta-rule {
+  width: 2.75rem;
+}
+
+/* ─── Job card content — shared by desktop + mobile ───
+   All sizes in cqw; each card sets container-type: inline-size.
+   Deep green = --color-ink, muted green = --color-ink-muted,
+   amber = --color-accent-gold. No text under 12px, no scroll. */
+
+.portfolio__logo-plate {
+  height: 15%; /* Rule 4 fallback step 2 (was 17%) */
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FBF7EF;
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 6cqw;
+}
+
+.portfolio__logo-img {
+  max-width: 100%;
+  max-height: 70%;
+  object-fit: contain;
+}
+
+.portfolio__logo-placeholder {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--color-ink-muted);
+}
+
+.portfolio__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 6cqw;
+  gap: 2.5cqw; /* Rule 4 fallback step 1 (was 3.5cqw) */
+  min-height: 0;
+}
+
+.portfolio__client-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(20px, 6.2cqw, 26px);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--color-ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.portfolio__info {
+  padding-bottom: 2cqw; /* Rule 4 fallback step 3 (was 2.6cqw) */
+  border-bottom: 2px solid var(--color-ink);
+}
+
+.portfolio__info-label {
+  display: block;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  font-size: max(12px, 3cqw);
+  letter-spacing: 0.12em;
+  color: var(--color-ink-muted);
+  margin: 0 0 1cqw;
+}
+
+.portfolio__info-value {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: max(17px, 5cqw);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-ink);
+}
+
+.portfolio__route-arrow {
+  color: var(--color-accent-gold);
+}
+
+.portfolio__price {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2cqw;
+}
+
+.portfolio__price-others {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.portfolio__price-others-label {
+  font-family: var(--font-body);
+  font-size: max(15px, 4.2cqw);
+  color: var(--color-ink-muted);
+}
+
+.portfolio__price-others-num {
+  font-family: var(--font-body);
+  font-size: max(20px, 6.2cqw);
+  font-weight: 600;
+  color: #B4503C;
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+
+.portfolio__price-our {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: 2.5cqw;
+  border-top: 2px solid var(--color-ink);
+}
+
+.portfolio__price-our-label {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: max(17px, 5cqw);
+  color: var(--color-accent-gold);
+}
+
+.portfolio__price-our-num {
+  text-align: right;
+}
+
+.portfolio__price-our-figure {
+  font-family: var(--font-body);
+  font-size: clamp(36px, 12.5cqw, 54px);
+  font-weight: 800;
+  line-height: 1;
+  color: #2F8F7A;
+}
+
+.portfolio__price-per {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-ink-muted);
+}
+
+.portfolio__saving {
+  margin: 0;
+  align-self: flex-start;
+  padding: 1.6cqw 3.5cqw;
+  border-radius: 999px;
+  background: #E3F2EC;
+  color: #1F6B58;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: max(14px, 3.8cqw);
+}
+
+/* ─── Side cards: logo plate + client name only ─── */
+
+.portfolio__card:not([data-pos="0"]) {
+  cursor: pointer;
+}
+
+.portfolio__card:not([data-pos="0"]) .portfolio__info,
+.portfolio__card:not([data-pos="0"]) .portfolio__price {
+  display: none;
+}
+
+.portfolio__card:not([data-pos="0"]) .portfolio__client-name {
+  font-size: max(14px, 4.5cqw);
+  padding: 4cqw;
+}
+
+/* ─── Entrance ─── */
+
+.portfolio--armed .portfolio__header,
+.portfolio--armed .portfolio__stage,
+.portfolio--armed .portfolio__dots,
+.portfolio--armed .portfolio__foot {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+}
+
+.portfolio--armed.portfolio--entered .portfolio__header {
+  animation: portfolio-enter 300ms var(--ease-snap) both 0ms;
+}
+
+.portfolio--armed.portfolio--entered .portfolio__stage {
+  animation: portfolio-enter 300ms var(--ease-snap) both 80ms;
+}
+
+.portfolio--armed.portfolio--entered .portfolio__dots {
+  animation: portfolio-enter 300ms var(--ease-snap) both 160ms;
+}
+
+.portfolio--armed.portfolio--entered .portfolio__foot {
+  animation: portfolio-enter 300ms var(--ease-snap) both 240ms;
+}
+
+/* ─── Card entrance — quick stagger to reveal side cards ─── */
+
+.portfolio--armed:not(.portfolio--entered) .portfolio__card {
+  opacity: 0;
+}
+
+.portfolio--armed.portfolio--entered .portfolio__card[data-pos="0"] {
+  animation: portfolio-card-enter 350ms var(--ease-snap) backwards 100ms;
+}
+
+.portfolio--armed.portfolio--entered .portfolio__card[data-pos="-1"],
+.portfolio--armed.portfolio--entered .portfolio__card[data-pos="1"] {
+  animation: portfolio-card-enter 350ms var(--ease-snap) backwards 180ms;
+}
+
+.portfolio--armed.portfolio--entered .portfolio__card[data-pos="-2"],
+.portfolio--armed.portfolio--entered .portfolio__card[data-pos="2"],
+.portfolio--armed.portfolio--entered .portfolio__card[data-pos="far"] {
+  animation: portfolio-card-enter 350ms var(--ease-snap) backwards 240ms;
+}
+
+@keyframes portfolio-card-enter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateX(var(--x)) scale(calc(var(--s) * 0.92));
+  }
+  to {
+    opacity: var(--o);
+    transform: translate(-50%, -50%) translateX(var(--x)) scale(var(--s));
+  }
+}
+
+@keyframes portfolio-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* ─── Reduced motion ─── */
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio--armed .portfolio__header,
+  .portfolio--armed .portfolio__stage,
+  .portfolio--armed .portfolio__dots,
+  .portfolio--armed .portfolio__foot {
+    opacity: 1;
+    transform: none;
+  }
+
+  .portfolio--armed:not(.portfolio--entered) .portfolio__card {
+    opacity: var(--o);
+  }
+
+  .portfolio--armed.portfolio--entered .portfolio__header,
+  .portfolio--armed.portfolio--entered .portfolio__stage,
+  .portfolio--armed.portfolio--entered .portfolio__dots,
+  .portfolio--armed.portfolio--entered .portfolio__foot,
+  .portfolio--armed.portfolio--entered .portfolio__card {
+    animation: none;
+  }
+}

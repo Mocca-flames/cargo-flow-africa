@@ -1,0 +1,44 @@
+/* ============================================
+   PROCESS — mobile drawing
+   Steps stack vertically, glyph left and text right in a two-column
+   cell. A single vertical connector runs behind the glyphs from the
+   first glyph's centreline to the last, drawing top → bottom.
+   ============================================ */
+
+.process--mobile .process__glyph-cell {
+  --glyph: clamp(2.75rem, 11vw, 3.25rem);
+}
+
+.process--mobile .process__row {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2rem, 5vh, 3rem);
+}
+
+.process--mobile .process__step {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  column-gap: var(--space-4);
+}
+
+/* The spine: a 1px line pinned to the glyph column's centre, running
+   between the first and last glyphs' centres. */
+.process--mobile .process__spine {
+  position: absolute;
+  left: calc(var(--glyph, 3rem) / 2);
+  top: calc(var(--glyph, 3rem) / 2);
+  bottom: calc(var(--glyph, 3rem) / 2);
+  width: 1px;
+  pointer-events: none;
+}
+
+.process--mobile .process__spine .process__connector {
+  width: 100%;
+  height: 100%;
+}
+
+.process--mobile .process__body {
+  max-width: 34ch;
+}

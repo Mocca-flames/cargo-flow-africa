@@ -1,0 +1,400 @@
+{
+  "converted": [
+    {
+      "web_old": "/fleet/flatbed.png",
+      "web_new": "/fleet/flatbed.avif",
+      "old_size": 1540182,
+      "new_size": 150309,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\fleet\\flatbed.png"
+    },
+    {
+      "web_old": "/fleet/lowbed.png",
+      "web_new": "/fleet/lowbed.avif",
+      "old_size": 1250480,
+      "new_size": 163514,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\fleet\\lowbed.png"
+    },
+    {
+      "web_old": "/fleet/side_tipper.png",
+      "web_new": "/fleet/side_tipper.avif",
+      "old_size": 1571281,
+      "new_size": 199247,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\fleet\\side_tipper.png"
+    },
+    {
+      "web_old": "/fleet/side_tipper_cinnematic.png",
+      "web_new": "/fleet/side_tipper_cinnematic.avif",
+      "old_size": 2703490,
+      "new_size": 302644,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\fleet\\side_tipper_cinnematic.png"
+    },
+    {
+      "web_old": "/fleet/tautliner.png",
+      "web_new": "/fleet/tautliner.avif",
+      "old_size": 1837531,
+      "new_size": 154048,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\fleet\\tautliner.png"
+    },
+    {
+      "web_old": "/images/branch/gaborone_office.png",
+      "web_new": "/images/branch/gaborone_office.avif",
+      "old_size": 2419790,
+      "new_size": 225937,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\branch\\gaborone_office.png"
+    },
+    {
+      "web_old": "/images/branch/google-maps.png",
+      "web_new": "/images/branch/google-maps.avif",
+      "old_size": 27457,
+      "new_size": 10341,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\branch\\google-maps.png"
+    },
+    {
+      "web_old": "/images/branch/johannesburg_office.png",
+      "web_new": "/images/branch/johannesburg_office.avif",
+      "old_size": 2419790,
+      "new_size": 225937,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\branch\\johannesburg_office.png"
+    },
+    {
+      "web_old": "/images/hero/a-man-mobile.png",
+      "web_new": "/images/hero/a-man-mobile.avif",
+      "old_size": 924220,
+      "new_size": 89388,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero\\a-man-mobile.png"
+    },
+    {
+      "web_old": "/images/hero/a-trucks-desktop.png",
+      "web_new": "/images/hero/a-trucks-desktop.avif",
+      "old_size": 2194635,
+      "new_size": 166568,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero\\a-trucks-desktop.png"
+    },
+    {
+      "web_old": "/images/hero/b-lowbed-desktop.png",
+      "web_new": "/images/hero/b-lowbed-desktop.avif",
+      "old_size": 681963,
+      "new_size": 84305,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero\\b-lowbed-desktop.png"
+    },
+    {
+      "web_old": "/images/hero/b-lowbed-mobile.png",
+      "web_new": "/images/hero/b-lowbed-mobile.avif",
+      "old_size": 177495,
+      "new_size": 26967,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero\\b-lowbed-mobile.png"
+    },
+    {
+      "web_old": "/images/hero/c-tri-desktop.png",
+      "web_new": "/images/hero/c-tri-desktop.avif",
+      "old_size": 919306,
+      "new_size": 99515,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero\\c-tri-desktop.png"
+    },
+    {
+      "web_old": "/images/hero/c-wheels-mobile.png",
+      "web_new": "/images/hero/c-wheels-mobile.avif",
+      "old_size": 500482,
+      "new_size": 53393,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero\\c-wheels-mobile.png"
+    },
+    {
+      "web_old": "/images/hero-1/bg-sky-mobile.png",
+      "web_new": "/images/hero-1/bg-sky-mobile.avif",
+      "old_size": 927699,
+      "new_size": 51627,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero-1\\bg-sky-mobile.png"
+    },
+    {
+      "web_old": "/images/hero-1/bg-sky.png",
+      "web_new": "/images/hero-1/bg-sky.avif",
+      "old_size": 1450267,
+      "new_size": 58283,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero-1\\bg-sky.png"
+    },
+    {
+      "web_old": "/images/hero-1/fg-grass.png",
+      "web_new": "/images/hero-1/fg-grass.avif",
+      "old_size": 963029,
+      "new_size": 114827,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero-1\\fg-grass.png"
+    },
+    {
+      "web_old": "/images/hero-1/fg-weeds.png",
+      "web_new": "/images/hero-1/fg-weeds.avif",
+      "old_size": 2025988,
+      "new_size": 481952,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero-1\\fg-weeds.png"
+    },
+    {
+      "web_old": "/images/hero-1/fg-weeds.png.png",
+      "web_new": "/images/hero-1/fg-weeds.png.avif",
+      "old_size": 2025988,
+      "new_size": 481952,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero-1\\fg-weeds.png.png"
+    },
+    {
+      "web_old": "/images/hero-1/fx-dust.png",
+      "web_new": "/images/hero-1/fx-dust.avif",
+      "old_size": 1240852,
+      "new_size": 182166,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero-1\\fx-dust.png"
+    },
+    {
+      "web_old": "/images/hero-1/fx-glow.png",
+      "web_new": "/images/hero-1/fx-glow.avif",
+      "old_size": 189547,
+      "new_size": 29762,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero-1\\fx-glow.png"
+    },
+    {
+      "web_old": "/images/hero-1/fx-streaks.png",
+      "web_new": "/images/hero-1/fx-streaks.avif",
+      "old_size": 259480,
+      "new_size": 56584,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero-1\\fx-streaks.png"
+    },
+    {
+      "web_old": "/images/hero-1/road-mobile.png",
+      "web_new": "/images/hero-1/road-mobile.avif",
+      "old_size": 2056960,
+      "new_size": 123750,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero-1\\road-mobile.png"
+    },
+    {
+      "web_old": "/images/hero-1/road.png",
+      "web_new": "/images/hero-1/road.avif",
+      "old_size": 2112045,
+      "new_size": 197910,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero-1\\road.png"
+    },
+    {
+      "web_old": "/images/hero-1/truck-faw.png",
+      "web_new": "/images/hero-1/truck-faw.avif",
+      "old_size": 1738595,
+      "new_size": 129558,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero-1\\truck-faw.png"
+    },
+    {
+      "web_old": "/images/hero-1/truck-man.png",
+      "web_new": "/images/hero-1/truck-man.avif",
+      "old_size": 1259980,
+      "new_size": 122595,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero-1\\truck-man.png"
+    },
+    {
+      "web_old": "/images/hero-1/truck-scania.png",
+      "web_new": "/images/hero-1/truck-scania.avif",
+      "old_size": 1603819,
+      "new_size": 130054,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\hero-1\\truck-scania.png"
+    },
+    {
+      "web_old": "/images/portfolio/apex-commodities-logo.png",
+      "web_new": "/images/portfolio/apex-commodities-logo.avif",
+      "old_size": 21580,
+      "new_size": 7612,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\portfolio\\apex-commodities-logo.png"
+    },
+    {
+      "web_old": "/images/portfolio/bono-logistic-logo.png",
+      "web_new": "/images/portfolio/bono-logistic-logo.avif",
+      "old_size": 12739,
+      "new_size": 7347,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\portfolio\\bono-logistic-logo.png"
+    },
+    {
+      "web_old": "/images/portfolio/consulmet-logo.png",
+      "web_new": "/images/portfolio/consulmet-logo.avif",
+      "old_size": 9684,
+      "new_size": 4892,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\portfolio\\consulmet-logo.png"
+    },
+    {
+      "web_old": "/images/portfolio/dms-powder-logo.png",
+      "web_new": "/images/portfolio/dms-powder-logo.avif",
+      "old_size": 13384,
+      "new_size": 5141,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\portfolio\\dms-powder-logo.png"
+    },
+    {
+      "web_old": "/images/portfolio/eagle-african-resources-logo.png",
+      "web_new": "/images/portfolio/eagle-african-resources-logo.avif",
+      "old_size": 10461,
+      "new_size": 5969,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\portfolio\\eagle-african-resources-logo.png"
+    },
+    {
+      "web_old": "/images/portfolio/malaxino-logo.png",
+      "web_new": "/images/portfolio/malaxino-logo.avif",
+      "old_size": 30091,
+      "new_size": 10648,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\portfolio\\malaxino-logo.png"
+    },
+    {
+      "web_old": "/images/portfolio/rawbank-logo.png",
+      "web_new": "/images/portfolio/rawbank-logo.avif",
+      "old_size": 14838,
+      "new_size": 6214,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\portfolio\\rawbank-logo.png"
+    },
+    {
+      "web_old": "/images/portfolio/surya-mine-logo.png",
+      "web_new": "/images/portfolio/surya-mine-logo.avif",
+      "old_size": 20235,
+      "new_size": 6361,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\portfolio\\surya-mine-logo.png"
+    },
+    {
+      "web_old": "/images/premise/desktop_left_panel.png",
+      "web_new": "/images/premise/desktop_left_panel.avif",
+      "old_size": 1931844,
+      "new_size": 142124,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\premise\\desktop_left_panel.png"
+    },
+    {
+      "web_old": "/images/premise/desktop_right_panel.png",
+      "web_new": "/images/premise/desktop_right_panel.avif",
+      "old_size": 2342336,
+      "new_size": 178393,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\premise\\desktop_right_panel.png"
+    },
+    {
+      "web_old": "/images/premise/mobile_left_panel.png",
+      "web_new": "/images/premise/mobile_left_panel.avif",
+      "old_size": 2195612,
+      "new_size": 196602,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\premise\\mobile_left_panel.png"
+    },
+    {
+      "web_old": "/images/premise/mobile_right_panel.png",
+      "web_new": "/images/premise/mobile_right_panel.avif",
+      "old_size": 1968134,
+      "new_size": 140714,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\premise\\mobile_right_panel.png"
+    },
+    {
+      "web_old": "/images/services/s1_desktop.png",
+      "web_new": "/images/services/s1_desktop.avif",
+      "old_size": 2328818,
+      "new_size": 210329,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\services\\s1_desktop.png"
+    },
+    {
+      "web_old": "/images/services/s1_mobile.png",
+      "web_new": "/images/services/s1_mobile.avif",
+      "old_size": 2206780,
+      "new_size": 184318,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\services\\s1_mobile.png"
+    },
+    {
+      "web_old": "/images/services/s2_desktop.png",
+      "web_new": "/images/services/s2_desktop.avif",
+      "old_size": 2427593,
+      "new_size": 206266,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\services\\s2_desktop.png"
+    },
+    {
+      "web_old": "/images/services/s2_mobile.png",
+      "web_new": "/images/services/s2_mobile.avif",
+      "old_size": 2217396,
+      "new_size": 180562,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\services\\s2_mobile.png"
+    },
+    {
+      "web_old": "/images/services/s3_desktop.png",
+      "web_new": "/images/services/s3_desktop.avif",
+      "old_size": 2427768,
+      "new_size": 202316,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\services\\s3_desktop.png"
+    },
+    {
+      "web_old": "/images/services/s3_mobile.png",
+      "web_new": "/images/services/s3_mobile.avif",
+      "old_size": 2468110,
+      "new_size": 198464,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\services\\s3_mobile.png"
+    },
+    {
+      "web_old": "/images/services/s4_desktop.png",
+      "web_new": "/images/services/s4_desktop.avif",
+      "old_size": 2369436,
+      "new_size": 194028,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\services\\s4_desktop.png"
+    },
+    {
+      "web_old": "/images/services/s4_mobile.png",
+      "web_new": "/images/services/s4_mobile.avif",
+      "old_size": 2171050,
+      "new_size": 161783,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\services\\s4_mobile.png"
+    },
+    {
+      "web_old": "/images/services/s5_desktop.png",
+      "web_new": "/images/services/s5_desktop.avif",
+      "old_size": 1745088,
+      "new_size": 84913,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\services\\s5_desktop.png"
+    },
+    {
+      "web_old": "/images/services/s5_mobile.png",
+      "web_new": "/images/services/s5_mobile.avif",
+      "old_size": 1856625,
+      "new_size": 121428,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\images\\services\\s5_mobile.png"
+    },
+    {
+      "web_old": "/logo-desktop.png",
+      "web_new": "/logo-desktop.avif",
+      "old_size": 62563,
+      "new_size": 24849,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\logo-desktop.png"
+    },
+    {
+      "web_old": "/logo-mobile.png",
+      "web_new": "/logo-mobile.avif",
+      "old_size": 62563,
+      "new_size": 24849,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\logo-mobile.png"
+    },
+    {
+      "web_old": "/logo-mobile1.png",
+      "web_new": "/logo-mobile1.avif",
+      "old_size": 10208,
+      "new_size": 4993,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\logo-mobile1.png"
+    },
+    {
+      "web_old": "/southern-africa-wide.png",
+      "web_new": "/southern-africa-wide.avif",
+      "old_size": 2555411,
+      "new_size": 265923,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\southern-africa-wide.png"
+    },
+    {
+      "web_old": "/southern-africa.png",
+      "web_new": "/southern-africa.avif",
+      "old_size": 2824971,
+      "new_size": 311269,
+      "archived_to": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\png_archive\\southern-africa.png"
+    }
+  ],
+  "skipped": [
+    {
+      "web_old": "/android-chrome-192x192.png",
+      "reason": "protected name, keep PNG"
+    },
+    {
+      "web_old": "/android-chrome-512x512.png",
+      "reason": "protected name, keep PNG"
+    },
+    {
+      "web_old": "/favicon-16x16.png",
+      "reason": "protected name, keep PNG"
+    },
+    {
+      "web_old": "/images/section_2_poster.png",
+      "reason": "conversion failed, keep PNG"
+    }
+  ]
+}

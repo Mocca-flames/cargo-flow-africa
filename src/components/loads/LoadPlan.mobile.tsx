@@ -5,9 +5,10 @@ import CargoFertiliser from "./CargoFertiliser";
 import CargoSteel from "./CargoSteel";
 import CargoSulphur from "./CargoSulphur";
 import TrailerSide from "./TrailerSide";
+import LoadsSheet from "./LoadsSheet";
 import { sideBlockStyle } from "./planGeometry";
 import { useLoadsMobileProgress } from "./useLoadsMobileProgress";
-import { loadPlan, loadTotals } from "@/data/loads";
+import { cumulativeTonnes, loadPlan, loadTotals, loadsCopy } from "@/data/loads";
 import type { CargoId, LoadUnitId } from "@/data/loads";
 import "./LoadPlan.mobile.css";
 
@@ -84,6 +85,8 @@ export default function LoadPlanMobile({ reduced }: { reduced: boolean }) {
 
   /* Manifest reading. -1 hidden, 0–2 a landed load, 3 the run total. */
   const [cardStep, setCardStep] = useState(-1);
+  /* Loads fully landed (0–3). Drives the load sheet counter. */
+  const [landed, setLanded] = useState(0);
   const [linkShown, setLinkShown] = useState(false);
 
   /* The rig's size is written to CSS variables, NOT to a React `style` prop.
@@ -99,6 +102,7 @@ export default function LoadPlanMobile({ reduced }: { reduced: boolean }) {
     }
   }, []);
   const onCard = useCallback((step: number) => setCardStep(step), []);
+  const onLanded = useCallback((n: number) => setLanded(n), []);
   const onLink = useCallback((shown: boolean) => setLinkShown(shown), []);
 
   useLoadsMobileProgress({
@@ -111,11 +115,13 @@ export default function LoadPlanMobile({ reduced }: { reduced: boolean }) {
     reduced,
     onScale,
     onCard,
+    onLanded,
     onLink,
   });
 
   /* Reduced motion (and the server snapshot) show the settled plan. */
   const step = reduced ? 3 : cardStep;
+  const landedCount = reduced ? loadTotals.units : landed;
   const link = reduced || linkShown;
   const unit = step >= 0 && step < loadPlan.length ? loadPlan[step] : null;
 
@@ -129,9 +135,11 @@ export default function LoadPlanMobile({ reduced }: { reduced: boolean }) {
       <div className="lm-frame" ref={frameRef}>
         <header className="lm-header">
           <h2 className="lm-heading" id="lm-heading">
-            <span className="lm-heading-line">Three Shippers.</span>
-            <span className="lm-heading-line">One Deck. One Run.</span>
+            <span className="lm-heading-line">3 Clients.</span>
+            <span className="lm-heading-line">1 Truck. 70% Saved.</span>
           </h2>
+          <p className="lm-standfirst">{loadsCopy.standfirst}</p>
+          <p className="lm-note">{loadsCopy.sharedTrailerNote}</p>
         </header>
 
         {/* THE CLIP. A load waits for its step ABOVE the stage, fully opaque,
@@ -191,6 +199,15 @@ export default function LoadPlanMobile({ reduced }: { reduced: boolean }) {
               </>
             ) : null}
           </div>
+        </div>
+
+        {/* ─── The load sheet ───
+            A thin mono line under the manifest card: `FD-120 · 00 / 03 · 0.0 T`
+            ticking to `03 / 03 · 34.0 T` as each load lands. Driven by the same
+            beats as the card (progress 0.15, 0.48, 0.81). Always visible — it is
+            the chapter's telemetry, not a reveal. */}
+        <div className="lm-sheet">
+          <LoadsSheet landed={landedCount} tonnes={cumulativeTonnes(landedCount)} />
         </div>
 
         {/* The link. Opacity-only reveal; dropped from the tab order and the

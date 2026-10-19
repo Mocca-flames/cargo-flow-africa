@@ -4,9 +4,9 @@
  * `fleet` is an array — primary code first; the first entry gets the
  * stamp on the card. `sceneId` is deliberately independent of `fleet`:
  * if a commodity's trailer turns out to be wrong (e.g. sulphur moving
- * from SL-104 to a bulk tipper class), only the code changes and the
+ * from ST-34 to another bulk class), only the code changes and the
  * scene stays. Tag codes are resolved against `data/fleet.ts` at render
- * time — never hardcode SL-104 here or in a component.
+ * time — never hardcode ST-34 here or in a component.
  */
 
 import type { FleetCode } from "./fleet";
@@ -40,8 +40,8 @@ export const commodities: CommodityRecord[] = [
     name: "Sulphur granules",
     tickerName: "Sulphur",
     hook: "Yellow, gritty, and always on schedule.",
-    // TBC — containerised only; see the note in data/fleet.ts.
-    fleet: ["SL-104"],
+    // Bulk sulphur runs on the side tipper.
+    fleet: ["ST-34"],
     corridorId: "mpumalanga-durban",
     sceneId: "pour",
   },

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Sora, DM_Sans, JetBrains_Mono } from "next/font/google";
 import NavBar from "@/components/nav/NavBar";
+import LoadingScreen from "@/components/loading/LoadingScreen";
 import "./globals.css";
 
 const sora = Sora({
@@ -38,8 +39,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${sora.variable} ${dmSans.variable} ${jetbrainsMono.variable}`}
     >
       <body>
-        <NavBar />
-        {children}
+        <LoadingScreen>
+          <NavBar />
+          {children}
+        </LoadingScreen>
       </body>
     </html>
   );

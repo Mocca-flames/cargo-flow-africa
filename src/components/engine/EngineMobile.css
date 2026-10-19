@@ -11,11 +11,16 @@
 .engine--mobile .engine__layout {
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(auto, 1fr) auto auto auto;
-  row-gap: clamp(0.5rem, 2.5vw, 1rem);
+  row-gap: clamp(0.375rem, 1.5vw, 0.625rem);
   align-content: stretch;
   min-height: 100svh;
-  padding-top: calc(var(--nav-height) + clamp(0.75rem, 3vw, 1.5rem));
-  padding-bottom: clamp(1rem, 4vw, 1.75rem);
+  padding-top: calc(
+    var(--nav-height, 5rem) + env(safe-area-inset-top, 0px) +
+      clamp(0.75rem, 3vw, 1.5rem)
+  );
+  padding-bottom: calc(
+    clamp(1rem, 4vw, 1.75rem) + env(safe-area-inset-bottom, 0px)
+  );
 }
 
 @supports not (min-height: 100svh) {
@@ -46,51 +51,43 @@
 .engine--mobile .engine__rail {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-2);
+  gap: var(--space-1);
 }
 
 .engine--mobile .engine__card {
   grid-template-columns: minmax(0, 1fr);
   align-items: start;
-  gap: var(--space-2);
-  padding: var(--space-3);
+  gap: var(--space-1);
+  padding: var(--space-2);
 }
 
 .engine--mobile .engine__rail-label {
   margin-bottom: var(--space-2);
 }
 
-/* Two stats per row on portrait; the third spans the full measure.
-   Odd cells lose the left rule, the row break supplies a top rule. */
+/* Compact schematic stays a thumbnail, not a second truck shot */
+.engine--mobile .engine__card-name {
+  font-size: 0.8125rem;
+}
+
+.engine--mobile .engine__card-code {
+  font-size: 0.625rem;
+}
+
+/* Single stat row: deck/loading dims live on the rig drawing, so the
+   readout is sized down — the truck, not the numbers, owns the screen. */
 .engine--mobile .engine__spec-stats {
-  --engine-stat-grid: 2;
+  --engine-stat-grid: 1;
 }
 
 .engine--mobile .engine__stat {
-  gap: var(--space-2);
-  padding: var(--space-3);
-}
-
-.engine--mobile .engine__stat:nth-child(odd) {
-  border-left: none;
-}
-
-.engine--mobile .engine__stat:nth-child(even) {
-  border-left: 1px solid var(--color-border);
-}
-
-.engine--mobile .engine__stat:nth-child(n + 3) {
-  border-top: 1px solid var(--color-border);
-}
-
-.engine--mobile .engine__stat:nth-child(3) {
-  grid-column: 1 / -1;
-  border-left: none;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
 }
 
 .engine--mobile .engine__summary {
   margin-bottom: var(--space-2);
-  font-size: clamp(0.8125rem, 3.4vw, 0.9375rem);
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 
@@ -101,7 +98,7 @@
 }
 
 .engine--mobile .engine__stat-value {
-  font-size: clamp(1.6rem, 7vw, 2.25rem);
+  font-size: clamp(1.25rem, 5vw, 1.75rem);
 }
 
 .engine--mobile .engine__spec-value {
@@ -110,5 +107,5 @@
 }
 
 .engine--mobile .engine__fleet-link {
-  margin-top: var(--space-1);
+  margin-top: var(--space-2);
 }

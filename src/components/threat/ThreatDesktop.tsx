@@ -46,14 +46,14 @@ export default function ThreatDesktop() {
           {/* Cargo Flow standard — base layer */}
           <img
             className="threat__layer threat__layer--right"
-            src="/images/premise/desktop_right_panel.png"
+            src="/images/premise/desktop_right_panel.jpg"
             alt="A Cargo Flow truck on an open corridor"
           />
 
           {/* Broker / fear photo — revealed by wipe */}
           <img
             className="threat__layer threat__layer--fear threat__layer--left"
-            src="/images/premise/desktop_left_panel.png"
+            src="/images/premise/desktop_left_panel.avif"
             alt="Trucks queued at a border crossing"
           />
 

@@ -9,6 +9,11 @@ const EASE_OUT_CUBIC = (t: number): number => 1 - Math.pow(1 - t, 3);
 
 const EASE_IN_CUBIC = (t: number): number => t * t * t;
 
+/* Truck rush: linear head start blended with a cubic tail — the trucks
+   visibly move from the first scroll frames but still accelerate hard
+   into the glass at the end. */
+const EASE_TRUCK_RUSH = (t: number): number => 0.4 * t + 0.6 * t * t * t;
+
 const clamp01 = (v: number): number => (v < 0 ? 0 : v > 1 ? 1 : v);
 
 const clamp = (v: number, min: number, max: number): number =>
@@ -31,9 +36,9 @@ type Bounds = {
 };
 
 const DEFAULT_BOUNDS: Bounds = {
-  v1End: 120,
-  gateEnd: 190,
-  v2End: 400,
+  v1End: 160,
+  gateEnd: 230,
+  v2End: 460,
   latchPx: 6,
   latchFrac: 0.12,
 };
@@ -117,27 +122,38 @@ export const gateEase = (
  * Scroll driver for the desktop hero: three pinned beats measured in vh of
  * scroll distance inside the track.
  *
- *   --p1 / --pe1  0vh    -> 120vh  V1 dolly (pe1 = easeInOutCubic, the old --pe)
- *   --pg          120vh  -> 190vh  gate lift (piecewise, eased in JS)
- *   --p2          190vh  -> 400vh  V2 route (linear, Step 5)
+ *   --p1 / --pe1 / --ptr  0vh -> 120vh  V1 dolly (pe1 = easeInOutCubic,
+ *                          ptr = linear+cubic truck rush)
+ *   --pg                  120vh -> 190vh  gate dissolve (piecewise, eased in JS)
+ *   --p2 / --r            190vh -> 400vh  V2 route (linear, Step 5)
  *
  * Segment bounds come from CSS (--seg-v1-end / --seg-gate-end / --seg-v2-end)
- * so they stay tunable next to --hero-track. Everything is written straight
- * onto the stage with style.setProperty from one rAF-throttled scroll
- * listener — no React state. Below `prefers-reduced-motion: reduce` every
- * segment stays at 0 and the hero rests on its approved static layout.
+ * so they stay tunable next to --hero-track. Each segment is written onto its
+ * own subtree root (V1 vars on the slab, V2 vars on the v2 root, gate vars on
+ * the stage) with style.setProperty from one rAF-throttled scroll listener —
+ * no React state — so a scroll frame only re-resolves styles inside the
+ * segment that is actually animating. Below `prefers-reduced-motion: reduce`
+ * every segment stays at 0 and the hero rests on its approved static layout.
  */
-export function useHeroScroll(stageRef: RefObject<HTMLElement | null>): void {
+export function useHeroScroll(
+  stageRef: RefObject<HTMLElement | null>,
+  slabRef?: RefObject<HTMLElement | null>,
+  v2Ref?: RefObject<HTMLElement | null>,
+): void {
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
 
-    setVar(stage, "--p1", 0);
-    setVar(stage, "--pe1", 0);
+    const slab = slabRef?.current ?? stage;
+    const v2 = v2Ref?.current ?? stage;
+
+    setVar(slab, "--p1", 0);
+    setVar(slab, "--pe1", 0);
+    setVar(slab, "--ptr", 0);
     setVar(stage, "--pg", 0);
     setLength(stage, "--gate-latch", 0);
-    setVar(stage, "--p2", 0);
-    setVar(stage, "--r", 0);
+    setVar(v2, "--p2", 0);
+    setVar(v2, "--r", 0);
     stage.classList.remove("gate-done");
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -166,12 +182,13 @@ export function useHeroScroll(stageRef: RefObject<HTMLElement | null>): void {
       const p2 = clamp01((scrolledVh - gateEnd) / (v2End - gateEnd));
       const r = getRouteProgress(p2);
 
-      setVar(stage, "--p1", p1);
-      setVar(stage, "--pe1", pe1);
+      setVar(slab, "--p1", p1);
+      setVar(slab, "--pe1", pe1);
+      setVar(slab, "--ptr", EASE_TRUCK_RUSH(p1));
       setVar(stage, "--pg", pg);
       setLength(stage, "--gate-latch", latch);
-      setVar(stage, "--p2", p2);
-      setVar(stage, "--r", r);
+      setVar(v2, "--p2", p2);
+      setVar(v2, "--r", r);
       stage.classList.toggle("gate-done", pg >= 1);
     };
 
@@ -194,5 +211,5 @@ export function useHeroScroll(stageRef: RefObject<HTMLElement | null>): void {
       window.removeEventListener("resize", onResize);
       if (rafId) cancelAnimationFrame(rafId);
     };
-  }, [stageRef]);
+  }, [stageRef, slabRef, v2Ref]);
 }

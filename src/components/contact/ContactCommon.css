@@ -1,0 +1,614 @@
+/* ============================================
+   CONTACT — "TALK TO DISPATCH, OR VISIT US"
+   LANDING_LAYOUT.md section 13 (post-Verdict utility close).
+
+   Matches the site canvas (cream) with ink text — no more sand
+   mismatch. Compact spacing, person cards with quick actions.
+
+   ── Progressive rendering ──
+   Paints COMPLETE from the server. JS only arms (`contact--armed`)
+   and completes (`contact--entered`) the entrance. No JS → nothing
+   hides. Reduced motion → neutralised below.
+   ============================================ */
+
+.contact {
+  position: relative;
+  width: 100%;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  border-top: 1px solid var(--color-border);
+  /* Fixed NavBar (`--nav-height: 4.5rem`) overlaps anchor jumps to
+     `#contact-section` — hold the section below it. */
+  scroll-margin-top: var(--nav-height, 4.5rem);
+}
+
+.contact__inner {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding: clamp(2rem, 5vh, 3.5rem) var(--section-padding);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 3vh, 2rem);
+}
+
+/* ─── Header ─── */
+
+.contact__header {
+  max-width: 52ch;
+}
+
+.contact__eyebrow {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent-terracotta);
+}
+
+.contact__heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-display-l);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--color-ink);
+}
+
+.contact__standfirst {
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-body);
+  font-size: var(--text-body-l);
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+}
+
+/* ─── Tier 1: ready strip ─── */
+
+.contact__ready {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-ink);
+  color: var(--color-canvas);
+  text-decoration: none;
+  transition: transform var(--duration-fast) var(--ease-snap);
+}
+
+.contact__ready:hover,
+.contact__ready:focus-visible {
+  transform: translateY(-2px);
+}
+
+.contact__ready:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 4px;
+}
+
+.contact__ready-label {
+  font-family: var(--font-display);
+  font-size: var(--text-display-m);
+  font-weight: 700;
+}
+
+.contact__ready-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent-gold);
+}
+
+.contact__cta-rule {
+  width: 1.5rem;
+  height: 1px;
+  background: currentColor;
+  transition: width var(--duration-fast) var(--ease-snap);
+}
+
+.contact__ready:hover .contact__cta-rule {
+  width: 2.25rem;
+}
+
+/* ─── Tier labels ─── */
+
+.contact__tier-label {
+  margin: var(--space-1) 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+/* ─── People grid ─── */
+
+.contact__people {
+  display: grid;
+  gap: var(--space-3);
+}
+
+/* ─── Person card ─── */
+
+.contact__person {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  transition: transform var(--duration-fast) var(--ease-snap),
+    box-shadow var(--duration-fast) var(--ease-snap);
+}
+
+.contact__person:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -12px rgba(18, 56, 47, 0.15);
+}
+
+.contact__person-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.contact__person-avatar {
+  flex: none;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--color-ink);
+  color: var(--color-canvas);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.contact__person-info {
+  min-width: 0;
+}
+
+.contact__person-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  line-height: 1.2;
+}
+
+.contact__person-role {
+  margin: 2px 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent-terracotta);
+}
+
+/* ─── Person actions (Email / WhatsApp) ─── */
+
+.contact__person-actions {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.contact__action {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  background: var(--color-canvas);
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--duration-fast) var(--ease-snap),
+    border-color var(--duration-fast) var(--ease-snap);
+}
+
+.contact__action:hover {
+  background: var(--color-surface);
+  border-color: var(--color-ink-muted);
+}
+
+.contact__action:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+.contact__action-icon {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-ink);
+}
+
+.contact__action-icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.contact__action--email .contact__action-icon {
+  color: var(--color-ink);
+}
+
+.contact__action--whatsapp .contact__action-icon {
+  color: #25d366;
+}
+
+.contact__action-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+
+.contact__action-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.contact__action-value {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+/* ─── Person copy buttons ─── */
+
+.contact__person-copy {
+  display: flex;
+  gap: var(--space-2);
+  padding-top: var(--space-1);
+  border-top: 1px solid var(--color-border);
+}
+
+.contact__copy-btn {
+  flex: 1;
+  background: none;
+  border: 1px solid var(--color-border);
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-snap),
+    border-color var(--duration-fast) var(--ease-snap);
+}
+
+.contact__copy-btn:hover {
+  color: var(--color-ink);
+  border-color: var(--color-ink-muted);
+}
+
+.contact__copy-btn:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+/* ─── Schematic branch link (NOT a map) ─── */
+
+.contact__link-line {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.contact__node {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-ink);
+  border: 2px solid var(--color-accent-gold);
+}
+
+.contact__link-connector {
+  flex: 1;
+  height: 1px;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--color-accent-gold) 0 4px,
+    transparent 4px 9px
+  );
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 100% 1px;
+  transition: background-size 900ms var(--ease-cinematic);
+}
+
+.contact__link-caption {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+/* ─── Branches — image-forward office showcase ─── */
+
+.contact__branches {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.contact__branch {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  transition: transform var(--duration-fast) var(--ease-snap),
+    box-shadow var(--duration-fast) var(--ease-snap);
+}
+
+.contact__branch:hover,
+.contact__branch:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px -16px rgba(18, 56, 47, 0.25);
+}
+
+.contact__branch:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 4px;
+}
+
+/* ── Photo area (80% of card) ── */
+
+.contact__branch-photo {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--color-canvas-alt);
+  overflow: hidden;
+}
+
+.contact__branch-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--duration-slow) var(--ease-cinematic);
+}
+
+.contact__branch:hover .contact__branch-img {
+  transform: scale(1.04);
+}
+
+/* TBC placeholder when no photo yet */
+
+.contact__branch-tbc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 100%;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--color-ink-muted);
+}
+
+.contact__branch-tbc-sub {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  opacity: 0.8;
+}
+
+/* HQ tag */
+
+.contact__branch-hq-tag {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  padding: 4px 10px;
+  background: var(--color-accent-gold);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  z-index: 2;
+}
+
+/* Google Maps icon badge */
+
+.contact__branch-maps-badge {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-canvas);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+  transition: transform var(--duration-fast) var(--ease-snap);
+}
+
+.contact__branch:hover .contact__branch-maps-badge {
+  transform: scale(1.1);
+}
+
+.contact__branch-maps-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  object-fit: contain;
+}
+
+/* Gradient overlay for text legibility */
+
+.contact__branch-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(18, 56, 47, 0.55) 0%,
+    rgba(18, 56, 47, 0) 40%
+  );
+  pointer-events: none;
+}
+
+/* ── Info bar (city + CTA) ── */
+
+.contact__branch-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+}
+
+.contact__branch-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-display-m);
+  font-weight: 700;
+  color: var(--color-ink);
+  line-height: 1.2;
+}
+
+.contact__branch-country {
+  font-weight: 400;
+  color: var(--color-ink-muted);
+}
+
+.contact__branch-cta {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent-terracotta);
+  white-space: nowrap;
+}
+
+.contact__branch-arrow {
+  width: 1rem;
+  height: 1rem;
+  transition: transform var(--duration-fast) var(--ease-snap);
+}
+
+.contact__branch:hover .contact__branch-arrow {
+  transform: translate(2px, -2px);
+}
+
+/* ─── Entrance: armed → entered ─── */
+
+.contact--armed .contact__header,
+.contact--armed .contact__ready,
+.contact--armed .contact__tier-label,
+.contact--armed .contact__person,
+.contact--armed .contact__link-line,
+.contact--armed .contact__branch {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+}
+
+.contact--armed .contact__link-connector {
+  background-size: 0% 1px;
+}
+
+.contact--armed.contact--entered .contact__header {
+  animation: contact-enter var(--duration-base) var(--ease-snap) both 0ms;
+}
+
+.contact--armed.contact--entered .contact__ready {
+  animation: contact-enter var(--duration-base) var(--ease-snap) both 80ms;
+}
+
+.contact--armed.contact--entered .contact__person,
+.contact--armed.contact--entered .contact__branch {
+  animation: contact-enter var(--duration-base) var(--ease-snap) both;
+  animation-delay: calc(var(--i) * 100ms + 120ms);
+}
+
+.contact--armed.contact--entered .contact__tier-label,
+.contact--armed.contact--entered .contact__link-line {
+  animation: contact-enter var(--duration-base) var(--ease-snap) both 160ms;
+}
+
+.contact--armed.contact--entered .contact__link-connector {
+  background-size: 100% 1px;
+}
+
+@keyframes contact-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* ─── Reduced motion ─── */
+
+@media (prefers-reduced-motion: reduce) {
+  .contact--armed .contact__header,
+  .contact--armed .contact__ready,
+  .contact--armed .contact__tier-label,
+  .contact--armed .contact__person,
+  .contact--armed .contact__link-line,
+  .contact--armed .contact__branch {
+    opacity: 1;
+    transform: none;
+  }
+
+  .contact--armed.contact--entered .contact__header,
+  .contact--armed.contact--entered .contact__ready,
+  .contact--armed.contact--entered .contact__person,
+  .contact--armed.contact--entered .contact__branch,
+  .contact--armed.contact--entered .contact__tier-label,
+  .contact--armed.contact--entered .contact__link-line {
+    animation: none;
+  }
+
+  .contact--armed .contact__link-connector,
+  .contact--armed.contact--entered .contact__link-connector {
+    background-size: 100% 1px;
+    transition: none;
+  }
+}

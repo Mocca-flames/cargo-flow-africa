@@ -50,14 +50,17 @@
 
 /* ---------- world colours (day↔night via --n) ---------- */
 
+/* Land is deliberately lightened at night (not crushed to black) — NIGHT_KEYS
+   tops out below 1 and TINT_KEYS stays shallow, so moonlit never means
+   unreadable. Keep this in sync with those curves. */
 .corridor__land {
-  fill: color-mix(in srgb, #0F1B17 calc(var(--n) * 100%), #F7F3EC);
+  fill: color-mix(in srgb, #22322E calc(var(--n) * 100%), #F7F3EC);
 }
 
 .corridor__road-bed {
   fill: none;
-  stroke: color-mix(in srgb, #1a2020 calc(var(--n) * 100%), #4a4e52);
-  stroke-width: 1100;
+  stroke: color-mix(in srgb, #2c3436 calc(var(--n) * 100%), #4a4e52);
+  stroke-width: 760; /* = 2 × ROAD_HALF in config.ts */
   stroke-linejoin: round;
 }
 
@@ -68,13 +71,16 @@
   stroke-dasharray: 140 220;
 }
 
+/* Roadside lettering — sized against the carriageway (ROAD_HALF = 380), NOT
+   against the screen. Big enough to read when the camera pulls back, small
+   enough that it never out-scales the truck. */
 .corridor__label {
-  font: 700 260px var(--font-mono, ui-monospace, "JetBrains Mono", monospace);
+  font: 700 150px var(--font-mono, ui-monospace, "JetBrains Mono", monospace);
   fill: color-mix(in srgb, #F4EEE3 calc(var(--n) * 100%), #0b1512);
   letter-spacing: 0.04em;
 }
 
-.corridor__queue-truck { fill: #3a4247; }
+.corridor__queue-truck { fill: #59636b; }
 .corridor__finish { fill: var(--cf-gold, #d9a441); }
 .corridor__barricade { fill: var(--cf-red, #c8352b); }
 
@@ -91,32 +97,101 @@
    flips the attribute. */
 
 .corridor__booth {
-  fill: color-mix(in srgb, #2a3035 calc(var(--n) * 100%), #3a4247);
+  fill: color-mix(in srgb, #222a2e calc(var(--n) * 100%), #353f45);
+  stroke: color-mix(in srgb, #4a5568 calc(var(--n) * 100%), #64748b);
+  stroke-width: 6px;
+}
+
+.corridor__gantry-truss {
+  fill: #1a2226;
+  stroke: color-mix(in srgb, #52606d calc(var(--n) * 100%), #8899a6);
+  stroke-width: 8px;
+}
+
+.corridor__stop-line {
+  fill: rgba(255, 255, 255, 0.45);
+}
+
+.corridor__pass-arrows {
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.corridor__gate[data-state="cleared"] .corridor__pass-arrows {
+  opacity: 0.95;
 }
 
 .corridor__boom {
-  fill: color-mix(in srgb, #8a8580 calc(var(--n) * 100%), #d8d2c4);
   transform-box: fill-box;
   transform-origin: 50% 0%;
-  transition: transform 0.6s cubic-bezier(0.3, 0.9, 0.3, 1), fill 0.3s;
+  transition: transform 0.45s cubic-bezier(0.2, 1.25, 0.3, 1);
 }
 
-.corridor__gate[data-state="hold"] .corridor__boom { fill: var(--cf-red, #c8352b); }
-.corridor__gate[data-state="cleared"] .corridor__boom { fill: #2f7a5f; transform: scaleY(0.08); }
+.corridor__boom-bar {
+  fill: #c8352b;
+  transition: fill 0.3s;
+}
+
+.corridor__boom-stripe {
+  fill: #ffffff;
+}
+
+.corridor__boom-light {
+  fill: #f2a91b;
+  transition: fill 0.3s;
+}
+
+.corridor__gate[data-state="hold"] .corridor__boom-bar { fill: var(--cf-amber, #f2a91b); }
+.corridor__gate[data-state="hold"] .corridor__boom-light { fill: #c8352b; }
+
+.corridor__gate[data-state="cleared"] .corridor__boom { transform: scaleY(0.06); }
+.corridor__gate[data-state="cleared"] .corridor__boom-bar { fill: #22c55e; }
+.corridor__gate[data-state="cleared"] .corridor__boom-light { fill: #22c55e; }
+
+.corridor__gantry-plate {
+  fill: #0b1512;
+  stroke: var(--cf-gold, #d9a441);
+  stroke-width: 6px;
+}
+
+.corridor__gantry-title {
+  fill: var(--cf-cream, #f4eee3);
+  font: 800 52px var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.08em;
+}
 
 .corridor__tag-hold,
 .corridor__tag-clear {
   opacity: 0;
   transform-box: fill-box;
   transform-origin: center;
-  transition: opacity 0.25s, transform 0.4s cubic-bezier(0.2, 1.6, 0.4, 1);
+  transition: opacity 0.25s, transform 0.4s cubic-bezier(0.2, 1.4, 0.3, 1);
 }
 
-.corridor__tag-hold rect { fill: var(--cf-amber, #f2a91b); }
-.corridor__tag-hold text { fill: #1e2326; font: 800 190px var(--font-mono, ui-monospace, monospace); }
-.corridor__tag-clear { transform: scale(1.7); }
-.corridor__tag-clear rect { fill: #2f7a5f; }
-.corridor__tag-clear text { fill: var(--cf-cream, #f4eee3); font: 800 190px var(--font-mono, ui-monospace, monospace); }
+.corridor__tag-hold rect {
+  fill: #b45309;
+  stroke: #f59e0b;
+  stroke-width: 6px;
+}
+.corridor__tag-hold text {
+  fill: #ffffff;
+  font: 800 66px var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.04em;
+}
+
+.corridor__tag-clear { transform: scale(1.35); }
+.corridor__tag-clear rect {
+  fill: #15803d;
+  stroke: var(--cf-gold, #d9a441);
+  stroke-width: 8px;
+  filter: drop-shadow(0 0 20px rgba(34, 197, 94, 0.7));
+}
+.corridor__tag-clear text {
+  fill: #ffffff;
+  font: 900 68px var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.05em;
+}
+
 .corridor__gate[data-state="hold"] .corridor__tag-hold { opacity: 1; }
 .corridor__gate[data-state="cleared"] .corridor__tag-clear { opacity: 1; transform: scale(1); }
 
@@ -132,7 +207,9 @@
   z-index: 2;
 }
 
-/* Night tint: multiplies the whole scene at night (NIGHT_KEYS). */
+/* Night tint: multiplies the whole scene at night (NIGHT_KEYS). Kept low —
+   the scene is already darker through --n; stacking a heavy multiply on top
+   is what made the night unreadable. */
 .corridor__night-tint {
   position: absolute;
   inset: 0;
@@ -157,7 +234,7 @@
 .corridor__kicker-plate {
   position: absolute;
   z-index: 20;
-  top: calc(var(--header-h, 90px) + 1.25rem);
+  top: calc(var(--nav-height, 4.5rem) + 1rem);
   left: 50%;
   transform: translateX(-50%);
   padding: 0.4rem 0.9rem;
@@ -199,7 +276,7 @@
 .corridor__panel {
   position: absolute;
   width: 100%;
-  padding: 0.9rem 1.1rem;
+  padding: 0.75rem 0.95rem;
   opacity: 0;
   transform: translateY(14px);
   transition: opacity 0.45s, transform 0.45s;
@@ -214,27 +291,17 @@
 /* Copy typography (shared by animated panels and the static fallback). */
 
 .corridor__kicker {
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.35rem;
   color: var(--cf-gold, #d9a441);
   font: 600 clamp(0.625rem, 0.3vw + 0.55rem, 0.75rem) var(--font-mono, ui-monospace, monospace);
   letter-spacing: 0.1em;
 }
 
 .corridor__title {
-  margin: 0 0 1rem;
-  font-size: clamp(1.25rem, 1vw + 1rem, 1.75rem);
+  margin: 0;
+  font-size: clamp(1.125rem, 0.8vw + 0.9rem, 1.5rem);
   line-height: 1.05;
   font-weight: 700;
-}
-
-.corridor__triad { margin: 0; display: grid; gap: 0.7rem; }
-.corridor__triad dt { font: 500 0.625rem var(--font-mono, ui-monospace, monospace); opacity: 0.6; }
-.corridor__triad dd {
-  margin: 0.15rem 0 0;
-  font-size: clamp(0.8rem, 0.25vw + 0.74rem, 0.9375rem);
-  line-height: 1.4;
-  max-width: 60ch;
-  color: color-mix(in srgb, #E8E4DD calc(var(--n) * 100%), var(--cf-cream, #f4eee3));
 }
 
 /* ---------- bottom progress bar (identical on both variants) ---------- */

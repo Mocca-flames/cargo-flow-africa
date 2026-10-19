@@ -1,5 +1,5 @@
 const HERO_BASE = "/images/hero-1/";
-const HERO_EXT = ".png";
+const HERO_EXT = ".avif";
 
 export const heroAssets = {
   bgSky: `${HERO_BASE}bg-sky${HERO_EXT}`,

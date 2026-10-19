@@ -11,7 +11,8 @@
   --proof-peek: 14vw;
 }
 
-.proof--mobile .proof__deck {
+/* Fallback only: native snap deck (reduced motion) */
+.proof--mobile:not(.proof--scrub) .proof__deck {
   display: flex;
   gap: var(--space-4);
   box-sizing: border-box;
@@ -27,11 +28,11 @@
   -webkit-overflow-scrolling: touch;
 }
 
-.proof--mobile .proof__deck::-webkit-scrollbar {
+.proof--mobile:not(.proof--scrub) .proof__deck::-webkit-scrollbar {
   display: none;
 }
 
-.proof--mobile .proof__card {
+.proof--mobile:not(.proof--scrub) .proof__card {
   /* Width leaves the gap plus exactly one peek of the next card.
      min-height, not height: short/landscape screens grow the
      section instead of clipping header, card, counter, ticker. */
@@ -43,7 +44,7 @@
 }
 
 @supports (min-height: 52svh) {
-  .proof--mobile .proof__card {
+  .proof--mobile:not(.proof--scrub) .proof__card {
     min-height: clamp(21rem, 52svh, 32rem);
   }
 }
@@ -63,4 +64,46 @@
 
 .proof--mobile.proof--inview .proof__card[data-active="true"] .proof__tag {
   animation: proof-stamp var(--duration-fast) var(--ease-snap) both;
+}
+
+/* ─── Scrubbed: GSAP ScrollTrigger pins the section.
+   The pin element is the ScrollTrigger trigger (pinned by GSAP);
+   the stage fills the locked viewport; the deck translates via scrub. ─── */
+.proof--scrub {
+  contain: none;
+  transform: none;
+}
+
+.proof--scrub .proof__pin {
+  height: 100svh;
+  overflow: hidden;
+}
+
+.proof--scrub .proof__stage {
+  position: relative;
+  height: 100svh;
+  padding-top: 5.5rem;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: clip;
+}
+
+.proof--scrub .proof__deck-frame {
+  overflow: hidden;
+}
+
+.proof--scrub .proof__deck {
+  display: flex;
+  width: max-content;
+  gap: var(--space-4);
+  padding-inline: var(--section-padding);
+  will-change: transform;
+}
+
+.proof--scrub .proof__card {
+  flex: 0 0 calc(100vw - var(--section-padding) - var(--proof-peek) - var(--space-4));
+  min-height: clamp(18rem, 46svh, 30rem);
 }

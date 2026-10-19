@@ -1,12 +1,11 @@
 .premise {
   position: relative;
   width: 100%;
-  min-height: 90vh;
+  min-height: 60vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--color-canvas);
-  overflow: hidden;
 }
 
 .premise {

@@ -1,0 +1,94 @@
+{
+  "source": "SRTM (90m / 30m) via AWS terrarium elevation-tiles-prod, zoom 8",
+  "projection": "Web Mercator (EPSG:3857)",
+  "region_bbox_declared": {
+    "lon_min": 11,
+    "lon_max": 34,
+    "lat_min": -35.5,
+    "lat_max": -9.5
+  },
+  "image_corners_lonlat": {
+    "topLeft": {
+      "lon": 9.84375,
+      "lat": -8.407168163601074
+    },
+    "topRight": {
+      "lon": 35.15625,
+      "lat": -8.407168163601074
+    },
+    "bottomLeft": {
+      "lon": 9.84375,
+      "lat": -36.59788913307021
+    },
+    "bottomRight": {
+      "lon": 35.15625,
+      "lat": -36.59788913307021
+    }
+  },
+  "dimensions_desktop": {
+    "width": 5000,
+    "height": 6111
+  },
+  "dimensions_mobile": {
+    "width": 1600,
+    "height": 1956
+  },
+  "files": {
+    "desktop": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\map_build\\southern_africa_hillshade_5000.webp",
+    "desktop_bytes": 376262,
+    "mobile": "C:\\Users\\MauriX\\Documents\\DEVS\\cargo_flow\\cargo-flow-africa\\map_build\\southern_africa_hillshade_1600.webp",
+    "mobile_bytes": 69668
+  },
+  "city_verification": [
+    {
+      "city": "Johannesburg",
+      "lon": 28.0473,
+      "lat": -26.2041,
+      "px": 3595.8,
+      "py": 3699.9,
+      "lon_rt": 28.0473,
+      "lat_rt": -26.2041,
+      "err_m": "0.0"
+    },
+    {
+      "city": "Gaborone",
+      "lon": 25.9231,
+      "lat": -24.6282,
+      "px": 3176.2,
+      "py": 3355.2,
+      "lon_rt": 25.9231,
+      "lat_rt": -24.6282,
+      "err_m": "0.0"
+    },
+    {
+      "city": "Beitbridge",
+      "lon": 29.9833,
+      "lat": -22.2167,
+      "px": 3978.2,
+      "py": 2836.1,
+      "lon_rt": 29.9833,
+      "lat_rt": -22.2167,
+      "err_m": "0.0"
+    },
+    {
+      "city": "Lusaka",
+      "lon": 28.3228,
+      "lat": -15.3875,
+      "px": 3650.2,
+      "py": 1410,
+      "lon_rt": 28.3228,
+      "lat_rt": -15.3875,
+      "err_m": "0.0"
+    },
+    {
+      "city": "Windhoek",
+      "lon": 17.0658,
+      "lat": -22.5609,
+      "px": 1426.6,
+      "py": 2909.6,
+      "lon_rt": 17.0658,
+      "lat_rt": -22.5609,
+      "err_m": "0.0"
+    }
+  ]
+}
