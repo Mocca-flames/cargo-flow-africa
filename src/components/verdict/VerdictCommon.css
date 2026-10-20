@@ -1,10 +1,22 @@
+/* ═══════════════════════════════════════════════════════════
+   Quote form — complete stylesheet
+   Replace your entire existing CSS file with this one.
+   ═══════════════════════════════════════════════════════════ */
+
 /* ─── Form Container ─── */
 .verdict {
   position: relative;
-  inline-size: 100%; /* Logical property replacing width */
-  min-block-size: 80svh; /* Logical property replacing min-height */
+  inline-size: 100%;
+  min-block-size: 80svh;
   background: var(--color-canvas);
   overflow: hidden;
+}
+
+/* `clip` does not create a scroll container, so the sticky Continue button works */
+@supports (overflow: clip) {
+  .verdict {
+    overflow: clip;
+  }
 }
 
 @supports not (min-block-size: 80svh) {
@@ -33,7 +45,7 @@
   color: var(--color-ink);
   margin-block-end: var(--space-8);
   max-inline-size: 600px;
-  text-wrap: balance; /* Modern typography: balances line lengths automatically */
+  text-wrap: balance;
 }
 
 /* ─── Card ─── */
@@ -46,12 +58,11 @@
   padding-inline: var(--space-6);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  /* Modernized shadow with modern color syntax and softer layering */
-  box-shadow: 
-    0 24px 54px rgb(18 56 47 / 8%), 
-    0 4px 12px rgb(18 56 47 / 4%), 
+  box-shadow:
+    0 24px 54px rgb(18 56 47 / 8%),
+    0 4px 12px rgb(18 56 47 / 4%),
     0 1px 3px rgb(18 56 47 / 4%);
-  border-radius: 1rem; /* Added modern rounded corners */
+  border-radius: 1rem;
   box-sizing: border-box;
   transition: box-shadow 0.3s ease;
 }
@@ -59,55 +70,67 @@
 .verdict__form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-6);
   inline-size: 100%;
 }
 
-/* ─── Step Indicator ─── */
-.verdict__steps {
+/* ─── Progress (replaces the numbered circles) ─── */
+.verdict__progress {
+  inline-size: 100%;
+  max-inline-size: 520px;
+  box-sizing: border-box;
+  padding-inline: var(--space-6);
+  margin-block-end: var(--space-4);
+  text-align: start;
+}
+
+.verdict__progress-text {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-body);
+  font-size: var(--text-body-m);
+  color: var(--color-ink-muted);
+}
+
+.verdict__progress-bar {
+  block-size: 4px;
+  border-radius: 2px;
+  background: var(--color-border);
+  overflow: hidden;
+}
+
+.verdict__progress-bar > span {
+  display: block;
+  block-size: 100%;
+  background: var(--color-ink);
+  border-radius: inherit;
+  transition: inline-size 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Hierarchy: one question, then blocks ─── */
+.verdict__question {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  color: var(--color-ink);
+  text-align: start;
+  text-wrap: balance;
+}
+
+.verdict__subhead {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: var(--color-ink);
+}
+
+.verdict__block {
   display: flex;
-  justify-content: center;
-  gap: var(--space-4);
-  padding-block-end: var(--space-6);
-  border-block-end: 1px solid var(--color-border);
-  margin-block-end: var(--space-6);
-}
-
-.verdict__step {
-  display: grid;
-  place-items: center; /* Modern centering */
-  inline-size: 2rem;
-  block-size: 2rem;
-  border-radius: 50%;
-  border: 1px solid var(--color-border);
-  background: var(--color-canvas);
-  color: var(--color-ink-muted);
-  font-family: var(--font-body);
-  font-size: var(--text-body-m);
-  cursor: default;
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth state transitions */
-}
-
-.verdict__step.is-active {
-  background: var(--color-ink);
-  color: var(--color-canvas);
-  border-color: var(--color-ink);
-  scale: 1.1; /* Modern transform property to highlight active step */
-}
-
-.verdict__step.is-complete {
-  background: var(--color-ink);
-  color: var(--color-canvas);
-  border-color: var(--color-ink);
-}
-
-.verdict__step-label {
-  font-family: var(--font-body);
-  font-size: var(--text-body-m);
-  color: var(--color-ink-muted);
-  margin-block-end: var(--space-6);
-  text-align: center;
+  flex-direction: column;
+  gap: var(--space-2);
+  text-align: start;
 }
 
 /* ─── Fields ─── */
@@ -118,12 +141,12 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  text-align: start; /* Logical property for left */
+  text-align: start;
 }
 
 .verdict__row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Fluid responsive grid */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: var(--space-4);
 }
 
@@ -134,7 +157,7 @@
   font-weight: 500;
 }
 
-/* ─── Chips ─── */
+/* ─── Chips (still used in Steps 2 and 4) ─── */
 .verdict__chips {
   display: flex;
   flex-wrap: wrap;
@@ -148,15 +171,15 @@
   border: 1px solid var(--color-border);
   background: var(--color-canvas);
   color: var(--color-ink);
-  border-radius: 2rem; /* Modern pill shape */
+  border-radius: 2rem;
   cursor: pointer;
   font-family: var(--font-body);
   font-size: var(--text-body-m);
-  transition: all 0.2s ease; /* Smooth hover interactions */
+  transition: all 0.2s ease;
 }
 
 .verdict__chip:hover {
-  background: color-mix(in srgb, var(--color-canvas), var(--color-ink) 5%); /* Subtle hover state */
+  background: color-mix(in srgb, var(--color-canvas), var(--color-ink) 5%);
 }
 
 .verdict__chip.is-active {
@@ -168,15 +191,15 @@
 /* ─── Inputs ─── */
 .verdict__input,
 .verdict__textarea {
-  appearance: none; /* Strip OS default styling */
+  appearance: none;
   padding-block: var(--space-3);
   padding-inline: var(--space-4);
   border: 1px solid var(--color-border);
   background: var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-body);
-  font-size: 1rem;
-  border-radius: 0.5rem; /* Smoother corners */
+  font-size: 1rem; /* 16px minimum: stops iOS Safari zooming on focus */
+  border-radius: 0.5rem;
   min-block-size: 44px;
   inline-size: 100%;
   box-sizing: border-box;
@@ -186,15 +209,121 @@
 .verdict__textarea {
   min-block-size: auto;
   resize: vertical;
-  field-sizing: content; /* Modern CSS: Textarea auto-grows with content (Chrome 123+) */
+  field-sizing: content;
 }
 
-/* Modern accessibility: :focus-visible instead of just :focus */
 .verdict__input:focus-visible,
 .verdict__textarea:focus-visible {
   outline: 2px solid var(--color-accent-gold);
   outline-offset: 2px;
   border-color: transparent;
+}
+
+/* ─── Combobox (typing-first fields) ─── */
+.combo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  text-align: start;
+}
+
+.combo > .verdict__label {
+  display: block;
+  margin-block-end: var(--space-2);
+  color: var(--color-ink-muted);
+}
+
+/* Taller field = easier thumb target; stronger border so it reads as THE input */
+.combo__input {
+  min-block-size: 52px;
+  padding-inline: var(--space-4);
+  border-color: color-mix(in srgb, var(--color-ink) 25%, var(--color-border));
+}
+
+.combo__input:focus-visible {
+  border-color: transparent;
+}
+
+/* Inline list (not absolute): never clipped by the card, pushes content instead */
+.combo__list {
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  padding: 0.25rem;
+  max-block-size: min(16rem, 40svh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background: var(--color-surface);
+  box-shadow: 0 8px 24px rgb(18 56 47 / 8%);
+}
+
+.combo__option {
+  display: flex;
+  align-items: center;
+  min-block-size: 48px;
+  padding-inline: var(--space-4);
+  border-radius: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.combo__option strong {
+  font-weight: 700;
+}
+
+.combo__option:hover,
+.combo__option.is-active {
+  background: color-mix(in srgb, var(--color-canvas), var(--color-ink) 6%);
+}
+
+.combo__option:active {
+  background: color-mix(in srgb, var(--color-canvas), var(--color-ink) 10%);
+}
+
+/* ─── Route: From → To read as one journey ─── */
+.verdict__route-fields {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-inline-start: var(--space-6);
+}
+
+/* Dotted connector between the two dots */
+.verdict__route-fields::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0.4rem;
+  inset-block: 2.9rem 1.9rem;
+  inline-size: 2px;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--color-ink-muted) 0 4px,
+    transparent 4px 8px
+  );
+  opacity: 0.5;
+}
+
+/* Origin dot (hollow) */
+.verdict__route-fields .combo::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: calc(-1 * var(--space-6) + 0.1rem);
+  inset-block-start: 2.9rem;
+  inline-size: 0.7rem;
+  block-size: 0.7rem;
+  border-radius: 50%;
+  border: 2px solid var(--color-ink);
+  background: var(--color-surface);
+}
+
+/* Destination dot (filled) */
+.verdict__route-fields > div:last-child .combo::before {
+  background: var(--color-ink);
 }
 
 /* ─── Quantity ─── */
@@ -203,8 +332,8 @@
   gap: var(--space-2);
 }
 
-.verdict__quantity .verdict__input { 
-  flex: 1; 
+.verdict__quantity .verdict__input {
+  flex: 1;
 }
 
 .verdict__unit-toggle {
@@ -246,13 +375,21 @@
   transition: opacity 0.2s ease;
 }
 
+/* Hint: quiet, tappable text rather than a competing control */
 .verdict__hint {
-  color: var(--color-accent-gold);
-  font-family: var(--font-mono);
-  font-size: var(--text-label);
+  align-self: flex-start;
+  min-block-size: 32px;
+  margin-block-start: var(--space-2);
+  color: var(--color-ink-muted);
+  font-family: var(--font-body);
+  font-size: var(--text-body-m);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-.verdict__hint:hover { opacity: 0.8; }
+.verdict__hint:hover {
+  opacity: 0.8;
+}
 
 .verdict__expand {
   color: var(--color-ink-muted);
@@ -262,7 +399,9 @@
   padding-block: var(--space-2);
 }
 
-.verdict__expand:hover { color: var(--color-ink); }
+.verdict__expand:hover {
+  color: var(--color-ink);
+}
 
 .verdict__specifics {
   display: flex;
@@ -281,7 +420,7 @@
 .verdict__error {
   color: var(--color-accent-terracotta);
   font-size: var(--text-body-m);
-  margin: 0;
+  margin: var(--space-2) 0 0;
 }
 
 /* ─── Navigation ─── */
@@ -289,7 +428,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-4);
-  margin-block-start: var(--space-6);
+  margin-block-start: var(--space-2);
   padding-block-start: var(--space-6);
   border-block-start: 1px solid var(--color-border);
 }
@@ -297,6 +436,18 @@
 .verdict__nav--final {
   flex-direction: column;
   align-items: center;
+}
+
+/* Step 1: Continue stays reachable above the keyboard and long suggestion lists */
+.verdict__nav--sticky {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 5;
+  margin-inline: calc(-1 * var(--space-6));
+  padding-inline: var(--space-6);
+  padding-block-end: max(var(--space-4), env(safe-area-inset-bottom));
+  background: linear-gradient(to bottom, transparent, var(--color-surface) 0.75rem);
+  border-block-start: none;
 }
 
 .verdict__nav-back {
@@ -323,7 +474,7 @@
 
 /* ─── CTA ─── */
 .verdict__cta {
-  flex: 1; /* Allows CTA to fill remaining space nicely next to nav-back */
+  flex: 1;
   padding: var(--space-4);
   background: var(--color-ink);
   color: var(--color-canvas);
@@ -333,7 +484,7 @@
   font-family: var(--font-body);
   font-weight: 600;
   font-size: var(--text-body-l);
-  min-block-size: 44px;
+  min-block-size: 52px;
   inline-size: 100%;
   transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
 }
@@ -347,9 +498,9 @@
   transform: translateY(0);
 }
 
-.verdict__cta:disabled { 
-  opacity: 0.6; 
-  cursor: not-allowed; 
+.verdict__cta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* ─── Text Buttons / Links ─── */
@@ -360,11 +511,13 @@
   font-family: var(--font-body);
   cursor: pointer;
   text-decoration: underline;
-  text-underline-offset: 4px; /* Modern spacing for underlines */
+  text-underline-offset: 4px;
   transition: opacity 0.2s ease;
 }
 
-.verdict__retry:hover { opacity: 0.8; }
+.verdict__retry:hover {
+  opacity: 0.8;
+}
 
 .verdict__wa-link {
   color: var(--color-ink-muted);
@@ -383,7 +536,7 @@
   padding: var(--space-4);
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
-  background: color-mix(in srgb, var(--color-canvas), var(--color-ink) 2%); /* Slight off-background */
+  background: color-mix(in srgb, var(--color-canvas), var(--color-ink) 2%);
   margin-block-end: var(--space-4);
 }
 
@@ -393,7 +546,7 @@
   color: var(--color-ink);
   margin: 0;
   line-height: 1.6;
-  text-wrap: pretty; /* Modern typo feature: prevents single hanging words */
+  text-wrap: pretty;
 }
 
 .verdict__success-msg {
@@ -435,7 +588,7 @@
 /* ─── WhatsApp FAB ─── */
 .verdict .whatsapp-fab {
   bottom: 2rem;
-  inset-inline-end: 2rem; /* Logical property for right/left depending on dir */
+  inset-inline-end: 2rem;
   inline-size: 4rem;
   block-size: 4rem;
   transition: transform 0.2s ease;
@@ -443,4 +596,28 @@
 
 .verdict .whatsapp-fab:hover {
   transform: scale(1.05);
+}
+
+/* ─── Small screens: tighter card, WhatsApp FAB smaller ─── */
+@media (max-width: 480px) {
+  .verdict__card {
+    padding-block: var(--space-6);
+  }
+
+  .verdict .whatsapp-fab {
+    bottom: 1rem;
+    inset-inline-end: 1rem;
+    inline-size: 3.5rem;
+    block-size: 3.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .verdict__progress-bar > span,
+  .verdict__cta,
+  .verdict__chip,
+  .verdict__nav-back,
+  .verdict .whatsapp-fab {
+    transition: none;
+  }
 }

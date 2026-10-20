@@ -1,5 +1,6 @@
 "use client";
 
+import { useId, useState, type KeyboardEvent, type ReactNode } from "react";
 import type { useQuoteForm } from "./useQuoteForm";
 import { getTrailerHint, buildWhatsAppLink, toPayload, origins, destinations, timingOptions, getTimingLabel } from "./quote-form";
 import { commodities } from "@/data/commodities";
@@ -13,11 +14,164 @@ const STEP_LABELS: Record<number, string> = {
   3: "Your Details",
   4: "Review",
 };
+const TOTAL_STEPS = 4;
 
-export function QuoteFormContent({ 
-  state, setField, openSpecifics, toggleSpecifics, step, nextStep, prevStep, handleSubmit, resetForm, formRef 
+/* ════════════════════════════════════════════════════════════
+   Combobox (typing-first field with tappable suggestions)
+   ════════════════════════════════════════════════════════════ */
+
+type ComboOption = { id: string; label: string };
+
+type ComboProps = {
+  id: string;
+  label: string;
+  value: string;
+  options: ComboOption[];
+  placeholder?: string;
+  enterKeyHint?: "next" | "done";
+  onInputChange: (value: string) => void;
+  onSelect: (option: ComboOption) => void;
+  onDone?: () => void;
+  error?: string;
+  errorId?: string;
+  helper?: ReactNode;
+};
+
+function Highlight({ text, query }: { text: string; query: string }) {
+  const q = query.trim();
+  if (!q) return <>{text}</>;
+  const i = text.toLowerCase().indexOf(q.toLowerCase());
+  if (i < 0) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, i)}
+      <strong>{text.slice(i, i + q.length)}</strong>
+      {text.slice(i + q.length)}
+    </>
+  );
+}
+
+function Combobox({
+  id, label, value, options, placeholder, enterKeyHint = "next",
+  onInputChange, onSelect, onDone, error, errorId, helper,
+}: ComboProps) {
+  const listId = useId();
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(-1);
+
+  const q = value.trim().toLowerCase();
+  const filtered = q
+    ? options
+        .filter((o) => o.label.toLowerCase().includes(q))
+        .sort(
+          (a, b) =>
+            Number(b.label.toLowerCase().startsWith(q)) -
+            Number(a.label.toLowerCase().startsWith(q))
+        )
+    : options;
+
+  const exact = filtered.length === 1 && filtered[0].label.toLowerCase() === q;
+  const showList = open && !exact && filtered.length > 0;
+
+  const choose = (o: ComboOption) => {
+    onSelect(o);
+    setOpen(false);
+    setActive(-1);
+    onDone?.();
+  };
+
+  const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setOpen(true);
+      setActive((i) => Math.min(i + 1, filtered.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActive((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault(); // never submit the form from a suggestion field
+      if (showList && active >= 0 && filtered[active]) choose(filtered[active]);
+      else {
+        setOpen(false);
+        onDone?.();
+      }
+    } else if (e.key === "Escape") {
+      setOpen(false);
+    }
+  };
+
+  return (
+    <div className="combo">
+      <label className="verdict__label" htmlFor={id}>{label}</label>
+
+      <input
+        className="verdict__input combo__input"
+        id={id}
+        name={id}
+        data-focus={id}
+        type="text"
+        role="combobox"
+        aria-expanded={showList}
+        aria-controls={listId}
+        aria-autocomplete="list"
+        aria-activedescendant={active >= 0 ? `${listId}-${active}` : undefined}
+        aria-invalid={!!error}
+        aria-describedby={error && errorId ? errorId : undefined}
+        autoComplete="off"
+        spellCheck={false}
+        enterKeyHint={enterKeyHint}
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => {
+          onInputChange(e.target.value);
+          setOpen(true);
+          setActive(-1);
+        }}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setOpen(false)}
+        onKeyDown={onKeyDown}
+      />
+
+      {helper}
+
+      {showList && (
+        <ul className="combo__list" id={listId} role="listbox" aria-label={`${label} suggestions`}>
+          {filtered.map((o, i) => (
+            <li
+              key={o.id}
+              id={`${listId}-${i}`}
+              role="option"
+              aria-selected={i === active}
+              className={`combo__option ${i === active ? "is-active" : ""}`}
+              onMouseDown={(e) => e.preventDefault()} // keeps keyboard open on mobile
+              onClick={() => choose(o)}
+            >
+              <Highlight text={o.label} query={value} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+const commodityOptions: ComboOption[] = commodities.map((c) => ({ id: c.id, label: c.name }));
+const originOptions: ComboOption[] = origins.map((o) => ({ id: o, label: o }));
+const destinationOptions: ComboOption[] = destinations.map((d) => ({ id: d, label: d }));
+
+const focusField = (id: string) => () => {
+  if (typeof window === "undefined") return;
+  window.requestAnimationFrame(() => document.getElementById(id)?.focus());
+};
+
+/* ════════════════════════════════════════════════════════════
+   Main form
+   ════════════════════════════════════════════════════════════ */
+
+export function QuoteFormContent({
+  state, setField, openSpecifics, toggleSpecifics, step, nextStep, prevStep, handleSubmit, resetForm, formRef
 }: Props) {
-  
+
   const hint = getTrailerHint(state.commodity);
   const payload = toPayload(state);
   const waLink = buildWhatsAppLink(payload);
@@ -37,30 +191,45 @@ export function QuoteFormContent({
     payload.contact && `Contact: ${payload.contact}`,
   ].filter(Boolean);
 
+  // Commodity text shown in the field. Known commodity => its name; typed text => commodityOther.
+  const commodityText =
+    state.commodity === "other"
+      ? state.commodityOther
+      : commodities.find((c) => c.id === state.commodity)?.name ?? "";
+
+  const handleCommodityInput = (text: string) => {
+    const match = commodities.find((c) => c.name.toLowerCase() === text.trim().toLowerCase());
+    if (match) {
+      setField("commodity", match.id);
+      setField("commodityOther", "");
+    } else if (text === "") {
+      setField("commodity", null);
+      setField("commodityOther", "");
+    } else {
+      setField("commodity", "other");
+      setField("commodityOther", text);
+    }
+  };
+
+  const commodityError = state.errors.commodity || state.errors.commodityOther;
+
   return (
     <>
       <div aria-live="polite" className="sr-only">{statusText}</div>
 
-      {/* ── Step Progress Indicator ── */}
-      <nav className="verdict__steps" aria-label="Form progress">
-        {Object.keys(STEP_LABELS).map((n) => {
-          const s = Number(n);
-          const isActive = s === step;
-          const isComplete = s < step;
-          
-          return (
-            <span 
-              key={s} 
-              className={`verdict__step ${isActive ? "is-active" : isComplete ? "is-complete" : ""}`}
-              aria-current={isActive ? "step" : undefined}
-            >
-              {/* Renders the number inside the modernized circle */}
-              {s} 
-            </span>
-          );
-        })}
+      {/* ── Progress ── */}
+      <nav className="verdict__progress" aria-label="Form progress">
+        <p className="verdict__progress-text">Step {step} of {TOTAL_STEPS} · {STEP_LABELS[step]}</p>
+        <div
+          className="verdict__progress-bar"
+          role="progressbar"
+          aria-valuemin={1}
+          aria-valuemax={TOTAL_STEPS}
+          aria-valuenow={step}
+        >
+          <span style={{ inlineSize: `${(step / TOTAL_STEPS) * 100}%` }} />
+        </div>
       </nav>
-      <p className="verdict__step-label" aria-hidden="true">{STEP_LABELS[step]}</p>
 
       {/* ── Main Form Card ── */}
       <div className="verdict__card">
@@ -75,102 +244,70 @@ export function QuoteFormContent({
             {/* ── Step 1: Cargo & Route ── */}
             {step === 1 && (
               <>
-                <fieldset className="verdict__fieldset">
-                  <legend className="sr-only">Commodity</legend>
-                  <span className="verdict__label" id="lbl-commodity">Commodity</span>
-                  <div className="verdict__chips" data-focus="commodity" tabIndex={-1} role="group" aria-labelledby="lbl-commodity">
-                    {commodities.map((c) => (
-                      <button 
-                        key={c.id} type="button"
-                        className={`verdict__chip ${state.commodity === c.id ? "is-active" : ""}`}
-                        aria-pressed={state.commodity === c.id}
-                        onClick={() => setField("commodity", c.id)}
-                      >
-                        {c.name}
-                      </button>
-                    ))}
-                    <button 
-                      type="button"
-                      className={`verdict__chip ${state.commodity === "other" ? "is-active" : ""}`}
-                      aria-pressed={state.commodity === "other"}
-                      onClick={() => setField("commodity", "other")}
-                    >
-                      Other
-                    </button>
-                  </div>
-                  {state.commodity === "other" && (
-                    <input 
-                      className="verdict__input" id="commodityOther" name="commodityOther"
-                      placeholder="Specify commodity"
-                      value={state.commodityOther}
-                      onChange={(e) => setField("commodityOther", e.target.value)}
-                      aria-invalid={!!state.errors.commodityOther}
-                      aria-describedby={state.errors.commodityOther ? "err-commodityOther" : undefined}
-                    />
-                  )}
-                  <FieldError id="err-commodity" msg={state.errors.commodity} />
-                  {state.commodity === "other" && <FieldError id="err-commodityOther" msg={state.errors.commodityOther} />}
-                </fieldset>
+                <h2 className="verdict__question">What are you moving?</h2>
 
-                {hint && (
-                  <button type="button" className="verdict__hint" onClick={openSpecifics}>
-                    Typically moved by {hint}
-                  </button>
-                )}
-
-                <fieldset className="verdict__fieldset">
-                  <legend className="sr-only">Origin</legend>
-                  <span className="verdict__label" id="lbl-from">From</span>
-                  <div className="verdict__chips" data-focus="from" tabIndex={-1} role="group" aria-labelledby="lbl-from">
-                    {origins.map((o) => (
-                      <button 
-                        key={o} type="button"
-                        className={`verdict__chip ${state.from === o ? "is-active" : ""}`}
-                        aria-pressed={state.from === o}
-                        onClick={() => setField("from", o)}
-                      >
-                        {o}
-                      </button>
-                    ))}
-                  </div>
-                  <input 
-                    className="verdict__input" id="from" name="from"
-                    placeholder="Or type origin"
-                    value={state.from}
-                    onChange={(e) => setField("from", e.target.value)}
-                    aria-invalid={!!state.errors.from}
-                    aria-describedby={state.errors.from ? "err-from" : undefined}
+                <div className="verdict__block">
+                  <Combobox
+                    id="commodity"
+                    label="Commodity"
+                    placeholder="e.g. Sulphur granules, steel coils…"
+                    value={commodityText}
+                    options={commodityOptions}
+                    onInputChange={handleCommodityInput}
+                    onSelect={(o) => handleCommodityInput(o.label)}
+                    onDone={focusField("from")}
+                    error={commodityError}
+                    errorId="err-commodity"
+                    helper={
+                      hint ? (
+                        <button type="button" className="verdict__hint" onClick={openSpecifics}>
+                          Usually moved by {hint}
+                        </button>
+                      ) : null
+                    }
                   />
-                  <FieldError id="err-from" msg={state.errors.from} />
-                </fieldset>
+                  <FieldError id="err-commodity" msg={commodityError} />
+                </div>
 
-                <fieldset className="verdict__fieldset">
-                  <legend className="sr-only">Destination</legend>
-                  <span className="verdict__label" id="lbl-to">To</span>
-                  <div className="verdict__chips" data-focus="to" tabIndex={-1} role="group" aria-labelledby="lbl-to">
-                    {destinations.map((d) => (
-                      <button 
-                        key={d} type="button"
-                        className={`verdict__chip ${state.to === d ? "is-active" : ""}`}
-                        aria-pressed={state.to === d}
-                        onClick={() => setField("to", d)}
-                      >
-                        {d}
-                      </button>
-                    ))}
+                <div className="verdict__block verdict__route" role="group" aria-labelledby="lbl-route">
+                  <h3 className="verdict__subhead" id="lbl-route">Route</h3>
+
+                  <div className="verdict__route-fields">
+                    <div>
+                      <Combobox
+                        id="from"
+                        label="From"
+                        placeholder="Town, city or province"
+                        value={state.from}
+                        options={originOptions}
+                        onInputChange={(v) => setField("from", v)}
+                        onSelect={(o) => setField("from", o.label)}
+                        onDone={focusField("to")}
+                        error={state.errors.from}
+                        errorId="err-from"
+                      />
+                      <FieldError id="err-from" msg={state.errors.from} />
+                    </div>
+
+                    <div>
+                      <Combobox
+                        id="to"
+                        label="To"
+                        placeholder="Town, city or province"
+                        value={state.to}
+                        options={destinationOptions}
+                        enterKeyHint="done"
+                        onInputChange={(v) => setField("to", v)}
+                        onSelect={(o) => setField("to", o.label)}
+                        error={state.errors.to}
+                        errorId="err-to"
+                      />
+                      <FieldError id="err-to" msg={state.errors.to} />
+                    </div>
                   </div>
-                  <input 
-                    className="verdict__input" id="to" name="to"
-                    placeholder="Or type destination"
-                    value={state.to}
-                    onChange={(e) => setField("to", e.target.value)}
-                    aria-invalid={!!state.errors.to}
-                    aria-describedby={state.errors.to ? "err-to" : undefined}
-                  />
-                  <FieldError id="err-to" msg={state.errors.to} />
-                </fieldset>
+                </div>
 
-                <div className="verdict__nav">
+                <div className="verdict__nav verdict__nav--sticky">
                   <button type="button" className="verdict__cta" onClick={nextStep}>Continue</button>
                 </div>
               </>
@@ -184,7 +321,7 @@ export function QuoteFormContent({
                   <span className="verdict__label" id="lbl-timing">Timing window</span>
                   <div className="verdict__chips" data-focus="timing" tabIndex={-1} role="group" aria-labelledby="lbl-timing">
                     {timingOptions.map((t) => (
-                      <button 
+                      <button
                         key={t} type="button"
                         className={`verdict__chip ${state.timing === t ? "is-active" : ""}`}
                         aria-pressed={state.timing === t}
@@ -195,7 +332,7 @@ export function QuoteFormContent({
                     ))}
                   </div>
                   {state.timing === "specific-date" && (
-                    <input 
+                    <input
                       className="verdict__input" id="timingSpecific" name="timingSpecific"
                       placeholder="e.g. 15 Oct 2026"
                       value={state.timingSpecific}
@@ -212,7 +349,7 @@ export function QuoteFormContent({
                   <legend className="sr-only">Quantity</legend>
                   <span className="verdict__label" id="lbl-qty">Quantity</span>
                   <div className="verdict__quantity">
-                    <input 
+                    <input
                       className="verdict__input" id="quantityValue" name="quantityValue"
                       type="number" inputMode="decimal" min="0" step="any"
                       placeholder="Amount"
@@ -224,7 +361,7 @@ export function QuoteFormContent({
                     <div className="verdict__unit-toggle" role="group" aria-labelledby="lbl-qty-unit">
                       <span id="lbl-qty-unit" className="sr-only">Unit</span>
                       {(["tonnes", "loads"] as const).map((u) => (
-                        <button 
+                        <button
                           key={u} type="button"
                           className={state.quantityUnit === u ? "is-active" : ""}
                           aria-pressed={state.quantityUnit === u}
@@ -251,7 +388,7 @@ export function QuoteFormContent({
                 <div className="verdict__row">
                   <fieldset className="verdict__fieldset">
                     <label className="verdict__label" htmlFor="name">Name</label>
-                    <input 
+                    <input
                       className="verdict__input" id="name" name="name"
                       autoComplete="name"
                       value={state.name}
@@ -261,10 +398,10 @@ export function QuoteFormContent({
                     />
                     <FieldError id="err-name" msg={state.errors.name} />
                   </fieldset>
-                  
+
                   <fieldset className="verdict__fieldset">
                     <label className="verdict__label" htmlFor="company">Company</label>
-                    <input 
+                    <input
                       className="verdict__input" id="company" name="company"
                       autoComplete="organization"
                       value={state.company}
@@ -278,7 +415,7 @@ export function QuoteFormContent({
 
                 <fieldset className="verdict__fieldset">
                   <label className="verdict__label" htmlFor="contact">Contact (WhatsApp preferred)</label>
-                  <input 
+                  <input
                     className="verdict__input" id="contact" name="contact"
                     placeholder="Phone or email" inputMode="text"
                     autoComplete="contact"
@@ -306,7 +443,7 @@ export function QuoteFormContent({
                   ))}
                 </div>
 
-                <button 
+                <button
                   type="button" className="verdict__expand"
                   aria-expanded={state.specificsExpanded}
                   aria-controls="verdict-specifics"
@@ -315,7 +452,7 @@ export function QuoteFormContent({
                   Know your trailer or handling needs? Add specifics
                 </button>
 
-                <div 
+                <div
                   id="verdict-specifics"
                   className="verdict__specifics"
                   hidden={!state.specificsExpanded}
@@ -325,7 +462,7 @@ export function QuoteFormContent({
                     <legend className="sr-only">Trailer class</legend>
                     <span className="verdict__label" id="lbl-trailer">Trailer class</span>
                     <div className="verdict__chips" data-focus="trailer" tabIndex={-1} role="group" aria-labelledby="lbl-trailer">
-                      <button 
+                      <button
                         type="button"
                         className={`verdict__chip ${state.trailer === "advise" ? "is-active" : ""}`}
                         aria-pressed={state.trailer === "advise"}
@@ -334,7 +471,7 @@ export function QuoteFormContent({
                         Not sure, advise me
                       </button>
                       {fleetClasses.map((f) => (
-                        <button 
+                        <button
                           key={f.id} type="button"
                           className={`verdict__chip ${state.trailer === f.id ? "is-active" : ""}`}
                           aria-pressed={state.trailer === f.id}
@@ -348,7 +485,7 @@ export function QuoteFormContent({
 
                   <fieldset className="verdict__fieldset">
                     <label className="verdict__label" htmlFor="handlingNeeds">Handling / border needs</label>
-                    <textarea 
+                    <textarea
                       className="verdict__textarea" id="handlingNeeds" name="handlingNeeds"
                       rows={3} placeholder="Clearance, escorts, permits..."
                       value={state.handlingNeeds}
@@ -358,7 +495,7 @@ export function QuoteFormContent({
 
                   <fieldset className="verdict__fieldset">
                     <label className="verdict__label" htmlFor="note">Note</label>
-                    <textarea 
+                    <textarea
                       className="verdict__textarea" id="note" name="note"
                       rows={3} placeholder="Anything else?"
                       value={state.note}
@@ -369,20 +506,20 @@ export function QuoteFormContent({
 
                 <div className="verdict__nav verdict__nav--final">
                   <button type="button" className="verdict__nav-back" onClick={prevStep}>Back</button>
-                  <button 
+                  <button
                     className="verdict__cta" type="submit"
                     disabled={state.submitStatus === "submitting"}
                   >
                     {state.submitStatus === "submitting" ? "Sending..." : "Request quote"}
                   </button>
                 </div>
-                
+
                 {state.submitStatus === "error" && (
                   <button type="button" className="verdict__retry" onClick={() => handleSubmit()}>
                     Retry
                   </button>
                 )}
-                
+
                 {waLink && (
                   <a className="verdict__wa-link" href={waLink} target="_blank" rel="noopener noreferrer">
                     Or message on WhatsApp

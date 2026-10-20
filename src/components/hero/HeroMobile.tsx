@@ -115,10 +115,10 @@ export default function HeroMobile() {
 
           <div className="hm-copy">
             <div className="hm-copy-inner">
-              <h1 className="hm-headline" aria-label="Cross Border Heavy Haulage & Corridor Freight">
-                Cross Border Heavy Haulage                                                                                                         
+              <h1 className="hm-headline" aria-label="Cross-Border Heavy Haulage and corridor freight">
+                Cross-Border Heavy Haulage
               </h1>
-              <p className="hm-sub">Corridor Freight.</p>
+              <p className="hm-sub">Secured from origin to destination.</p>
             </div>
           </div>
 
