@@ -14,17 +14,18 @@ const STEP_LABELS: Record<number, string> = {
   4: "Review",
 };
 
-export function QuoteFormContent({ state, setField, openSpecifics, toggleSpecifics, step, nextStep, prevStep, handleSubmit, resetForm, formRef }: Props) {
+export function QuoteFormContent({ 
+  state, setField, openSpecifics, toggleSpecifics, step, nextStep, prevStep, handleSubmit, resetForm, formRef 
+}: Props) {
+  
   const hint = getTrailerHint(state.commodity);
   const payload = toPayload(state);
   const waLink = buildWhatsAppLink(payload);
 
   const statusText =
-    state.submitStatus === "success"
-      ? "Quote sent. We will be in touch shortly."
-      : state.submitStatus === "error"
-        ? `Send failed: ${state.errorMessage ?? "unknown error"}.`
-        : Object.values(state.errors).join(", ");
+    state.submitStatus === "success" ? "Quote sent. We will be in touch shortly."
+    : state.submitStatus === "error" ? `Send failed: ${state.errorMessage ?? "unknown error"}.`
+    : Object.values(state.errors).join(", ");
 
   const summaryLines = [
     payload.commodity && `Commodity: ${payload.commodity}`,
@@ -40,24 +41,31 @@ export function QuoteFormContent({ state, setField, openSpecifics, toggleSpecifi
     <>
       <div aria-live="polite" className="sr-only">{statusText}</div>
 
-      {/* Step progress — visual only, no skipping */}
-      <nav className="verdict__steps" aria-label="Form steps">
-        {Object.entries(STEP_LABELS).map(([n]) => {
+      {/* ── Step Progress Indicator ── */}
+      <nav className="verdict__steps" aria-label="Form progress">
+        {Object.keys(STEP_LABELS).map((n) => {
           const s = Number(n);
+          const isActive = s === step;
+          const isComplete = s < step;
+          
           return (
-            <span key={s} className="verdict__step-indicator">
-              <span className={`verdict__step-dot ${s === step ? "is-active" : s < step ? "is-complete" : ""}`} />
-              {s < 4 && <span className="verdict__step-line" />}
+            <span 
+              key={s} 
+              className={`verdict__step ${isActive ? "is-active" : isComplete ? "is-complete" : ""}`}
+              aria-current={isActive ? "step" : undefined}
+            >
+              {/* Renders the number inside the modernized circle */}
+              {s} 
             </span>
           );
         })}
       </nav>
-      <p className="verdict__step-label">{STEP_LABELS[step]}</p>
+      <p className="verdict__step-label" aria-hidden="true">{STEP_LABELS[step]}</p>
 
-      {/* Card with fixed min-height — stops header jumping between steps */}
+      {/* ── Main Form Card ── */}
       <div className="verdict__card">
         {state.submitStatus === "success" ? (
-          <div className="verdict__success-msg">
+          <div className="verdict__success-msg" role="alert">
             <p>Your quote has been received. We will reach out soon.</p>
             <button className="verdict__cta" onClick={resetForm}>Send another</button>
           </div>
@@ -72,21 +80,27 @@ export function QuoteFormContent({ state, setField, openSpecifics, toggleSpecifi
                   <span className="verdict__label" id="lbl-commodity">Commodity</span>
                   <div className="verdict__chips" data-focus="commodity" tabIndex={-1} role="group" aria-labelledby="lbl-commodity">
                     {commodities.map((c) => (
-                      <button key={c.id} type="button"
+                      <button 
+                        key={c.id} type="button"
                         className={`verdict__chip ${state.commodity === c.id ? "is-active" : ""}`}
                         aria-pressed={state.commodity === c.id}
-                        aria-label={c.name}
                         onClick={() => setField("commodity", c.id)}
-                      >{c.name}</button>
+                      >
+                        {c.name}
+                      </button>
                     ))}
-                    <button type="button"
+                    <button 
+                      type="button"
                       className={`verdict__chip ${state.commodity === "other" ? "is-active" : ""}`}
                       aria-pressed={state.commodity === "other"}
                       onClick={() => setField("commodity", "other")}
-                    >Other</button>
+                    >
+                      Other
+                    </button>
                   </div>
                   {state.commodity === "other" && (
-                    <input className="verdict__input" id="commodityOther" name="commodityOther"
+                    <input 
+                      className="verdict__input" id="commodityOther" name="commodityOther"
                       placeholder="Specify commodity"
                       value={state.commodityOther}
                       onChange={(e) => setField("commodityOther", e.target.value)}
@@ -109,14 +123,18 @@ export function QuoteFormContent({ state, setField, openSpecifics, toggleSpecifi
                   <span className="verdict__label" id="lbl-from">From</span>
                   <div className="verdict__chips" data-focus="from" tabIndex={-1} role="group" aria-labelledby="lbl-from">
                     {origins.map((o) => (
-                      <button key={o} type="button"
+                      <button 
+                        key={o} type="button"
                         className={`verdict__chip ${state.from === o ? "is-active" : ""}`}
                         aria-pressed={state.from === o}
                         onClick={() => setField("from", o)}
-                      >{o}</button>
+                      >
+                        {o}
+                      </button>
                     ))}
                   </div>
-                  <input className="verdict__input" id="from" name="from"
+                  <input 
+                    className="verdict__input" id="from" name="from"
                     placeholder="Or type origin"
                     value={state.from}
                     onChange={(e) => setField("from", e.target.value)}
@@ -131,14 +149,18 @@ export function QuoteFormContent({ state, setField, openSpecifics, toggleSpecifi
                   <span className="verdict__label" id="lbl-to">To</span>
                   <div className="verdict__chips" data-focus="to" tabIndex={-1} role="group" aria-labelledby="lbl-to">
                     {destinations.map((d) => (
-                      <button key={d} type="button"
+                      <button 
+                        key={d} type="button"
                         className={`verdict__chip ${state.to === d ? "is-active" : ""}`}
                         aria-pressed={state.to === d}
                         onClick={() => setField("to", d)}
-                      >{d}</button>
+                      >
+                        {d}
+                      </button>
                     ))}
                   </div>
-                  <input className="verdict__input" id="to" name="to"
+                  <input 
+                    className="verdict__input" id="to" name="to"
                     placeholder="Or type destination"
                     value={state.to}
                     onChange={(e) => setField("to", e.target.value)}
@@ -162,15 +184,19 @@ export function QuoteFormContent({ state, setField, openSpecifics, toggleSpecifi
                   <span className="verdict__label" id="lbl-timing">Timing window</span>
                   <div className="verdict__chips" data-focus="timing" tabIndex={-1} role="group" aria-labelledby="lbl-timing">
                     {timingOptions.map((t) => (
-                      <button key={t} type="button"
+                      <button 
+                        key={t} type="button"
                         className={`verdict__chip ${state.timing === t ? "is-active" : ""}`}
                         aria-pressed={state.timing === t}
                         onClick={() => setField("timing", t)}
-                      >{getTimingLabel(t)}</button>
+                      >
+                        {getTimingLabel(t)}
+                      </button>
                     ))}
                   </div>
                   {state.timing === "specific-date" && (
-                    <input className="verdict__input" id="timingSpecific" name="timingSpecific"
+                    <input 
+                      className="verdict__input" id="timingSpecific" name="timingSpecific"
                       placeholder="e.g. 15 Oct 2026"
                       value={state.timingSpecific}
                       onChange={(e) => setField("timingSpecific", e.target.value)}
@@ -186,7 +212,8 @@ export function QuoteFormContent({ state, setField, openSpecifics, toggleSpecifi
                   <legend className="sr-only">Quantity</legend>
                   <span className="verdict__label" id="lbl-qty">Quantity</span>
                   <div className="verdict__quantity">
-                    <input className="verdict__input" id="quantityValue" name="quantityValue"
+                    <input 
+                      className="verdict__input" id="quantityValue" name="quantityValue"
                       type="number" inputMode="decimal" min="0" step="any"
                       placeholder="Amount"
                       value={state.quantityValue}
@@ -197,11 +224,14 @@ export function QuoteFormContent({ state, setField, openSpecifics, toggleSpecifi
                     <div className="verdict__unit-toggle" role="group" aria-labelledby="lbl-qty-unit">
                       <span id="lbl-qty-unit" className="sr-only">Unit</span>
                       {(["tonnes", "loads"] as const).map((u) => (
-                        <button key={u} type="button"
+                        <button 
+                          key={u} type="button"
                           className={state.quantityUnit === u ? "is-active" : ""}
                           aria-pressed={state.quantityUnit === u}
                           onClick={() => setField("quantityUnit", u)}
-                        >{u === "tonnes" ? "Tonnes" : "Loads"}</button>
+                        >
+                          {u === "tonnes" ? "Tonnes" : "Loads"}
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -221,7 +251,9 @@ export function QuoteFormContent({ state, setField, openSpecifics, toggleSpecifi
                 <div className="verdict__row">
                   <fieldset className="verdict__fieldset">
                     <label className="verdict__label" htmlFor="name">Name</label>
-                    <input className="verdict__input" id="name" name="name"
+                    <input 
+                      className="verdict__input" id="name" name="name"
+                      autoComplete="name"
                       value={state.name}
                       onChange={(e) => setField("name", e.target.value)}
                       aria-invalid={!!state.errors.name}
@@ -229,9 +261,12 @@ export function QuoteFormContent({ state, setField, openSpecifics, toggleSpecifi
                     />
                     <FieldError id="err-name" msg={state.errors.name} />
                   </fieldset>
+                  
                   <fieldset className="verdict__fieldset">
                     <label className="verdict__label" htmlFor="company">Company</label>
-                    <input className="verdict__input" id="company" name="company"
+                    <input 
+                      className="verdict__input" id="company" name="company"
+                      autoComplete="organization"
                       value={state.company}
                       onChange={(e) => setField("company", e.target.value)}
                       aria-invalid={!!state.errors.company}
@@ -243,8 +278,10 @@ export function QuoteFormContent({ state, setField, openSpecifics, toggleSpecifi
 
                 <fieldset className="verdict__fieldset">
                   <label className="verdict__label" htmlFor="contact">Contact (WhatsApp preferred)</label>
-                  <input className="verdict__input" id="contact" name="contact"
+                  <input 
+                    className="verdict__input" id="contact" name="contact"
                     placeholder="Phone or email" inputMode="text"
+                    autoComplete="contact"
                     value={state.contact}
                     onChange={(e) => setField("contact", e.target.value)}
                     aria-invalid={!!state.errors.contact}
@@ -263,19 +300,23 @@ export function QuoteFormContent({ state, setField, openSpecifics, toggleSpecifi
             {/* ── Step 4: Review & Submit ── */}
             {step === 4 && (
               <>
-                <div className="verdict__review">
+                <div className="verdict__review" aria-live="polite">
                   {summaryLines.map((line, i) => (
                     <p key={i} className="verdict__review-line">{line}</p>
                   ))}
                 </div>
 
-                <button type="button" className="verdict__expand"
+                <button 
+                  type="button" className="verdict__expand"
                   aria-expanded={state.specificsExpanded}
                   aria-controls="verdict-specifics"
                   onClick={toggleSpecifics}
-                >Know your trailer or handling needs? Add specifics</button>
+                >
+                  Know your trailer or handling needs? Add specifics
+                </button>
 
-                <div id="verdict-specifics"
+                <div 
+                  id="verdict-specifics"
                   className="verdict__specifics"
                   hidden={!state.specificsExpanded}
                   aria-hidden={!state.specificsExpanded}
@@ -284,24 +325,31 @@ export function QuoteFormContent({ state, setField, openSpecifics, toggleSpecifi
                     <legend className="sr-only">Trailer class</legend>
                     <span className="verdict__label" id="lbl-trailer">Trailer class</span>
                     <div className="verdict__chips" data-focus="trailer" tabIndex={-1} role="group" aria-labelledby="lbl-trailer">
-                      <button type="button"
+                      <button 
+                        type="button"
                         className={`verdict__chip ${state.trailer === "advise" ? "is-active" : ""}`}
                         aria-pressed={state.trailer === "advise"}
                         onClick={() => setField("trailer", "advise")}
-                      >Not sure, advise me</button>
+                      >
+                        Not sure, advise me
+                      </button>
                       {fleetClasses.map((f) => (
-                        <button key={f.id} type="button"
+                        <button 
+                          key={f.id} type="button"
                           className={`verdict__chip ${state.trailer === f.id ? "is-active" : ""}`}
                           aria-pressed={state.trailer === f.id}
                           onClick={() => setField("trailer", f.id)}
-                        >{f.name}</button>
+                        >
+                          {f.name}
+                        </button>
                       ))}
                     </div>
                   </fieldset>
 
                   <fieldset className="verdict__fieldset">
                     <label className="verdict__label" htmlFor="handlingNeeds">Handling / border needs</label>
-                    <textarea className="verdict__textarea" id="handlingNeeds" name="handlingNeeds"
+                    <textarea 
+                      className="verdict__textarea" id="handlingNeeds" name="handlingNeeds"
                       rows={3} placeholder="Clearance, escorts, permits..."
                       value={state.handlingNeeds}
                       onChange={(e) => setField("handlingNeeds", e.target.value)}
@@ -310,7 +358,8 @@ export function QuoteFormContent({ state, setField, openSpecifics, toggleSpecifi
 
                   <fieldset className="verdict__fieldset">
                     <label className="verdict__label" htmlFor="note">Note</label>
-                    <textarea className="verdict__textarea" id="note" name="note"
+                    <textarea 
+                      className="verdict__textarea" id="note" name="note"
                       rows={3} placeholder="Anything else?"
                       value={state.note}
                       onChange={(e) => setField("note", e.target.value)}
@@ -320,20 +369,22 @@ export function QuoteFormContent({ state, setField, openSpecifics, toggleSpecifi
 
                 <div className="verdict__nav verdict__nav--final">
                   <button type="button" className="verdict__nav-back" onClick={prevStep}>Back</button>
-                  <button className="verdict__cta" type="submit"
+                  <button 
+                    className="verdict__cta" type="submit"
                     disabled={state.submitStatus === "submitting"}
                   >
                     {state.submitStatus === "submitting" ? "Sending..." : "Request quote"}
                   </button>
                 </div>
+                
                 {state.submitStatus === "error" && (
-                  <button type="button" className="verdict__retry"
-                    onClick={() => handleSubmit()}
-                  >Retry</button>
+                  <button type="button" className="verdict__retry" onClick={() => handleSubmit()}>
+                    Retry
+                  </button>
                 )}
+                
                 {waLink && (
-                  <a className="verdict__wa-link" href={waLink}
-                    target="_blank" rel="noopener noreferrer">
+                  <a className="verdict__wa-link" href={waLink} target="_blank" rel="noopener noreferrer">
                     Or message on WhatsApp
                   </a>
                 )}
@@ -347,5 +398,10 @@ export function QuoteFormContent({ state, setField, openSpecifics, toggleSpecifi
 }
 
 function FieldError({ id, msg }: { id: string; msg?: string }) {
-  return msg ? <p id={id} className="verdict__error">{msg}</p> : null;
+  if (!msg) return null;
+  return (
+    <p id={id} className="verdict__error" role="alert">
+      {msg}
+    </p>
+  );
 }

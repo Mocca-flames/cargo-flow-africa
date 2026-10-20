@@ -57,9 +57,7 @@ const CORR_COLOR: Record<CorridorId, string> = {
   D: "#D63384",
 };
 
-const MAP_6000 = "/southern-africa-wide-6000.webp";
-const MAP_2400 = "/southern-africa-wide-2400.webp";
-const MAP_FALLBACK = "/southern-africa-wide.avif";
+const MAP_SRC = "/southern-africa-wide.avif";
 
 /* ─── Card copy (text only — no coordinates) ─── */
 
@@ -212,8 +210,7 @@ export default function CoverageSection() {
   const stRef = useRef<ScrollTrigger | null>(null);
   const [active, setActive] = useState(0);
   const [reduced, setReduced] = useState(false);
-  const [narrowVp, setNarrowVp] = useState(false);
-  const [mapFailed, setMapFailed] = useState(false);
+  const [isDesktop, setIsDesktop] = useState<boolean | null>(null);
   const [size, setSize] = useState({ cw: 0, ch: 0 });
 
   useEffect(() => {
@@ -224,16 +221,12 @@ export default function CoverageSection() {
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  /* Viewport width picks the basemap file; container size drives framing. */
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 1024px)");
-    const updateVp = () => {
-      setNarrowVp(mq.matches);
-      setMapFailed(false);
-    };
-    updateVp();
-    mq.addEventListener("change", updateVp);
-    return () => mq.removeEventListener("change", updateVp);
+    const mq = window.matchMedia("(min-width: 1025px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
   }, []);
 
   useEffect(() => {
@@ -249,14 +242,7 @@ export default function CoverageSection() {
     return () => window.removeEventListener("resize", measure);
   }, []);
 
-  /* Preload the webp; fall back to the png if it 404s. */
-  useEffect(() => {
-    const src = narrowVp ? MAP_2400 : MAP_6000;
-    const im = new window.Image();
-    im.onerror = () => setMapFailed(true);
-    im.src = src;
-  }, [narrowVp]);
-  const mapSrc = mapFailed ? MAP_FALLBACK : narrowVp ? MAP_2400 : MAP_6000;
+  const mapSrc = MAP_SRC;
 
   const goTo = useCallback(
     (i: number) => {
@@ -665,7 +651,7 @@ export default function CoverageSection() {
           </g>
         </svg>
 
-        {!narrowVp && (
+        {isDesktop && (
           <nav
             className="cov2-rail"
             aria-label="Coverage stops"

@@ -1,7 +1,7 @@
  :root {
-  --hm-seg-a-end: 70;
-  --hm-seg-b-end: 130;
-  --hm-seg-c-end: 530;
+  --hm-seg-a-end: 35;
+  --hm-seg-b-end: 65;
+  --hm-seg-c-end: 265;
   --hm-road-start: 40%;
   --hm-zoom-a: 1.5;
   --hm-zoom-b: 2.4;
@@ -15,7 +15,7 @@
 
 .hm-track {
   position: relative;
-  height: calc(var(--hm-seg-c-end) * 1svh + 100lvh);
+  height: calc((var(--hm-seg-c-end) / 3 + 100) * 1svh);
 }
 
 .hm-stage {

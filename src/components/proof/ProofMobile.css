@@ -72,15 +72,19 @@
 .proof--scrub {
   contain: none;
   transform: none;
+  overflow: visible;
+  content-visibility: visible;
 }
 
 .proof--scrub .proof__pin {
-  height: 100svh;
-  overflow: hidden;
+  /* scroll runway: one viewport + ~80svh per card step */
+  height: calc(100svh + var(--proof-steps) * 80svh);
+  /* no overflow here, it breaks sticky */
 }
 
 .proof--scrub .proof__stage {
-  position: relative;
+  position: sticky;
+  top: 0;
   height: 100svh;
   padding-top: 5.5rem;
   padding-bottom: env(safe-area-inset-bottom);

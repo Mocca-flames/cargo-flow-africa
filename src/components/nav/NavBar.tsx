@@ -42,11 +42,21 @@ function sectionIsDark(el: Element): boolean {
 export default function NavBar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [active, setActive] = useState<string>("");
   const [theme, setTheme] = useState<"light" | "dark">("dark"); // hero first = dark
 
+  /* Scrolled state + hide on scroll down / reveal on scroll up (CSS limits hiding to mobile). */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 24);
+      const delta = y - lastY;
+      if (Math.abs(delta) < 8) return; // ignore jitter
+      setHidden(delta > 0 && y > 80); // down = hide, up = show
+      lastY = y;
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -106,7 +116,7 @@ export default function NavBar() {
   return (
     <>
       <header
-        className={`cfa-nav-wrap${scrolled ? " is-scrolled" : ""}`}
+        className={`cfa-nav-wrap${scrolled ? " is-scrolled" : ""}${hidden && !open ? " is-hidden" : ""}`}
         data-theme={theme}
       >
         <div className="cfa-nav" data-theme={theme}>

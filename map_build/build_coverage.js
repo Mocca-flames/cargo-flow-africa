@@ -100,6 +100,55 @@ function ringArea(ring) {
   return Math.abs(a / 2);
 }
 
+/**
+ * Keep the country outlines while removing redundant points. We use a
+ * small tolerance because the loader only needs a clean silhouette, not
+ * the raw Natural Earth precision.
+ */
+function simplifyRing(ring, tolerance = 12) {
+  const points = ring.map((point) => project(point));
+  const closed = points.length > 1 &&
+    points[0][0] === points[points.length - 1][0] &&
+    points[0][1] === points[points.length - 1][1];
+  const base = closed ? points.slice(0, -1) : points;
+
+  if (base.length <= 4) return base;
+
+  const keep = new Set([0, base.length - 1]);
+
+  function recurse(start, end) {
+    let maxDist = 0;
+    let maxIndex = -1;
+    const [x1, y1] = base[start];
+    const [x2, y2] = base[end];
+
+    for (let i = start + 1; i < end; i++) {
+      const [x, y] = base[i];
+      const numerator = Math.abs((x2 - x1) * (y1 - y) - (x1 - x) * (y2 - y1));
+      const denominator = Math.hypot(x2 - x1, y2 - y1) || 1;
+      const dist = numerator / denominator;
+      if (dist > maxDist) {
+        maxDist = dist;
+        maxIndex = i;
+      }
+    }
+
+    if (maxDist > tolerance) {
+      recurse(start, maxIndex);
+      recurse(maxIndex, end);
+      keep.add(maxIndex);
+    }
+  }
+
+  recurse(0, base.length - 1);
+
+  const simplified = [...keep]
+    .sort((a, b) => a - b)
+    .map((index) => base[index]);
+
+  return simplified.length >= 3 ? simplified : base;
+}
+
 /* ─── Build ─── */
 
 const territories = [];
@@ -125,8 +174,9 @@ for (const want of WANTED) {
     if (a > largestArea) { largestArea = a; largest = ring; }
   }
 
-  const pathD = rings.map(ring => ringToPath(ring)).join(' ');
-  const label = visibleLabelAnchor(largest, rings.map(ringToPath).join(' '));
+  const simplifiedRings = rings.map((ring) => simplifyRing(ring));
+  const pathD = simplifiedRings.map(ringToPath).join(' ');
+  const label = visibleLabelAnchor(largest, simplifiedRings.map(ringToPath).join(' '));
   const bbox = bboxOf(pathD);
 
   territories.push({
@@ -164,8 +214,7 @@ function visibleLabelAnchor(ring, pathD) {
 
 function ringToPath(ring) {
   let d = 'M';
-  for (const point of ring) {
-    const [x, y] = project(point);
+  for (const [x, y] of ring) {
     d += `${round(x)} ${round(y)}L`;
   }
   return d.slice(0, -1) + 'Z';

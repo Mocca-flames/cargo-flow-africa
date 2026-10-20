@@ -31,7 +31,7 @@
      finale. The length buys the chapter its slow, weighted tempo rather than
      any more content. svh, not vh: the track must not jump when the URL bar
      shows or hides. */
-  height: 460svh;
+  height: 280svh;
   background: var(--color-canvas);
   color: var(--color-ink);
   /* Fixed NavBar (`--nav-height: 4.5rem`) overlaps anchor jumps to
@@ -39,9 +39,9 @@
   scroll-margin-top: var(--nav-height, 4.5rem);
 }
 
-@supports not (height: 460svh) {
+@supports not (height: 280svh) {
   .lm-section {
-    height: 460vh;
+    height: 280vh;
   }
 }
 

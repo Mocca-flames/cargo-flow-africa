@@ -7,10 +7,9 @@ import HeroMobileV2 from "./HeroMobileV2";
 import "./HeroMobile.css";
 
 const HEADLINE_WORDS = [
-  "Cross-Border",
+  "Cross Border ",
   "Heavy",
   "Haulage",
-  
 ];
 
 export default function HeroMobile() {
@@ -116,28 +115,10 @@ export default function HeroMobile() {
 
           <div className="hm-copy">
             <div className="hm-copy-inner">
-              <h1 className="hm-headline" aria-label="Cross-Border Heavy Haulage & Corridor Freight">
-                {HEADLINE_WORDS.map((word, index) => (
-                  <span key={`${word}-${index}`} className="hm-word">
-                    {index > 0 ? " " : ""}
-                    {word}
-                  </span>
-                ))}
+              <h1 className="hm-headline" aria-label="Cross Border Heavy Haulage & Corridor Freight">
+                Cross Border Heavy Haulage                                                                                                         
               </h1>
-              <p className="hm-sub">Secured from Origin to Destination.</p>
-              <div className="hm-cards">
-                <div className="hm-card">
-                  <span className="hm-card-label">CORRIDOR</span>
-                  <span className="hm-card-value">South Africa &#10132; DRC</span>
-                </div>
-                <div className="hm-card">
-                  <span className="hm-card-label">
-                    <span className="hm-card-dot" aria-hidden="true" />
-                    STATUS
-                  </span>
-                  <span className="hm-card-value">Direct Fleet Dispatch</span>
-                </div>
-              </div>
+              <p className="hm-sub">Corridor Freight.</p>
             </div>
           </div>
 

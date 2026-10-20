@@ -112,7 +112,9 @@ export function useHeroScrollMobile(stageRef: RefObject<HTMLElement | null>): vo
     };
     measureSvh();
 
-    const segmentPx = (svh: number): number => (svhPx * svh) / 100;
+    const SWIPE_SPEED = 4; // 1.5–3, higher = more sensitive
+
+    const segmentPx = (svh: number): number => (svhPx * svh) / 100 / SWIPE_SPEED;
 
     const measure = () => {
       rafId = 0;
@@ -149,12 +151,16 @@ export function useHeroScrollMobile(stageRef: RefObject<HTMLElement | null>): vo
       onScroll();
     };
 
+    const coarse = window.matchMedia("(hover: none) and (pointer: coarse)");
+    const scroller = coarse.matches ? document.getElementById("app-scroller") : null;
+    const target: HTMLElement | Window = scroller ?? window;
+
     measure();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    target.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize, { passive: true });
 
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      target.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
       if (rafId) cancelAnimationFrame(rafId);
       ruler.remove();

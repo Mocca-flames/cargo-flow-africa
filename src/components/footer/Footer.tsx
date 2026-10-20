@@ -52,39 +52,11 @@ export default function Footer() {
               className="cfa-footer__logo"
               aria-label="Cargo Flow Africa — Return to top"
             >
-              <svg
-                width="30"
-                height="30"
-                viewBox="0 0 32 32"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <rect
-                  x="1"
-                  y="1"
-                  width="30"
-                  height="30"
-                  rx="7"
-                  fill="#12382F"
-                  stroke="#D4A44C"
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="M9 22L16 10L23 22"
-                  stroke="#F8F4EB"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M12 17.5H20"
-                  stroke="#D4A44C"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-                <circle cx="16" cy="10" r="1.75" fill="#D4A44C" />
-              </svg>
+              <img
+              src="/logo-mobile1.avif"
+              alt="Cargo Flow Africa"
+              className="cfa-nav-logo-img cfa-nav-logo-img--mobile"
+            />
               <span className="cfa-footer__brand-text">
                 <span className="cfa-footer__brand-title">Cargo Flow Africa</span>
                 <span className="cfa-footer__brand-subtitle">

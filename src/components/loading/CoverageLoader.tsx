@@ -1,28 +1,16 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { TERRITORIES, MAP_SPACE } from "@/data/coverage-territories";
+import { TERRITORIES } from "@/data/coverage-territories";
 import "./CoverageLoader.css";
 
 type CoverageLoaderProps = {
-  /** Called when the loading animation completes (all countries highlighted once). */
+  /** Called when the loader has finished exiting. */
   onComplete?: () => void;
-  /** Minimum display time in ms before calling onComplete. */
-  minDuration?: number;
   /** Whether to show the loader (controlled by parent). */
   isLoading?: boolean;
 };
 
-/**
- * CoverageLoader — A full-screen loading animation that highlights
- * the countries we operate in, one by one, in a satisfying loop.
- *
- * Uses the SVG paths from coverage-territories.ts (MAP_SPACE 5000×6111).
- * The "rail" countries (ZAF, BWA, ZWE, ZMB, COD, MWI, TZA, MOZ) are
- * highlighted sequentially with a glow effect, then the loop repeats.
- */
-// Full regional bounding box covering all territories (AGO, COD, TZA, MOZ, ZAF, etc.)
-// with comfortable margin so no country edge is clipped.
 const LOADER_VIEWBOX = {
   x: 150,
   y: -2910,
@@ -30,76 +18,69 @@ const LOADER_VIEWBOX = {
   h: 8790,
 } as const;
 
+/** Time each country stays highlighted, in ms. */
+const STEP_MS = 450;
+
+/**
+ * CoverageLoader — full-screen loading animation.
+ *
+ * The country loop and progress bar are pure CSS animations, so they run
+ * from the first paint of the server-rendered HTML — no hydration needed.
+ */
 export default function CoverageLoader({
   onComplete,
   isLoading = true,
 }: CoverageLoaderProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
   const [isMounted, setIsMounted] = useState(isLoading);
-  const [progress, setProgress] = useState(15);
 
-  // Only the countries we operate in (rail: true)
-  const railCountries = useMemo(
-    () => TERRITORIES.filter((t) => t.rail),
-    []
-  );
+  const railCountries = useMemo(() => TERRITORIES.filter((t) => t.rail), []);
+  const contextCountries = useMemo(() => TERRITORIES.filter((t) => !t.rail), []);
 
-  // All countries for context (rail: false) — drawn faint
-  const contextCountries = useMemo(
-    () => TERRITORIES.filter((t) => !t.rail),
-    []
-  );
+  const count = railCountries.length;
+  const cycleMs = Math.max(count, 1) * STEP_MS;
 
-  // Country highlight loop: starts immediately on mount and loops continuously
-  useEffect(() => {
-    if (railCountries.length === 0) return;
+  // Keyframes generated from the country count so the timing stays correct
+  // if countries are added/removed. Identical on server and client.
+  const keyframesCss = useMemo(() => {
+    const n = Math.max(count, 1);
+    const w = 100 / n;
+    const a = w * 0.2;
+    const pct = (v: number) => `${Math.min(100, v).toFixed(3)}%`;
 
-    const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % railCountries.length);
-    }, 450);
+    const base =
+      "fill:rgba(212,164,76,0.1);stroke:rgba(180,120,40,0.35);stroke-width:8;filter:drop-shadow(0 0 0 rgba(212,164,76,0));";
+    const active =
+      "fill:rgba(212,164,76,0.55);stroke:var(--color-accent-gold);stroke-width:14;filter:drop-shadow(0 0 16px rgba(212,164,76,0.7));";
+    const prev =
+      "fill:rgba(212,164,76,0.28);stroke:rgba(180,120,40,0.65);stroke-width:10;filter:drop-shadow(0 0 6px rgba(212,164,76,0.25));";
 
-    return () => clearInterval(interval);
-  }, [railCountries.length]);
-
-  // Independent loading progress bar: smoothly moves towards 92% while loading
-  useEffect(() => {
-    if (!isLoading) {
-      setProgress(100);
-      return;
-    }
-
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 92) return prev;
-        const diff = 92 - prev;
-        return prev + Math.max(0.8, diff * 0.12);
-      });
-    }, 120);
-
-    return () => clearInterval(timer);
-  }, [isLoading]);
+    return `@keyframes loader-rail-cycle{
+0%{${base}}
+${pct(a)}{${active}}
+${pct(w)}{${active}}
+${pct(w + a)}{${prev}}
+${pct(2 * w)}{${prev}}
+${pct(2 * w + a)}{${base}}
+100%{${base}}
+}`;
+  }, [count]);
 
   // Exit transition when isLoading becomes false
   useEffect(() => {
     if (!isLoading) {
-      setProgress(100);
       setIsExiting(true);
       const timer = setTimeout(() => {
         setIsMounted(false);
         onComplete?.();
-      }, 500);
+      }, 150);
       return () => clearTimeout(timer);
-    } else {
-      setIsMounted(true);
-      setIsExiting(false);
     }
+    setIsMounted(true);
+    setIsExiting(false);
   }, [isLoading, onComplete]);
 
   if (!isMounted) return null;
-
-  const activeCountry = railCountries[activeIndex];
-  const prevIndex = (activeIndex - 1 + railCountries.length) % railCountries.length;
 
   return (
     <div
@@ -107,10 +88,11 @@ export default function CoverageLoader({
       role="status"
       aria-label="Loading Cargo Flow Africa"
     >
+      <style>{keyframesCss}</style>
+
       <div className="coverage-loader__backdrop" />
 
       <div className="coverage-loader__content">
-        {/* Logo / Brand */}
         <div className="coverage-loader__brand">
           <img
             src="/logo-desktop.avif"
@@ -121,7 +103,6 @@ export default function CoverageLoader({
           />
         </div>
 
-        {/* Animated SVG Map showing full Southern & Central Africa */}
         <div className="coverage-loader__map-wrap">
           <svg
             className="coverage-loader__map"
@@ -129,7 +110,6 @@ export default function CoverageLoader({
             preserveAspectRatio="xMidYMid meet"
             aria-hidden="true"
           >
-            {/* Context countries (faint outlines) */}
             <g className="coverage-loader__context">
               {contextCountries.map((country) => (
                 <path
@@ -140,36 +120,22 @@ export default function CoverageLoader({
               ))}
             </g>
 
-            {/* Rail countries (continuous animated highlight loop) */}
-            <g className="coverage-loader__rail">
-              {railCountries.map((country, index) => {
-                const isActive = index === activeIndex;
-                const isPrev = index === prevIndex;
-                return (
-                  <path
-                    key={country.id}
-                    d={country.d}
-                    className={`coverage-loader__country coverage-loader__country--rail${
-                      isActive ? " is-active" : ""
-                    }${isPrev ? " is-prev" : ""}`}
-                  />
-                );
-              })}
+            <g
+              className="coverage-loader__rail"
+              style={{ ["--loader-cycle" as string]: `${cycleMs}ms` }}
+            >
+              {railCountries.map((country, index) => (
+                <path
+                  key={country.id}
+                  d={country.d}
+                  className="coverage-loader__country coverage-loader__country--rail"
+                  style={{ animationDelay: `${index * STEP_MS}ms` }}
+                />
+              ))}
             </g>
-
-            {/* Active country glow overlay */}
-            {activeCountry && (
-              <path
-                key={`glow-${activeCountry.id}`}
-                d={activeCountry.d}
-                className="coverage-loader__glow"
-                aria-hidden="true"
-              />
-            )}
           </svg>
         </div>
 
-        {/* Loading status */}
         <div className="coverage-loader__status">
           <div className="coverage-loader__spinner" aria-hidden="true">
             <span className="coverage-loader__spinner-dot" />
@@ -180,14 +146,8 @@ export default function CoverageLoader({
           <p className="coverage-loader__subtext">Connecting Regional Corridors</p>
         </div>
 
-        {/* Independent progress bar */}
         <div className="coverage-loader__progress" aria-hidden="true">
-          <div
-            className="coverage-loader__progress-bar"
-            style={{
-              width: `${progress}%`,
-            }}
-          />
+          <div className="coverage-loader__progress-bar" />
         </div>
       </div>
     </div>

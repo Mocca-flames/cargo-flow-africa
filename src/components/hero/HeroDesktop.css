@@ -309,7 +309,7 @@
   margin: 0 auto;
   padding: 0.25rem 0 1rem;
   font-family: var(--font-mono);
-  font-size: clamp(10.5px, 0.82vw, 12px);
+  font-size: clamp(15.5px, 0.82vw, 13px);
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: #8a8f98;
@@ -336,7 +336,7 @@
 .v2-header-statement {
   justify-self: center;
   color: #ede6d6;
-  font-size: clamp(20px, 1.8vw, 26px);
+  font-size: clamp(30px, 2.8vw, 36px);
   letter-spacing: 0.02em;
   text-transform: none;
   font-weight: 500;
