@@ -15,8 +15,9 @@
   --color-border: #dccba9;
 
   /* ─── Typography ─── */
-  --font-display: var(--font-sora), "Sora", system-ui, sans-serif;
-  --font-body: var(--font-dm-sans), "DM Sans", system-ui, sans-serif;
+  --font-display: "Sora", "Segoe UI", sans-serif;
+  --font-body: "DM Sans", "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", monospace;
 
   /* ─── Type Scale (fluid) ─── */
   --text-display-xl: clamp(3.5rem, 6vw + 1rem, 6rem);
